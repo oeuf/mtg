@@ -1,8 +1,3 @@
-Gotcha — let’s redo the **How-to** file clean from top to bottom so it doesn’t break midway.
-
-Here’s a fresh `HOWTO.md` you can paste directly:
-
-````markdown
 # How to Use the Master Reference Table
 
 This guide explains how to use the **Master Reference Table** once it’s imported into a spreadsheet tool like **Google Sheets**, Excel, or Numbers.
@@ -120,7 +115,7 @@ If your data range is `A2:H300` (adjust if needed), you can use a `SUBTOTAL` to 
 
 ```text
 =SUBTOTAL(103, A2:A300)
-````
+```
 
 * `103` = COUNTA for visible cells.
 * This tells you how many rows are currently shown for that filter.
@@ -479,6 +474,3 @@ After a few uses, the workflow becomes:
 > 4. If the table’s too strong or too weak, adjust using the same sheet.
 
 That’s it — the Master Reference Table is your **living, filterable deck lab**.
-
-```
-```
