@@ -196,7 +196,6 @@
 | 194 | Lion’s Eye Diamond | Artifact                      | 0, sac & discard hand: add 3 mana of one color                              | 0            | SU-Ext                                                         | N           |
 | 195 | Grim Monolith      | Artifact                      | T: add 3 colorless; doesn’t untap normally; 4: untap Grim Monolith          | 2            | GA4-Ext,GA4-Mid,SU-Ext,RGX-Ext                                 | N           |
 | 196 | Intuition          | Instant                       | Search for 3 cards; opponent chooses 1 to hand, 2 go to graveyard           | 2U           | SU-Ext,SU-Mid,GA4-Ext,GA4-Mid,RGX-Ext                          | N           |
-        | N           |
 | 197 | Volatile Stormdrake    | Creature — Drake                   | 3/2 flying, hexproof from activated/triggered abilities; ETB: exchange with opp creature, get 4 energy, may pay energy equal to MV to keep it | 1U | GA4-Ext,GA4-Mid                                  | N           |
 | 198 | Gilded Drake           | Creature — Drake                   | 3/3 flying; ETB exchange control with target creature an opponent controls or sac Drake     | 1U           | GA4-Ext,GA4-Mid,CA-Ext,CA-Mid,SU-Ext                            | N           |
 | 199 | Darksteel Mutation     | Enchantment — Aura                 | Enchant creature; enchanted creature is indestructible 0/1 Insect with no abilities        | 1W           | GA4-Ext,GA4-Mid,GA4-Low,CA-Ext,CA-Mid,CA-Low                    | N           |
