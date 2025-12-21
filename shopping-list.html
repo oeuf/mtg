@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extreme Tier Rare Singles - MTG Commander Shopping List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #1a1d2e;
+            --bg-secondary: #252a3d;
+            --bg-card: #2f3551;
+            --text-primary: #e8eaf2;
+            --text-secondary: #a8b2d1;
+            --accent-blue: #4a9eff;
+            --accent-green: #4ade80;
+            --accent-purple: #a78bfa;
+            --accent-gold: #fbbf24;
+            --border: #3d4567;
+            --ga4-color: #3b82f6;
+            --ca-color: #10b981;
+            --su-color: #8b5cf6;
+            --rgx-color: #06b6d4;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-gold);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .filters {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .filter-group {
+            margin-bottom: 15px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        .filter-btn.ga4 { border-color: var(--ga4-color); }
+        .filter-btn.ca { border-color: var(--ca-color); }
+        .filter-btn.su { border-color: var(--su-color); }
+        .filter-btn.rgx { border-color: var(--rgx-color); }
+
+        .filter-btn.ga4.active { background: var(--ga4-color); }
+        .filter-btn.ca.active { background: var(--ca-color); }
+        .filter-btn.su.active { background: var(--su-color); }
+        .filter-btn.rgx.active { background: var(--rgx-color); }
+
+        .section {
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .tier-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; }
+        .tier-2 { background: linear-gradient(135deg, #a78bfa, #8b5cf6); color: #fff; }
+        .tier-3 { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; }
+        .tier-4 { background: linear-gradient(135deg, #6b7280, #4b5563); color: #fff; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead {
+            background: var(--bg-card);
+            position: sticky;
+            top: 0;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--accent-blue);
+            border-bottom: 2px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            color: var(--accent-purple);
+        }
+
+        th::after {
+            content: ' ↕';
+            opacity: 0.3;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: var(--bg-card);
+        }
+
+        .card-name {
+            font-weight: 600;
+            color: var(--accent-blue);
+            font-size: 1.05rem;
+        }
+
+        .price {
+            font-weight: bold;
+            color: var(--accent-gold);
+            font-size: 1.1rem;
+        }
+
+        .mana-cost {
+            font-family: 'Courier New', monospace;
+            background: var(--bg-primary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: var(--accent-purple);
+        }
+
+        .deck-badges {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .deck-badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .deck-badge.ga4 { background: var(--ga4-color); }
+        .deck-badge.ca { background: var(--ca-color); }
+        .deck-badge.su { background: var(--su-color); }
+        .deck-badge.rgx { background: var(--rgx-color); }
+
+        .recommendations {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-green);
+            margin-bottom: 20px;
+        }
+
+        .recommendations h3 {
+            color: var(--accent-green);
+            margin-bottom: 10px;
+        }
+
+        .recommendations ul {
+            list-style-position: inside;
+            color: var(--text-secondary);
+        }
+
+        .recommendations li {
+            margin-bottom: 8px;
+        }
+
+        .priority-stars {
+            color: var(--accent-gold);
+        }
+
+        .archetype-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .archetype-card {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .archetype-card.ga4 { border-color: var(--ga4-color); }
+        .archetype-card.ca { border-color: var(--ca-color); }
+        .archetype-card.su { border-color: var(--su-color); }
+        .archetype-card.rgx { border-color: var(--rgx-color); }
+
+        .archetype-card h3 {
+            margin-bottom: 15px;
+        }
+
+        .archetype-card .stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .budget-alt {
+            background: var(--bg-primary);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .budget-alt-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .savings {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            .filters {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 Extreme Tier Rare Singles</h1>
+            <p class="subtitle">Prioritized Shopping List for High-Power Commander</p>
+            <p class="subtitle" style="margin-top: 10px; font-size: 0.9rem;">
+                Last Updated: <strong>2025-12-21</strong> | Cards: <strong id="header-total-cards">21</strong> |
+                Total Value: <strong id="header-total-value">$1,413.91</strong>
+            </p>
+        </header>
+
+        <div class="dashboard">
+            <div class="stat-card">
+                <div class="stat-value" id="total-cards">21</div>
+                <div class="stat-label">Total Cards</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="total-value">$1,413.91</div>
+                <div class="stat-label">Total Value</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avg-price">$67.33</div>
+                <div class="stat-label">Average Price</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="most-expensive">$394.38</div>
+                <div class="stat-label">Most Expensive</div>
+            </div>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label>Filter by Archetype</label>
+                <div class="filter-buttons">
+                    <button class="filter-btn" onclick="filterAll()">Show All</button>
+                    <button class="filter-btn ga4" onclick="filterDeck('GA4-Ext')">GA4-Ext (Azorius Prison)</button>
+                    <button class="filter-btn ca" onclick="filterDeck('CA-Ext')">CA-Ext (Bant Hatebears)</button>
+                    <button class="filter-btn su" onclick="filterDeck('SU-Ext')">SU-Ext (Sultai Graveyard)</button>
+                    <button class="filter-btn rgx" onclick="filterDeck('RGX-Ext')">RGX-Ext (Simic Lands)</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>Filter by Versatility</label>
+                <div class="filter-buttons">
+                    <button class="filter-btn" onclick="filterVersatility(4)">4 Decks (Universal)</button>
+                    <button class="filter-btn" onclick="filterVersatility(3)">3 Decks (High Value)</button>
+                    <button class="filter-btn" onclick="filterVersatility(2)">2 Decks</button>
+                    <button class="filter-btn" onclick="filterVersatility(1)">1 Deck (Archetype-Specific)</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label>Sort By</label>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="sortBy('versatility')">Versatility</button>
+                    <button class="filter-btn" onclick="sortBy('price-desc')">Price (High to Low)</button>
+                    <button class="filter-btn" onclick="sortBy('price-asc')">Price (Low to High)</button>
+                    <button class="filter-btn" onclick="sortBy('name')">Name (A-Z)</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="tier-badge tier-1">TIER 1</span>
+                Universal Staples (All 4 Ext Decks)
+            </h2>
+            <p class="section-subtitle">
+                ⭐⭐⭐⭐⭐ BUY FIRST - These go in every Ext deck you build. Total: <strong>$103.19</strong>
+            </p>
+            <div class="recommendations">
+                <h3>💡 Priority Recommendation</h3>
+                <ul>
+                    <li><strong>Rhystic Study</strong> - Best card draw engine in Commander, fits all blue strategies</li>
+                    <li><strong>Force of Negation</strong> - Free counter protection for your key turns</li>
+                    <li><strong>Cyclonic Rift</strong> - Best board control spell in blue, wins games</li>
+                </ul>
+            </div>
+            <table id="tier-1-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('tier-1-table', 0)">Card Name</th>
+                        <th onclick="sortTable('tier-1-table', 1)">Type</th>
+                        <th onclick="sortTable('tier-1-table', 2)">Cost</th>
+                        <th onclick="sortTable('tier-1-table', 3)">Description</th>
+                        <th onclick="sortTable('tier-1-table', 4)">Decks</th>
+                        <th onclick="sortTable('tier-1-table', 5)">Price</th>
+                    </tr>
+                </thead>
+                <tbody id="tier-1-body">
+                    <!-- Populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="tier-badge tier-2">TIER 2</span>
+                High-Versatility Cards (3 Ext Decks)
+            </h2>
+            <p class="section-subtitle">
+                ⭐⭐⭐⭐ Buy based on which archetypes you're building. Total: <strong>$791.67</strong>
+            </p>
+            <div class="recommendations">
+                <h3>💡 Strategic Notes</h3>
+                <ul>
+                    <li><strong>Grim Monolith</strong> - Fast mana engine for artifact-heavy decks. Expensive but powerful.</li>
+                    <li><strong>Intuition</strong> - Tutors 3 cards, opponent picks 1 for hand. Great for graveyard strategies.</li>
+                    <li><strong>Gilded Drake</strong> - Permanent creature theft. Answers commanders effectively.</li>
+                    <li><strong>Chrome Mox</strong> - Free acceleration that enables explosive starts.</li>
+                </ul>
+            </div>
+            <table id="tier-2-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('tier-2-table', 0)">Card Name</th>
+                        <th onclick="sortTable('tier-2-table', 1)">Type</th>
+                        <th onclick="sortTable('tier-2-table', 2)">Cost</th>
+                        <th onclick="sortTable('tier-2-table', 3)">Description</th>
+                        <th onclick="sortTable('tier-2-table', 4)">Decks</th>
+                        <th onclick="sortTable('tier-2-table', 5)">Price</th>
+                    </tr>
+                </thead>
+                <tbody id="tier-2-body">
+                    <!-- Populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <span class="tier-badge tier-4">TIER 3</span>
+                Archetype-Specific Power Cards (1 Ext Deck)
+            </h2>
+            <p class="section-subtitle">
+                ⭐⭐⭐ Buy when building that specific archetype. Total: <strong>$519.05</strong>
+            </p>
+            <table id="tier-3-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('tier-3-table', 0)">Card Name</th>
+                        <th onclick="sortTable('tier-3-table', 1)">Type</th>
+                        <th onclick="sortTable('tier-3-table', 2)">Cost</th>
+                        <th onclick="sortTable('tier-3-table', 3)">Description</th>
+                        <th onclick="sortTable('tier-3-table', 4)">Deck</th>
+                        <th onclick="sortTable('tier-3-table', 5)">Price</th>
+                    </tr>
+                </thead>
+                <tbody id="tier-3-body">
+                    <!-- Populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">💰 Budget by Archetype</h2>
+            <p class="section-subtitle">Cost breakdown to build each Ext-tier archetype with these rare singles</p>
+            <div class="archetype-breakdown">
+                <div class="archetype-card ga4">
+                    <h3>GA4-Ext (Azorius Prison)</h3>
+                    <div class="stat">
+                        <span>Rare Singles:</span>
+                        <strong id="ga4-count">10 cards</strong>
+                    </div>
+                    <div class="stat">
+                        <span>Total Cost:</span>
+                        <strong class="price" id="ga4-value">$995.09</strong>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">
+                        Prison pieces that generate advantage while locking down opponents.
+                    </p>
+                </div>
+                <div class="archetype-card ca">
+                    <h3>CA-Ext (Bant Hatebears)</h3>
+                    <div class="stat">
+                        <span>Rare Singles:</span>
+                        <strong id="ca-count">7 cards</strong>
+                    </div>
+                    <div class="stat">
+                        <span>Total Cost:</span>
+                        <strong class="price" id="ca-value">$431.93</strong>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">
+                        Most affordable Ext deck. Protection spells and creature-based disruption.
+                    </p>
+                </div>
+                <div class="archetype-card su">
+                    <h3>SU-Ext (Sultai Graveyard)</h3>
+                    <div class="stat">
+                        <span>Rare Singles:</span>
+                        <strong id="su-count">11 cards</strong>
+                    </div>
+                    <div class="stat">
+                        <span>Total Cost:</span>
+                        <strong class="price" id="su-value">$1,041.13</strong>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">
+                        Tutors for assembling combos, draw engines, and finishers.
+                    </p>
+                </div>
+                <div class="archetype-card rgx">
+                    <h3>RGX-Ext (Simic Lands)</h3>
+                    <div class="stat">
+                        <span>Rare Singles:</span>
+                        <strong id="rgx-count">10 cards</strong>
+                    </div>
+                    <div class="stat">
+                        <span>Total Cost:</span>
+                        <strong class="price" id="rgx-value">$838.67</strong>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 10px;">
+                        Land-focused engines and ramp acceleration for explosive plays.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">💡 Budget Alternatives</h2>
+            <p class="section-subtitle">Lower-cost alternatives that maintain similar functionality</p>
+
+            <div class="budget-alt">
+                <div class="budget-alt-header">
+                    <strong>Grim Monolith ($394.38)</strong>
+                    <span class="savings">Save ~$393</span>
+                </div>
+                <div style="color: var(--text-secondary);">
+                    Alternative: <strong style="color: var(--accent-green);">Basalt Monolith (~$1)</strong> - Similar untap synergies, just slower
+                </div>
+            </div>
+
+            <div class="budget-alt">
+                <div class="budget-alt-header">
+                    <strong>Vampiric Tutor ($54.10)</strong>
+                    <span class="savings">Save ~$42</span>
+                </div>
+                <div style="color: var(--text-secondary);">
+                    Alternative: <strong style="color: var(--accent-green);">Mystical Tutor (~$12)</strong> - Instant/sorcery only, but same instant-speed
+                </div>
+            </div>
+
+            <div class="budget-alt">
+                <div class="budget-alt-header">
+                    <strong>Scapeshift ($48.65)</strong>
+                    <span class="savings">Save ~$47</span>
+                </div>
+                <div style="color: var(--text-secondary);">
+                    Alternative: <strong style="color: var(--accent-green);">Hour of Promise (~$1)</strong> - Tutors 2 lands instead of mass sacrifice
+                </div>
+            </div>
+
+            <div class="budget-alt">
+                <div class="budget-alt-header">
+                    <strong>Demonic Tutor ($44.37)</strong>
+                    <span class="savings">Save ~$41</span>
+                </div>
+                <div style="color: var(--text-secondary);">
+                    Alternative: <strong style="color: var(--accent-green);">Diabolic Intent (~$3)</strong> - Requires sacrifice but same end result
+                </div>
+            </div>
+
+            <div class="budget-alt">
+                <div class="budget-alt-header">
+                    <strong>Mana Drain ($35.73)</strong>
+                    <span class="savings">Save ~$35</span>
+                </div>
+                <div style="color: var(--text-secondary);">
+                    Alternative: <strong style="color: var(--accent-green);">Counterspell (~$0.25)</strong> - No mana generation, but counters just as well
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">📅 Acquisition Timeline</h2>
+            <p class="section-subtitle">Suggested buying plan over 6-12 months</p>
+
+            <div style="margin-top: 20px;">
+                <div class="recommendations">
+                    <h3>Month 1-2: Foundation ($103.19)</h3>
+                    <ul>
+                        <li>Buy Tier 1 universal staples (Rhystic Study, Force of Negation, Cyclonic Rift)</li>
+                        <li>These work in ALL Ext decks immediately</li>
+                    </ul>
+                </div>
+
+                <div class="recommendations">
+                    <h3>Month 3-4: Acceleration ($394.38)</h3>
+                    <ul>
+                        <li>Add Grim Monolith if building 2+ archetypes</li>
+                        <li>Skip if only building one archetype or on tight budget</li>
+                    </ul>
+                </div>
+
+                <div class="recommendations">
+                    <h3>Month 5-6: Archetype Specialization ($150-200)</h3>
+                    <ul>
+                        <li>Focus on your primary archetype's power cards</li>
+                        <li>SU-Ext: Vampiric + Demonic Tutor ($98.47)</li>
+                        <li>RGX-Ext: Scapeshift + Exploration + Burgeoning ($100.18)</li>
+                        <li>GA4-Ext: Mana Drain + Sensei's Top ($65.83)</li>
+                    </ul>
+                </div>
+
+                <div class="recommendations">
+                    <h3>Month 7+: Versatile Upgrades</h3>
+                    <ul>
+                        <li>Intuition ($190) - Great for multiple strategies</li>
+                        <li>Gilded Drake ($175) - Answers commanders in any blue deck</li>
+                        <li>Fill out remaining archetype-specific cards</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Card data will be embedded here
+        const CARDS_DATA = [{"name": "Rhystic Study", "type": "Enchantment", "desc": "\"Pay 1 or I draw\" whenever opp casts spell", "cost": "2U", "decks": ["GA4-Ext", "CA-Ext", "SU-Ext", "RGX-Ext"], "versatility": 4, "price": 41.45}, {"name": "Force of Negation", "type": "Instant", "desc": "Free noncreature counter on opp turn", "cost": "1UU", "decks": ["GA4-Ext", "CA-Ext", "SU-Ext", "RGX-Ext"], "versatility": 4, "price": 38.09}, {"name": "Cyclonic Rift", "type": "Instant", "desc": "Bounce nonland; overload to bounce opps' nonlands", "cost": "1U", "decks": ["GA4-Ext", "CA-Ext", "SU-Ext", "RGX-Ext"], "versatility": 4, "price": 23.65}, {"name": "Grim Monolith", "type": "Artifact", "desc": "T: add 3 colorless; doesn't untap normally; 4: untap Grim Monolith", "cost": "2", "decks": ["GA4-Ext", "SU-Ext", "RGX-Ext"], "versatility": 3, "price": 394.38}, {"name": "Intuition", "type": "Instant", "desc": "Search for 3 cards; opponent chooses 1 to hand, 2 go to graveyard", "cost": "2U", "decks": ["GA4-Ext", "SU-Ext", "RGX-Ext"], "versatility": 3, "price": 190.0}, {"name": "Gilded Drake", "type": "Creature — Drake", "desc": "3/3 flying; ETB exchange control with target creature an opponent controls or sac Drake", "cost": "1U", "decks": ["GA4-Ext", "CA-Ext", "SU-Ext"], "versatility": 3, "price": 175.0}, {"name": "Chrome Mox", "type": "Artifact", "desc": "Imprint a nonartifact, nonland; T: add one mana of imprinted card's color", "cost": "0", "decks": ["GA4-Ext", "CA-Ext", "SU-Ext"], "versatility": 3, "price": 32.29}, {"name": "Null Rod", "type": "Artifact", "desc": "Activated abilities of artifacts can't be activated (except mana abilities)", "cost": "2", "decks": ["CA-Ext"], "versatility": 1, "price": 84.0}, {"name": "Vampiric Tutor", "type": "Instant", "desc": "Tutor to top; lose 2 life", "cost": "B", "decks": ["SU-Ext"], "versatility": 1, "price": 54.1}, {"name": "Scapeshift", "type": "Sorcery", "desc": "Sac lands; fetch that many lands", "cost": "2GG", "decks": ["RGX-Ext"], "versatility": 1, "price": 48.65}, {"name": "Demonic Tutor", "type": "Sorcery", "desc": "Tutor any card", "cost": "1B", "decks": ["SU-Ext"], "versatility": 1, "price": 44.37}, {"name": "Teferi's Protection", "type": "Instant", "desc": "Phase out, can't lose this turn", "cost": "2W", "decks": ["CA-Ext"], "versatility": 1, "price": 37.45}, {"name": "Mana Drain", "type": "Instant", "desc": "Counter spell; next main add that mana", "cost": "UU", "decks": ["GA4-Ext"], "versatility": 1, "price": 35.73}, {"name": "Smothering Tithe", "type": "Enchantment", "desc": "Opp draws → treasure unless they pay 2", "cost": "3W", "decks": ["GA4-Ext"], "versatility": 1, "price": 34.4}, {"name": "Sensei's Divining Top", "type": "Artifact", "desc": "Top 3 reorder/draw", "cost": "1", "decks": ["GA4-Ext"], "versatility": 1, "price": 30.1}, {"name": "Crucible of Worlds", "type": "Artifact", "desc": "Play lands from GY", "cost": "3", "decks": ["RGX-Ext"], "versatility": 1, "price": 27.96}, {"name": "Burgeoning", "type": "Enchantment", "desc": "Play land whenever opp plays land", "cost": "G", "decks": ["RGX-Ext"], "versatility": 1, "price": 25.8}, {"name": "Exploration", "type": "Enchantment", "desc": "Play extra land each turn", "cost": "G", "decks": ["RGX-Ext"], "versatility": 1, "price": 25.73}, {"name": "Consecrated Sphinx", "type": "Creature — Sphinx", "desc": "Opp draw → you may draw 2", "cost": "4UU", "decks": ["SU-Ext"], "versatility": 1, "price": 25.62}, {"name": "Field of the Dead", "type": "Land", "desc": "7+ unique lands → 2/2 Zombie on landfall", "cost": "—", "decks": ["RGX-Ext"], "versatility": 1, "price": 22.96}, {"name": "Torment of Hailfire", "type": "Sorcery", "desc": "Repeat \"sac/discard/lose 3\" for X", "cost": "XBB", "decks": ["SU-Ext"], "versatility": 1, "price": 22.18}];
+
+        let currentFilter = null;
+        let currentSort = 'versatility';
+
+        // Populate tables on load
+        window.onload = function() {
+            populateTables();
+        };
+
+        function populateTables() {
+            const tier1 = CARDS_DATA.filter(c => c.versatility === 4);
+            const tier2 = CARDS_DATA.filter(c => c.versatility === 3);
+            const tier3 = CARDS_DATA.filter(c => c.versatility === 1);
+
+            populateTable('tier-1-body', tier1);
+            populateTable('tier-2-body', tier2);
+            populateTable('tier-3-body', tier3);
+        }
+
+        function populateTable(bodyId, cards) {
+            const tbody = document.getElementById(bodyId);
+            tbody.innerHTML = '';
+
+            cards.forEach(card => {
+                const row = document.createElement('tr');
+
+                const deckBadges = card.decks.map(d => {
+                    const shortName = d.split('-')[0].toLowerCase();
+                    return `<span class="deck-badge ${shortName}">${d}</span>`;
+                }).join('');
+
+                row.innerHTML = `
+                    <td><span class="card-name">${card.name}</span></td>
+                    <td>${card.type}</td>
+                    <td><span class="mana-cost">${card.cost}</span></td>
+                    <td style="color: var(--text-secondary); font-size: 0.9rem;">${card.desc}</td>
+                    <td><div class="deck-badges">${deckBadges}</div></td>
+                    <td><span class="price">$${card.price.toFixed(2)}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterAll() {
+            currentFilter = null;
+            populateTables();
+            updateActiveFilter(event.target);
+        }
+
+        function filterDeck(deckName) {
+            currentFilter = {type: 'deck', value: deckName};
+            const filtered = CARDS_DATA.filter(c => c.decks.includes(deckName));
+
+            const tier1 = filtered.filter(c => c.versatility === 4);
+            const tier2 = filtered.filter(c => c.versatility === 3);
+            const tier3 = filtered.filter(c => c.versatility === 1);
+
+            populateTable('tier-1-body', tier1);
+            populateTable('tier-2-body', tier2);
+            populateTable('tier-3-body', tier3);
+
+            updateActiveFilter(event.target);
+        }
+
+        function filterVersatility(level) {
+            currentFilter = {type: 'versatility', value: level};
+            const filtered = CARDS_DATA.filter(c => c.versatility === level);
+
+            // Show all in tier-1-body
+            populateTable('tier-1-body', filtered);
+            document.getElementById('tier-2-body').innerHTML = '';
+            document.getElementById('tier-3-body').innerHTML = '';
+
+            updateActiveFilter(event.target);
+        }
+
+        function sortBy(method) {
+            let sorted = [...CARDS_DATA];
+
+            switch(method) {
+                case 'versatility':
+                    sorted.sort((a, b) => b.versatility - a.versatility || b.price - a.price);
+                    break;
+                case 'price-desc':
+                    sorted.sort((a, b) => b.price - a.price);
+                    break;
+                case 'price-asc':
+                    sorted.sort((a, b) => a.price - b.price);
+                    break;
+                case 'name':
+                    sorted.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+            }
+
+            currentSort = method;
+
+            if (currentFilter) {
+                if (currentFilter.type === 'deck') {
+                    sorted = sorted.filter(c => c.decks.includes(currentFilter.value));
+                } else if (currentFilter.type === 'versatility') {
+                    sorted = sorted.filter(c => c.versatility === currentFilter.value);
+                }
+            }
+
+            const tier1 = sorted.filter(c => c.versatility === 4);
+            const tier2 = sorted.filter(c => c.versatility === 3);
+            const tier3 = sorted.filter(c => c.versatility === 1);
+
+            populateTable('tier-1-body', currentFilter ? sorted : tier1);
+            populateTable('tier-2-body', currentFilter ? [] : tier2);
+            populateTable('tier-3-body', currentFilter ? [] : tier3);
+
+            updateActiveFilter(event.target);
+        }
+
+        function updateActiveFilter(target) {
+            const parent = target.parentElement;
+            const buttons = parent.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            target.classList.add('active');
+        }
+
+        function sortTable(tableId, column) {
+            // Simple table sorting (can be enhanced)
+            console.log(`Sorting table ${tableId} by column ${column}`);
+        }
+    </script>
+</body>
+</html>
