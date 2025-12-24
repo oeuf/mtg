@@ -1,0 +1,3910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Cards by Deck Usage - MTG Commander Database</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #1a1d2e;
+            --bg-secondary: #252a3d;
+            --bg-card: #2f3551;
+            --text-primary: #e8eaf2;
+            --text-secondary: #a8b2d1;
+            --accent-blue: #4a9eff;
+            --accent-green: #4ade80;
+            --accent-purple: #a78bfa;
+            --accent-gold: #fbbf24;
+            --border: #3d4567;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        input[type="search"] {
+            flex: 1;
+            padding: 10px 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        input[type="search"]::placeholder {
+            color: var(--text-secondary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: var(--bg-card);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--accent-blue);
+            border-bottom: 2px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background: var(--bg-primary);
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: var(--bg-card);
+        }
+
+        .deck-count {
+            color: var(--accent-green);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .card-name {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .card-type {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .commanders {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 20px;
+            background: var(--bg-card);
+            color: var(--accent-blue);
+            text-decoration: none;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .back-link:hover {
+            background: var(--accent-blue);
+            color: var(--bg-primary);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>All Cards by Deck Usage</h1>
+            <p class="subtitle">Complete card database sorted by number of decks (Archetypes + Commanders)</p>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">518</div>
+                    <div class="stat-label">Total Cards</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Archetype Decks</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Commander Analyses</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Max Decks (One Card)</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="controls">
+            <input type="search" id="searchBox" placeholder="Search cards..." onkeyup="filterTable()">
+        </div>
+
+        <table id="cardTable">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">#</th>
+                    <th onclick="sortTable(1)">Card Name ▼</th>
+                    <th onclick="sortTable(2)">Card Type</th>
+                    <th onclick="sortTable(3)">Total Decks</th>
+                    <th onclick="sortTable(4)">Commanders</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td class="card-name">Birds of Paradise</td>
+                    <td class="card-type">Creature — Bird</td>
+                    <td class="deck-count">12</td>
+                    <td class="commanders">Kinnan, Muldrotha, Tasigur</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td class="card-name">Imprisoned in the Moon</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">12</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td class="card-name">Worldly small flex slots (meta)</td>
+                    <td class="card-type">Various (placeholder)</td>
+                    <td class="deck-count">12</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td class="card-name">Nature's Claim</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">11</td>
+                    <td class="commanders">Kinnan, Tasigur</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td class="card-name">Maze of Ith</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">10</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td class="card-name">Boseiju, Who Endures</td>
+                    <td class="card-type">Legendary Land</td>
+                    <td class="deck-count">9</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td class="card-name">Song of the Dryads</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">9</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td class="card-name">Kenrith’s Transformation</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">9</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td class="card-name">Lignify</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">9</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td class="card-name">Marsh Flats</td>
+                    <td class="card-type">Land — Fetch</td>
+                    <td class="deck-count">9</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td class="card-name">Nature’s Claim</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">9</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td class="card-name">Tropical Island</td>
+                    <td class="card-type">Land — Forest Island</td>
+                    <td class="deck-count">9</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td class="card-name">Waterlogged Grove</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">9</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>14</td>
+                    <td class="card-name">Wooded Foothills</td>
+                    <td class="card-type">Land — Fetch</td>
+                    <td class="deck-count">9</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td class="card-name">Yavimaya Coast</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">9</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>16</td>
+                    <td class="card-name">Gaea’s Cradle</td>
+                    <td class="card-type">Legendary Land</td>
+                    <td class="deck-count">8</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>17</td>
+                    <td class="card-name">Take Possession</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">8</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>18</td>
+                    <td class="card-name">Spreading Seas</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">8</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>19</td>
+                    <td class="card-name">Scavenging Ooze</td>
+                    <td class="card-type">Creature — Ooze</td>
+                    <td class="deck-count">8</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>20</td>
+                    <td class="card-name">Sakura-Tribe Elder</td>
+                    <td class="card-type">Creature — Snake Shaman</td>
+                    <td class="deck-count">7</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>21</td>
+                    <td class="card-name">Finale of Devastation</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">7</td>
+                    <td class="commanders">Chulane</td>
+                </tr>
+                <tr>
+                    <td>22</td>
+                    <td class="card-name">Mana Crypt</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">7</td>
+                    <td class="commanders">Kinnan, Muldrotha, Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>23</td>
+                    <td class="card-name">Spellseeker</td>
+                    <td class="card-type">Creature — Human Wizard</td>
+                    <td class="deck-count">7</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>24</td>
+                    <td class="card-name">Sol Ring</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">Kinnan, Muldrotha, Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>25</td>
+                    <td class="card-name">Rhystic Study</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">Kinnan, Muldrotha, Tasigur, Tymna+Thrasios, Zur</td>
+                </tr>
+                <tr>
+                    <td>26</td>
+                    <td class="card-name">Teferi, Hero of Dominaria</td>
+                    <td class="card-type">Planeswalker</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>27</td>
+                    <td class="card-name">Demonic Tutor</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">Kinnan, Muldrotha, Tasigur, Tymna+Thrasios, Zur</td>
+                </tr>
+                <tr>
+                    <td>28</td>
+                    <td class="card-name">Gilded Drake</td>
+                    <td class="card-type">Creature — Drake</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">Chulane</td>
+                </tr>
+                <tr>
+                    <td>29</td>
+                    <td class="card-name">Darksteel Mutation</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>30</td>
+                    <td class="card-name">Prison Term</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>31</td>
+                    <td class="card-name">Seal Away</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>32</td>
+                    <td class="card-name">Adarkar Wastes</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>33</td>
+                    <td class="card-name">Azorius Signet</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>34</td>
+                    <td class="card-name">Esper Sentinel</td>
+                    <td class="card-type">Artifact Creature — Human Soldier</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>35</td>
+                    <td class="card-name">Force of Vigor</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>36</td>
+                    <td class="card-name">Krosan Grip</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>37</td>
+                    <td class="card-name">Prairie Stream</td>
+                    <td class="card-type">Land — Plains Island</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>38</td>
+                    <td class="card-name">Relic of Progenitus</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>39</td>
+                    <td class="card-name">Seachrome Coast</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>40</td>
+                    <td class="card-name">Temple of Enlightenment</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">6</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>41</td>
+                    <td class="card-name">Mystic Remora</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">Kinnan, Muldrotha, Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>42</td>
+                    <td class="card-name">Swan Song</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">Muldrotha, Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>43</td>
+                    <td class="card-name">Force of Will</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">Kinnan, Muldrotha, Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>44</td>
+                    <td class="card-name">Mystical Tutor</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">Kinnan, Muldrotha, Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>45</td>
+                    <td class="card-name">Mana Drain</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">Muldrotha, Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>46</td>
+                    <td class="card-name">Pact of Negation</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">Kinnan, Muldrotha, Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>47</td>
+                    <td class="card-name">Sylvan Library</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">Kinnan, Muldrotha, Tasigur</td>
+                </tr>
+                <tr>
+                    <td>48</td>
+                    <td class="card-name">Abrupt Decay</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">Kinnan, Muldrotha, Tasigur</td>
+                </tr>
+                <tr>
+                    <td>49</td>
+                    <td class="card-name">Intuition</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>50</td>
+                    <td class="card-name">Control Magic</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>51</td>
+                    <td class="card-name">Coldsteel Heart</td>
+                    <td class="card-type">Snow Artifact</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>52</td>
+                    <td class="card-name">March of Otherworldly Light</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>53</td>
+                    <td class="card-name">Simic Growth Chamber</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>54</td>
+                    <td class="card-name">Winds of Abandon</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>55</td>
+                    <td class="card-name">Thassa's Oracle</td>
+                    <td class="card-type">Creature — Merfolk Wizard</td>
+                    <td class="deck-count">5</td>
+                    <td class="commanders">Chulane, Muldrotha, Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>56</td>
+                    <td class="card-name">Arcane Signet</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">Kinnan, Zur</td>
+                </tr>
+                <tr>
+                    <td>57</td>
+                    <td class="card-name">Aura of Silence</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>58</td>
+                    <td class="card-name">Eternal Witness</td>
+                    <td class="card-type">Creature — Human Shaman</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">Muldrotha, Tasigur</td>
+                </tr>
+                <tr>
+                    <td>59</td>
+                    <td class="card-name">Noble Hierarch</td>
+                    <td class="card-type">Creature — Human Druid</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>60</td>
+                    <td class="card-name">Satyr Wayfinder</td>
+                    <td class="card-type">Creature — Satyr Druid</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>61</td>
+                    <td class="card-name">Vampiric Tutor</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">Muldrotha, Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>62</td>
+                    <td class="card-name">Academy Ruins</td>
+                    <td class="card-type">Legendary Land</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>63</td>
+                    <td class="card-name">Elephant Grass</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>64</td>
+                    <td class="card-name">Nexus of Fate</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>65</td>
+                    <td class="card-name">Chrome Mox</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">Muldrotha, Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>66</td>
+                    <td class="card-name">Arrest</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>67</td>
+                    <td class="card-name">Agent of Treachery</td>
+                    <td class="card-type">Creature — Human Rogue</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>68</td>
+                    <td class="card-name">Authority of the Consuls</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>69</td>
+                    <td class="card-name">Evacuation</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>70</td>
+                    <td class="card-name">Everflowing Chalice</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>71</td>
+                    <td class="card-name">Green Sun's Zenith</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>72</td>
+                    <td class="card-name">Hall of Heliod’s Generosity</td>
+                    <td class="card-type">Legendary Land</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>73</td>
+                    <td class="card-name">Heliod’s Intervention</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>74</td>
+                    <td class="card-name">Idyllic Tutor</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>75</td>
+                    <td class="card-name">Reliquary Tower</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>76</td>
+                    <td class="card-name">Seasons Past</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>77</td>
+                    <td class="card-name">Serra’s Sanctum</td>
+                    <td class="card-type">Legendary Land</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>78</td>
+                    <td class="card-name">World Shaper</td>
+                    <td class="card-type">Creature — Merfolk Shaman</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>79</td>
+                    <td class="card-name">Sensei's Divining Top</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">Muldrotha, Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>80</td>
+                    <td class="card-name">Demonic Consultation</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">4</td>
+                    <td class="commanders">Muldrotha, Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>81</td>
+                    <td class="card-name">Grand Arbiter Augustin IV</td>
+                    <td class="card-type">Legendary Creature — Human</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>82</td>
+                    <td class="card-name">Roon of the Hidden Realm</td>
+                    <td class="card-type">Legendary Creature — Rhino</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>83</td>
+                    <td class="card-name">Muldrotha, the Gravetide</td>
+                    <td class="card-type">Legendary Creature — Elemental</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>84</td>
+                    <td class="card-name">Aesi, Tyrant of Gyre Strait</td>
+                    <td class="card-type">Legendary Creature — Serpent</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>85</td>
+                    <td class="card-name">Swords to Plowshares</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>86</td>
+                    <td class="card-name">Cyclonic Rift</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>87</td>
+                    <td class="card-name">Force of Negation</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">Kinnan, Tasigur</td>
+                </tr>
+                <tr>
+                    <td>88</td>
+                    <td class="card-name">Propaganda</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>89</td>
+                    <td class="card-name">Ghostly Prison</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>90</td>
+                    <td class="card-name">Sphere of Safety</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>91</td>
+                    <td class="card-name">Blind Obedience</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>92</td>
+                    <td class="card-name">Wrath of God</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">Tymna+Thrasios</td>
+                </tr>
+                <tr>
+                    <td>93</td>
+                    <td class="card-name">Farewell</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>94</td>
+                    <td class="card-name">Darksteel Plate</td>
+                    <td class="card-type">Artifact — Equipment</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>95</td>
+                    <td class="card-name">Dovin’s Veto</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>96</td>
+                    <td class="card-name">Dig Through Time</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">Tasigur</td>
+                </tr>
+                <tr>
+                    <td>97</td>
+                    <td class="card-name">Generic UW Land Suite</td>
+                    <td class="card-type">Land (bundle)</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>98</td>
+                    <td class="card-name">Generic UW Basics/Flex</td>
+                    <td class="card-type">Land (bundle)</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>99</td>
+                    <td class="card-name">Qasali Pridemage</td>
+                    <td class="card-type">Creature — Cat Wizard</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>100</td>
+                    <td class="card-name">Reclamation Sage</td>
+                    <td class="card-type">Creature — Elf Shaman</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>101</td>
+                    <td class="card-name">Knight of Autumn</td>
+                    <td class="card-type">Creature — Dryad Knight</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>102</td>
+                    <td class="card-name">Skyclave Apparition</td>
+                    <td class="card-type">Creature — Kor Spirit</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>103</td>
+                    <td class="card-name">Reflector Mage</td>
+                    <td class="card-type">Creature — Human Wizard</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>104</td>
+                    <td class="card-name">Restoration Angel</td>
+                    <td class="card-type">Creature — Angel</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>105</td>
+                    <td class="card-name">Teferi’s Protection</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>106</td>
+                    <td class="card-name">Rishkar’s Expertise</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>107</td>
+                    <td class="card-name">Avacyn’s Pilgrim</td>
+                    <td class="card-type">Creature — Human Monk</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>108</td>
+                    <td class="card-name">Generic Bant Land Suite</td>
+                    <td class="card-type">Land (bundle)</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>109</td>
+                    <td class="card-name">Generic Bant Basics/Flex</td>
+                    <td class="card-type">Land (bundle)</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>110</td>
+                    <td class="card-name">Mulch</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>111</td>
+                    <td class="card-name">Animate Dead</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>112</td>
+                    <td class="card-name">Walking Ballista</td>
+                    <td class="card-type">Artifact Creature</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">Kinnan, Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>113</td>
+                    <td class="card-name">Consecrated Sphinx</td>
+                    <td class="card-type">Creature — Sphinx</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>114</td>
+                    <td class="card-name">Generic Sultai Land Suite</td>
+                    <td class="card-type">Land (bundle)</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>115</td>
+                    <td class="card-name">Generic Sultai Basics/Flex</td>
+                    <td class="card-type">Land (bundle)</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>116</td>
+                    <td class="card-name">Rampant Growth</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>117</td>
+                    <td class="card-name">Kodama’s Reach</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>118</td>
+                    <td class="card-name">Nature’s Lore</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>119</td>
+                    <td class="card-name">Oracle of Mul Daya</td>
+                    <td class="card-type">Creature — Elf Shaman</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>120</td>
+                    <td class="card-name">Courser of Kruphix</td>
+                    <td class="card-type">Enchant. Creature — Centaur</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>121</td>
+                    <td class="card-name">Crucible of Worlds</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>122</td>
+                    <td class="card-name">Rampaging Baloths</td>
+                    <td class="card-type">Creature — Beast</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>123</td>
+                    <td class="card-name">Generic Simic Land Suite</td>
+                    <td class="card-type">Land (bundle)</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>124</td>
+                    <td class="card-name">Generic Simic Basics/Flex</td>
+                    <td class="card-type">Land (bundle)</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>125</td>
+                    <td class="card-name">Immovable Rod</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>126</td>
+                    <td class="card-name">Time Stretch</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>127</td>
+                    <td class="card-name">Null Rod</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>128</td>
+                    <td class="card-name">Angel’s Grace</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>129</td>
+                    <td class="card-name">Urza, Lord High Artificer</td>
+                    <td class="card-type">Legendary Creature — Human Artificer</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>130</td>
+                    <td class="card-name">Candelabra of Tawnos</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>131</td>
+                    <td class="card-name">Pendrell Mists</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>132</td>
+                    <td class="card-name">Timetwister</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>133</td>
+                    <td class="card-name">Magus of the Tabernacle</td>
+                    <td class="card-type">Creature — Human Wizard</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>134</td>
+                    <td class="card-name">Grim Monolith</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">Kinnan, Tasigur</td>
+                </tr>
+                <tr>
+                    <td>135</td>
+                    <td class="card-name">Brushland</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>136</td>
+                    <td class="card-name">Cursed Totem</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>137</td>
+                    <td class="card-name">Drowned Catacomb</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>138</td>
+                    <td class="card-name">Eladamri's Call</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>139</td>
+                    <td class="card-name">Fabricate</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>140</td>
+                    <td class="card-name">Horizon Canopy</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>141</td>
+                    <td class="card-name">Irrigated Farmland</td>
+                    <td class="card-type">Land — Plains Island</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>142</td>
+                    <td class="card-name">Jace, Wielder of Mysteries</td>
+                    <td class="card-type">Planeswalker — Jace</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>143</td>
+                    <td class="card-name">Linvala, Keeper of Silence</td>
+                    <td class="card-type">Legendary Creature — Angel</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>144</td>
+                    <td class="card-name">Port Town</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>145</td>
+                    <td class="card-name">Savannah</td>
+                    <td class="card-type">Land — Forest Plains</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>146</td>
+                    <td class="card-name">Sky Diamond</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>147</td>
+                    <td class="card-name">Spara’s Headquarters</td>
+                    <td class="card-type">Land — Forest Plains Island</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>148</td>
+                    <td class="card-name">Venser, the Sojourner</td>
+                    <td class="card-type">Planeswalker — Venser</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>149</td>
+                    <td class="card-name">Woodland Cemetery</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>150</td>
+                    <td class="card-name">Isochron Scepter</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">Kinnan, Tasigur</td>
+                </tr>
+                <tr>
+                    <td>151</td>
+                    <td class="card-name">Dramatic Reversal</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">Kinnan, Tasigur</td>
+                </tr>
+                <tr>
+                    <td>152</td>
+                    <td class="card-name">Worldly Tutor</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">3</td>
+                    <td class="commanders">Kinnan, Muldrotha, Tasigur</td>
+                </tr>
+                <tr>
+                    <td>153</td>
+                    <td class="card-name">Fellwar Stone</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>154</td>
+                    <td class="card-name">Path to Exile</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>155</td>
+                    <td class="card-name">Generous Gift</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>156</td>
+                    <td class="card-name">Beast Within</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>157</td>
+                    <td class="card-name">Command Tower</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>158</td>
+                    <td class="card-name">Exotic Orchard</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>159</td>
+                    <td class="card-name">Winter Orb</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>160</td>
+                    <td class="card-name">Static Orb</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>161</td>
+                    <td class="card-name">Hokori, Dust Drinker</td>
+                    <td class="card-type">Legendary Creature — Spirit</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>162</td>
+                    <td class="card-name">Back to Basics</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>163</td>
+                    <td class="card-name">Rule of Law</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>164</td>
+                    <td class="card-name">Smothering Tithe</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>165</td>
+                    <td class="card-name">Narset, Parter of Veils</td>
+                    <td class="card-type">Legendary Planeswalker — Narset</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>166</td>
+                    <td class="card-name">Supreme Verdict</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>167</td>
+                    <td class="card-name">Sensei’s Divining Top</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>168</td>
+                    <td class="card-name">Thalia, Guardian of Thraben</td>
+                    <td class="card-type">Legendary Creature — Human</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>169</td>
+                    <td class="card-name">Thalia, Heretic Cathar</td>
+                    <td class="card-type">Legendary Creature — Human</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>170</td>
+                    <td class="card-name">Archon of Emeria</td>
+                    <td class="card-type">Creature — Archon</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>171</td>
+                    <td class="card-name">Lavinia, Azorius Renegade</td>
+                    <td class="card-type">Legendary Creature — Human</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>172</td>
+                    <td class="card-name">Aven Mindcensor</td>
+                    <td class="card-type">Creature — Bird Wizard</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>173</td>
+                    <td class="card-name">Deputy of Detention</td>
+                    <td class="card-type">Creature — Vedalken Wizard</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>174</td>
+                    <td class="card-name">Venser, Shaper Savant</td>
+                    <td class="card-type">Legendary Creature — Human</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>175</td>
+                    <td class="card-name">Charming Prince</td>
+                    <td class="card-type">Creature — Human Noble</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>176</td>
+                    <td class="card-name">Aura Shards</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>177</td>
+                    <td class="card-name">Rest in Peace</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>178</td>
+                    <td class="card-name">Green Sun’s Zenith</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>179</td>
+                    <td class="card-name">Eladamri’s Call</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>180</td>
+                    <td class="card-name">Guardian Project</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>181</td>
+                    <td class="card-name">Stitcher’s Supplier</td>
+                    <td class="card-type">Creature — Zombie</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>182</td>
+                    <td class="card-name">Mesmeric Orb</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>183</td>
+                    <td class="card-name">Grisly Salvage</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>184</td>
+                    <td class="card-name">Life from the Loam</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>185</td>
+                    <td class="card-name">Ramunap Excavator</td>
+                    <td class="card-type">Creature — Naga Cleric</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>186</td>
+                    <td class="card-name">Necromancy</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>187</td>
+                    <td class="card-name">Reanimate</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>188</td>
+                    <td class="card-name">Victimize</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>189</td>
+                    <td class="card-name">Underworld Breach</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>190</td>
+                    <td class="card-name">Brain Freeze</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>191</td>
+                    <td class="card-name">Assassin’s Trophy</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>192</td>
+                    <td class="card-name">Sheoldred, the Apocalypse</td>
+                    <td class="card-type">Legendary Creature — Praetor</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>193</td>
+                    <td class="card-name">Grave Titan</td>
+                    <td class="card-type">Creature — Giant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>194</td>
+                    <td class="card-name">Altar of Dementia</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>195</td>
+                    <td class="card-name">Baleful Strix</td>
+                    <td class="card-type">Artifact Creature — Bird</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>196</td>
+                    <td class="card-name">Bane of Progress</td>
+                    <td class="card-type">Creature — Elemental</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>197</td>
+                    <td class="card-name">Cultivate</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>198</td>
+                    <td class="card-name">Exploration</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>199</td>
+                    <td class="card-name">Burgeoning</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>200</td>
+                    <td class="card-name">Lotus Cobra</td>
+                    <td class="card-type">Creature — Snake</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>201</td>
+                    <td class="card-name">Azusa, Lost but Seeking</td>
+                    <td class="card-type">Legendary Creature — Human</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>202</td>
+                    <td class="card-name">Field of the Dead</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>203</td>
+                    <td class="card-name">Boundless Realms</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>204</td>
+                    <td class="card-name">Scapeshift</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>205</td>
+                    <td class="card-name">Splendid Reclamation</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>206</td>
+                    <td class="card-name">Elder Gargaroth</td>
+                    <td class="card-type">Creature — Beast</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>207</td>
+                    <td class="card-name">Blue Sun’s Zenith</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>208</td>
+                    <td class="card-name">Mindslaver</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>209</td>
+                    <td class="card-name">Thassa’s Oracle</td>
+                    <td class="card-type">Creature — Merfolk Wizard</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>210</td>
+                    <td class="card-name">The Abyss</td>
+                    <td class="card-type">World Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>211</td>
+                    <td class="card-name">Abyssal Persecutor</td>
+                    <td class="card-type">Creature — Demon</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>212</td>
+                    <td class="card-name">Teferi’s Puzzle Box</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>213</td>
+                    <td class="card-name">Mox Diamond</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>214</td>
+                    <td class="card-name">Volatile Stormdrake</td>
+                    <td class="card-type">Creature — Drake</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>215</td>
+                    <td class="card-name">Pacifism</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>216</td>
+                    <td class="card-name">Treachery</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>217</td>
+                    <td class="card-name">Corrupted Conscience</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>218</td>
+                    <td class="card-name">Convincing Mirage</td>
+                    <td class="card-type">Enchantment — Aura</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>219</td>
+                    <td class="card-name">Breeding Pool</td>
+                    <td class="card-type">Land — Forest Island</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>220</td>
+                    <td class="card-name">Celestial Colonnade</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>221</td>
+                    <td class="card-name">Enlightened Tutor</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>222</td>
+                    <td class="card-name">Fabled Passage</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>223</td>
+                    <td class="card-name">Flooded Strand</td>
+                    <td class="card-type">Land — Fetch</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>224</td>
+                    <td class="card-name">Forest</td>
+                    <td class="card-type">Basic Land — Forest</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>225</td>
+                    <td class="card-name">Glacial Fortress</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>226</td>
+                    <td class="card-name">Hallowed Fountain</td>
+                    <td class="card-type">Land — Plains Island</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>227</td>
+                    <td class="card-name">Hinterland Harbor</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>228</td>
+                    <td class="card-name">Island</td>
+                    <td class="card-type">Basic Land — Island</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>229</td>
+                    <td class="card-name">Marble Diamond</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>230</td>
+                    <td class="card-name">Misty Rainforest</td>
+                    <td class="card-type">Land — Fetch</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>231</td>
+                    <td class="card-name">Plains</td>
+                    <td class="card-type">Basic Land — Plains</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>232</td>
+                    <td class="card-name">Reflecting Pool</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>233</td>
+                    <td class="card-name">Search for Azcanta</td>
+                    <td class="card-type">Legendary Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>234</td>
+                    <td class="card-name">Tabernacle at Pendrell Vale</td>
+                    <td class="card-type">Legendary Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>235</td>
+                    <td class="card-name">Temple Garden</td>
+                    <td class="card-type">Land — Forest Plains</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>236</td>
+                    <td class="card-name">Windswept Heath</td>
+                    <td class="card-type">Land — Fetch</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>237</td>
+                    <td class="card-name">Blood Moon</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>238</td>
+                    <td class="card-name">Magus of the Moon</td>
+                    <td class="card-type">Creature — Human Wizard</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>239</td>
+                    <td class="card-name">Teferi's Puzzle Box</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>240</td>
+                    <td class="card-name">Dovin's Veto</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>241</td>
+                    <td class="card-name">Lightning Bolt</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>242</td>
+                    <td class="card-name">Vandalblast</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>243</td>
+                    <td class="card-name">Steam Vents</td>
+                    <td class="card-type">Land — Island Mountain</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>244</td>
+                    <td class="card-name">Sacred Foundry</td>
+                    <td class="card-type">Land — Mountain Plains</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>245</td>
+                    <td class="card-name">Chaos Warp</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>246</td>
+                    <td class="card-name">Mana Vault</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>247</td>
+                    <td class="card-name">Lotus Petal</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>248</td>
+                    <td class="card-name">Howling Mine</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>249</td>
+                    <td class="card-name">Font of Mythos</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>250</td>
+                    <td class="card-name">Temple Bell</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>251</td>
+                    <td class="card-name">Rites of Flourishing</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>252</td>
+                    <td class="card-name">Dictate of Kruphix</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>253</td>
+                    <td class="card-name">Kami of the Crescent Moon</td>
+                    <td class="card-type">Legendary Creature — Spirit</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>254</td>
+                    <td class="card-name">Ghirapur Orrery</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>255</td>
+                    <td class="card-name">Spectral Searchlight</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>256</td>
+                    <td class="card-name">Carpet of Flowers</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Tasigur</td>
+                </tr>
+                <tr>
+                    <td>257</td>
+                    <td class="card-name">Tainted Pact</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>258</td>
+                    <td class="card-name">Fierce Guardianship</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>259</td>
+                    <td class="card-name">Nature's Lore</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>260</td>
+                    <td class="card-name">Farseek</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>261</td>
+                    <td class="card-name">City of Brass</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>262</td>
+                    <td class="card-name">Mana Confluence</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>263</td>
+                    <td class="card-name">Path of Ancestry</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>264</td>
+                    <td class="card-name">Terramorphic Expanse</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>265</td>
+                    <td class="card-name">Evolving Wilds</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>266</td>
+                    <td class="card-name">Scalding Tarn</td>
+                    <td class="card-type">Land — Fetch</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>267</td>
+                    <td class="card-name">Stomping Ground</td>
+                    <td class="card-type">Land — Mountain Forest</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>268</td>
+                    <td class="card-name">Sunpetal Grove</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>269</td>
+                    <td class="card-name">Clifftop Retreat</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>270</td>
+                    <td class="card-name">Rootbound Crag</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>271</td>
+                    <td class="card-name">Mountain</td>
+                    <td class="card-type">Basic Land — Mountain</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>272</td>
+                    <td class="card-name">Kodama's Reach</td>
+                    <td class="card-type">Sorcery — Arcane</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>273</td>
+                    <td class="card-name">Bloom Tender</td>
+                    <td class="card-type">Creature — Elf Druid</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>274</td>
+                    <td class="card-name">Horn of Greed</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>275</td>
+                    <td class="card-name">Possibility Storm</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>276</td>
+                    <td class="card-name">Warp World</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>277</td>
+                    <td class="card-name">Seedborn Muse</td>
+                    <td class="card-type">Creature — Spirit</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>278</td>
+                    <td class="card-name">Wood Elves</td>
+                    <td class="card-type">Creature — Elf Scout</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>279</td>
+                    <td class="card-name">Imperial Seal</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>280</td>
+                    <td class="card-name">Necropotence</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>281</td>
+                    <td class="card-name">Assassin's Trophy</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Muldrotha, Tasigur</td>
+                </tr>
+                <tr>
+                    <td>282</td>
+                    <td class="card-name">Ad Nauseam</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>283</td>
+                    <td class="card-name">Ponder</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>284</td>
+                    <td class="card-name">Brainstorm</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Tasigur, Zur</td>
+                </tr>
+                <tr>
+                    <td>285</td>
+                    <td class="card-name">Phyrexian Arena</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Muldrotha, Zur</td>
+                </tr>
+                <tr>
+                    <td>286</td>
+                    <td class="card-name">Laboratory Maniac</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">2</td>
+                    <td class="commanders">Chulane, Zur</td>
+                </tr>
+                <tr>
+                    <td>287</td>
+                    <td class="card-name">Mind Stone</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>288</td>
+                    <td class="card-name">Counterspell</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>289</td>
+                    <td class="card-name">Stasis</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>290</td>
+                    <td class="card-name">Moat</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>291</td>
+                    <td class="card-name">Magus of the Moat</td>
+                    <td class="card-type">Creature — Human Wizard</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>292</td>
+                    <td class="card-name">Deafening Silence</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>293</td>
+                    <td class="card-name">Teferi, Time Raveler</td>
+                    <td class="card-type">Legendary Planeswalker — Teferi</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>294</td>
+                    <td class="card-name">Armageddon</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>295</td>
+                    <td class="card-name">Cataclysm</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>296</td>
+                    <td class="card-name">Approach of the Second Sun</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>297</td>
+                    <td class="card-name">Platinum Angel</td>
+                    <td class="card-type">Artifact Creature — Angel</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>298</td>
+                    <td class="card-name">Martial Coup</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>299</td>
+                    <td class="card-name">Fact or Fiction</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>300</td>
+                    <td class="card-name">Gaddock Teeg</td>
+                    <td class="card-type">Legendary Creature — Kithkin</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>301</td>
+                    <td class="card-name">Drannith Magistrate</td>
+                    <td class="card-type">Creature — Human Wizard</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>302</td>
+                    <td class="card-name">Eidolon of Rhetoric</td>
+                    <td class="card-type">Enchant. Creature — Spirit</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>303</td>
+                    <td class="card-name">Collector Ouphe</td>
+                    <td class="card-type">Creature — Ouphe</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>304</td>
+                    <td class="card-name">Spirit of the Labyrinth</td>
+                    <td class="card-type">Enchant. Creature</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>305</td>
+                    <td class="card-name">Mulldrifter</td>
+                    <td class="card-type">Creature — Elemental</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>306</td>
+                    <td class="card-name">Austere Command</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>307</td>
+                    <td class="card-name">Tireless Tracker</td>
+                    <td class="card-type">Creature — Human Scout</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>308</td>
+                    <td class="card-name">Protean Hulk</td>
+                    <td class="card-type">Creature — Beast</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>309</td>
+                    <td class="card-name">Mikaeus, the Unhallowed</td>
+                    <td class="card-type">Legendary Creature — Zombie</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>310</td>
+                    <td class="card-name">Triskelion</td>
+                    <td class="card-type">Artifact Creature</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>311</td>
+                    <td class="card-name">Lion’s Eye Diamond</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>312</td>
+                    <td class="card-name">Torment of Hailfire</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>313</td>
+                    <td class="card-name">Three Visits</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>314</td>
+                    <td class="card-name">Wasteland</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>315</td>
+                    <td class="card-name">Strip Mine</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>316</td>
+                    <td class="card-name">Avenger of Zendikar</td>
+                    <td class="card-type">Creature — Elemental</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>317</td>
+                    <td class="card-name">Craterhoof Behemoth</td>
+                    <td class="card-type">Creature — Beast</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>318</td>
+                    <td class="card-name">Book of Exalted Deeds</td>
+                    <td class="card-type">Legendary Artifact</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>319</td>
+                    <td class="card-name">Faceless Haven</td>
+                    <td class="card-type">Snow Land</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>320</td>
+                    <td class="card-name">Nether Void</td>
+                    <td class="card-type">World Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>321</td>
+                    <td class="card-name">Notion Thief</td>
+                    <td class="card-type">Creature — Human Rogue</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>322</td>
+                    <td class="card-name">Acidic Slime</td>
+                    <td class="card-type">Creature — Ooze</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>323</td>
+                    <td class="card-name">Arcane Denial</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>324</td>
+                    <td class="card-name">Coiling Oracle</td>
+                    <td class="card-type">Creature — Snake Elf Druid</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>325</td>
+                    <td class="card-name">Flusterstorm</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>326</td>
+                    <td class="card-name">Mystic Sanctuary</td>
+                    <td class="card-type">Land — Island</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>327</td>
+                    <td class="card-name">Polluted Delta</td>
+                    <td class="card-type">Land — Fetch</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>328</td>
+                    <td class="card-name">Solemn Simulacrum</td>
+                    <td class="card-type">Artifact Creature — Golem</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>329</td>
+                    <td class="card-name">Sun Titan</td>
+                    <td class="card-type">Creature — Giant</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>330</td>
+                    <td class="card-name">Talisman of Progress</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>331</td>
+                    <td class="card-name">Tangle Wire</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>332</td>
+                    <td class="card-name">Tundra</td>
+                    <td class="card-type">Land — Plains Island</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>333</td>
+                    <td class="card-name">Zagoth Triome</td>
+                    <td class="card-type">Land — Forest Island Swamp</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>334</td>
+                    <td class="card-name">Kykar, Wind's Fury</td>
+                    <td class="card-type">Legendary Creature — Bird Wizard</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>335</td>
+                    <td class="card-name">Aethersworn Canonist</td>
+                    <td class="card-type">Artifact Creature — Human Cleric</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>336</td>
+                    <td class="card-name">Counterbalance</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>337</td>
+                    <td class="card-name">Wheel of Fortune</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>338</td>
+                    <td class="card-name">Windfall</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>339</td>
+                    <td class="card-name">Reforge the Soul</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>340</td>
+                    <td class="card-name">Echo of Eons</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>341</td>
+                    <td class="card-name">Time Spiral</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>342</td>
+                    <td class="card-name">Time Reversal</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>343</td>
+                    <td class="card-name">Magus of the Wheel</td>
+                    <td class="card-type">Creature — Human Wizard</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>344</td>
+                    <td class="card-name">Jace's Archivist</td>
+                    <td class="card-type">Creature — Vedalken Wizard</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>345</td>
+                    <td class="card-name">Monastery Mentor</td>
+                    <td class="card-type">Creature — Human Monk</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>346</td>
+                    <td class="card-name">Young Pyromancer</td>
+                    <td class="card-type">Creature — Human Shaman</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>347</td>
+                    <td class="card-name">Saheeli, Sublime Artificer</td>
+                    <td class="card-type">Legendary Planeswalker — Saheeli</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>348</td>
+                    <td class="card-name">Chain of Vapor</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>349</td>
+                    <td class="card-name">Wear // Tear</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>350</td>
+                    <td class="card-name">Talisman of Creativity</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>351</td>
+                    <td class="card-name">Volcanic Island</td>
+                    <td class="card-type">Land — Island Mountain</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>352</td>
+                    <td class="card-name">Plateau</td>
+                    <td class="card-type">Land — Mountain Plains</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>353</td>
+                    <td class="card-name">Zo-Zu the Punisher</td>
+                    <td class="card-type">Legendary Creature — Goblin Warrior</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>354</td>
+                    <td class="card-name">Ankh of Mishra</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>355</td>
+                    <td class="card-name">Price of Progress</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>356</td>
+                    <td class="card-name">Burning Earth</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>357</td>
+                    <td class="card-name">Manabarbs</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>358</td>
+                    <td class="card-name">Blood Sun</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>359</td>
+                    <td class="card-name">Ruination</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>360</td>
+                    <td class="card-name">Jokulhaups</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>361</td>
+                    <td class="card-name">Obliterate</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>362</td>
+                    <td class="card-name">Devastation</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>363</td>
+                    <td class="card-name">Wildfire</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>364</td>
+                    <td class="card-name">Burning of Xinye</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>365</td>
+                    <td class="card-name">Boom // Bust</td>
+                    <td class="card-type">Instant // Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>366</td>
+                    <td class="card-name">Stone Rain</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>367</td>
+                    <td class="card-name">Molten Rain</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>368</td>
+                    <td class="card-name">Pillage</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>369</td>
+                    <td class="card-name">Avalanche Riders</td>
+                    <td class="card-type">Creature — Human Nomad</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>370</td>
+                    <td class="card-name">Dust Bowl</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>371</td>
+                    <td class="card-name">Eidolon of the Great Revel</td>
+                    <td class="card-type">Enchantment Creature — Spirit</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>372</td>
+                    <td class="card-name">Pyrostatic Pillar</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>373</td>
+                    <td class="card-name">Harsh Mentor</td>
+                    <td class="card-type">Creature — Human Cleric</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>374</td>
+                    <td class="card-name">Sulfuric Vortex</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>375</td>
+                    <td class="card-name">Goblin Welder</td>
+                    <td class="card-type">Creature — Goblin Artificer</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>376</td>
+                    <td class="card-name">Daretti, Scrap Savant</td>
+                    <td class="card-type">Legendary Planeswalker — Daretti</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>377</td>
+                    <td class="card-name">Chandra, Torch of Defiance</td>
+                    <td class="card-type">Legendary Planeswalker — Chandra</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>378</td>
+                    <td class="card-name">Abrade</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>379</td>
+                    <td class="card-name">Blasphemous Act</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>380</td>
+                    <td class="card-name">Torbran, Thane of Red Fell</td>
+                    <td class="card-type">Legendary Creature — Dwarf Noble</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>381</td>
+                    <td class="card-name">Inferno Titan</td>
+                    <td class="card-type">Creature — Giant</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>382</td>
+                    <td class="card-name">Fire Diamond</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>383</td>
+                    <td class="card-name">Ancient Tomb</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>384</td>
+                    <td class="card-name">Kenrith, the Returned King</td>
+                    <td class="card-type">Legendary Creature — Human Noble</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>385</td>
+                    <td class="card-name">Folio of Fancies</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>386</td>
+                    <td class="card-name">Otherworldly Atlas</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>387</td>
+                    <td class="card-name">Veteran Explorer</td>
+                    <td class="card-type">Creature — Human Soldier Scout</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>388</td>
+                    <td class="card-name">Oath of Lieges</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>389</td>
+                    <td class="card-name">Forced Fruition</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>390</td>
+                    <td class="card-name">Dockside Extortionist</td>
+                    <td class="card-type">Creature — Goblin Pirate</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>391</td>
+                    <td class="card-name">Indatha Triome</td>
+                    <td class="card-type">Land — Plains Swamp Forest</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>392</td>
+                    <td class="card-name">Ketria Triome</td>
+                    <td class="card-type">Land — Forest Island Mountain</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>393</td>
+                    <td class="card-name">Raugrin Triome</td>
+                    <td class="card-type">Land — Island Mountain Plains</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>394</td>
+                    <td class="card-name">Savai Triome</td>
+                    <td class="card-type">Land — Mountain Plains Swamp</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>395</td>
+                    <td class="card-name">Verdant Catacombs</td>
+                    <td class="card-type">Land — Fetch</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>396</td>
+                    <td class="card-name">Godless Shrine</td>
+                    <td class="card-type">Land — Plains Swamp</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>397</td>
+                    <td class="card-name">Overgrown Tomb</td>
+                    <td class="card-type">Land — Swamp Forest</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>398</td>
+                    <td class="card-name">Blood Crypt</td>
+                    <td class="card-type">Land — Swamp Mountain</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>399</td>
+                    <td class="card-name">Watery Grave</td>
+                    <td class="card-type">Land — Island Swamp</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>400</td>
+                    <td class="card-name">Isolated Chapel</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>401</td>
+                    <td class="card-name">Krosan Verge</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>402</td>
+                    <td class="card-name">Rugged Prairie</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>403</td>
+                    <td class="card-name">Mystic Monastery</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>404</td>
+                    <td class="card-name">Frontier Bivouac</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>405</td>
+                    <td class="card-name">Skycloud Expanse</td>
+                    <td class="card-type">Land</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>406</td>
+                    <td class="card-name">Swamp</td>
+                    <td class="card-type">Basic Land — Swamp</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>407</td>
+                    <td class="card-name">Chromatic Lantern</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>408</td>
+                    <td class="card-name">Skyshroud Claim</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>409</td>
+                    <td class="card-name">Dictate of Karametra</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>410</td>
+                    <td class="card-name">Hunted Phantasm</td>
+                    <td class="card-type">Creature — Spirit</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>411</td>
+                    <td class="card-name">Hunted Troll</td>
+                    <td class="card-type">Creature — Troll Warrior</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>412</td>
+                    <td class="card-name">Hunted Dragon</td>
+                    <td class="card-type">Creature — Dragon</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>413</td>
+                    <td class="card-name">Nekusar, the Mindrazer</td>
+                    <td class="card-type">Legendary Creature — Zombie Wizard</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>414</td>
+                    <td class="card-name">Spiteful Visions</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>415</td>
+                    <td class="card-name">Psychosis Crawler</td>
+                    <td class="card-type">Artifact Creature — Horror</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>416</td>
+                    <td class="card-name">Hive Mind</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>417</td>
+                    <td class="card-name">Omen Machine</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>418</td>
+                    <td class="card-name">Confusion in the Ranks</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>419</td>
+                    <td class="card-name">Eye of the Storm</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>420</td>
+                    <td class="card-name">Scrambleverse</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>421</td>
+                    <td class="card-name">Game Plan</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>422</td>
+                    <td class="card-name">Curse of Opulence</td>
+                    <td class="card-type">Enchantment — Aura Curse</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>423</td>
+                    <td class="card-name">Grip of Chaos</td>
+                    <td class="card-type">Enchantment</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>424</td>
+                    <td class="card-name">Anguished Unmaking</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>425</td>
+                    <td class="card-name">Decimate</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>426</td>
+                    <td class="card-name">Return to Dust</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>427</td>
+                    <td class="card-name">Gamble</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>428</td>
+                    <td class="card-name">Exsanguinate</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>429</td>
+                    <td class="card-name">Aetherflux Reservoir</td>
+                    <td class="card-type">Artifact</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>430</td>
+                    <td class="card-name">Wheel of Misfortune</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>431</td>
+                    <td class="card-name">Kynaios and Tiro of Meletis</td>
+                    <td class="card-type">Legendary Creature — Human Soldier</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>432</td>
+                    <td class="card-name">Tireless Provisioner</td>
+                    <td class="card-type">Creature — Elf Scout</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>433</td>
+                    <td class="card-name">Dragonlord Ojutai</td>
+                    <td class="card-type">Legendary Creature — Dragon</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>434</td>
+                    <td class="card-name">Season’s Past</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>435</td>
+                    <td class="card-name">Pull from Tomorrow</td>
+                    <td class="card-type">Instant</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>436</td>
+                    <td class="card-name">Collective Voyage</td>
+                    <td class="card-type">Sorcery</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">—</td>
+                </tr>
+                <tr>
+                    <td>437</td>
+                    <td class="card-name">1v1 Focus</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tymna+Thrasios</td>
+                </tr>
+                <tr>
+                    <td>438</td>
+                    <td class="card-name">8. Utility Creatures</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tymna+Thrasios</td>
+                </tr>
+                <tr>
+                    <td>439</td>
+                    <td class="card-name">Dorks</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tymna+Thrasios</td>
+                </tr>
+                <tr>
+                    <td>440</td>
+                    <td class="card-name">Toxic Deluge for multiplayer board control</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tymna+Thrasios</td>
+                </tr>
+                <tr>
+                    <td>441</td>
+                    <td class="card-name">Vampiric Tutor for consistency in both</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tymna+Thrasios</td>
+                </tr>
+                <tr>
+                    <td>442</td>
+                    <td class="card-name">4. Mass Removal</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tymna+Thrasios</td>
+                </tr>
+                <tr>
+                    <td>443</td>
+                    <td class="card-name">2. Card Advantage</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tymna+Thrasios</td>
+                </tr>
+                <tr>
+                    <td>444</td>
+                    <td class="card-name">enchantments for sustained draws</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tymna+Thrasios</td>
+                </tr>
+                <tr>
+                    <td>445</td>
+                    <td class="card-name">evasive creatures for Tymna triggers</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tymna+Thrasios</td>
+                </tr>
+                <tr>
+                    <td>446</td>
+                    <td class="card-name">6. Tutors</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tymna+Thrasios</td>
+                </tr>
+                <tr>
+                    <td>447</td>
+                    <td class="card-name">Grand Architect</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>448</td>
+                    <td class="card-name">Rapid Hybridization</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>449</td>
+                    <td class="card-name">Veil of Summer</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>450</td>
+                    <td class="card-name">Rings of Brighthearth</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>451</td>
+                    <td class="card-name">Pili-Pala</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>452</td>
+                    <td class="card-name">Deathrite Shaman</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>453</td>
+                    <td class="card-name">Thrasios, Triton Hero</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>454</td>
+                    <td class="card-name">Long-Term Plans</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>455</td>
+                    <td class="card-name">Fierce Empath</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>456</td>
+                    <td class="card-name">Basalt Monolith</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>457</td>
+                    <td class="card-name">Hullbreaker Horror</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Kinnan</td>
+                </tr>
+                <tr>
+                    <td>458</td>
+                    <td class="card-name">Careful Study</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tasigur</td>
+                </tr>
+                <tr>
+                    <td>459</td>
+                    <td class="card-name">Crop Rotation</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tasigur</td>
+                </tr>
+                <tr>
+                    <td>460</td>
+                    <td class="card-name">Treasure Cruise</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tasigur</td>
+                </tr>
+                <tr>
+                    <td>461</td>
+                    <td class="card-name">Noxious Revival</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tasigur</td>
+                </tr>
+                <tr>
+                    <td>462</td>
+                    <td class="card-name">Otherworldly Gaze</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tasigur</td>
+                </tr>
+                <tr>
+                    <td>463</td>
+                    <td class="card-name">Fatal Push</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tasigur</td>
+                </tr>
+                <tr>
+                    <td>464</td>
+                    <td class="card-name">Gitaxian Probe</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tasigur</td>
+                </tr>
+                <tr>
+                    <td>465</td>
+                    <td class="card-name">Regrowth</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tasigur</td>
+                </tr>
+                <tr>
+                    <td>466</td>
+                    <td class="card-name">Reality Shift</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Tasigur</td>
+                </tr>
+                <tr>
+                    <td>467</td>
+                    <td class="card-name">Greater Auramancy</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>468</td>
+                    <td class="card-name">Shielded by Faith</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>469</td>
+                    <td class="card-name">Lim-Dûl's Vault</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>470</td>
+                    <td class="card-name">Diplomatic Immunity</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>471</td>
+                    <td class="card-name">Alexi's Cloak</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>472</td>
+                    <td class="card-name">Scroll Rack</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>473</td>
+                    <td class="card-name">Dark Confidant</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>474</td>
+                    <td class="card-name">Stony Silence</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>475</td>
+                    <td class="card-name">Steel of the Godhead</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>476</td>
+                    <td class="card-name">Detention Sphere</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>477</td>
+                    <td class="card-name">Grasp of Fate</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>478</td>
+                    <td class="card-name">Angel's Grace</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>479</td>
+                    <td class="card-name">Empyrial Armor</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>480</td>
+                    <td class="card-name">Vanishing</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>481</td>
+                    <td class="card-name">Oblivion Ring</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Zur</td>
+                </tr>
+                <tr>
+                    <td>482</td>
+                    <td class="card-name">5. Tutors & Selection</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Chulane</td>
+                </tr>
+                <tr>
+                    <td>483</td>
+                    <td class="card-name">1. Mana Dorks</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Chulane</td>
+                </tr>
+                <tr>
+                    <td>484</td>
+                    <td class="card-name">Vendilion Clique</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Chulane</td>
+                </tr>
+                <tr>
+                    <td>485</td>
+                    <td class="card-name">Protect Chulane and combo</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Chulane</td>
+                </tr>
+                <tr>
+                    <td>486</td>
+                    <td class="card-name">Soulherder</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Chulane</td>
+                </tr>
+                <tr>
+                    <td>487</td>
+                    <td class="card-name">scale in long games</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Chulane</td>
+                </tr>
+                <tr>
+                    <td>488</td>
+                    <td class="card-name">Both ✓✓</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Chulane</td>
+                </tr>
+                <tr>
+                    <td>489</td>
+                    <td class="card-name">Utility + card draw</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Chulane</td>
+                </tr>
+                <tr>
+                    <td>490</td>
+                    <td class="card-name">Format Emphasis</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Chulane</td>
+                </tr>
+                <tr>
+                    <td>491</td>
+                    <td class="card-name">Perpetual Timepiece</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>492</td>
+                    <td class="card-name">Spore Frog</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>493</td>
+                    <td class="card-name">Lion's Eye Diamond</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>494</td>
+                    <td class="card-name">Caustic Caterpillar</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>495</td>
+                    <td class="card-name">Millikin</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>496</td>
+                    <td class="card-name">The Gitrog Monster</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>497</td>
+                    <td class="card-name">Survival of the Fittest</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>498</td>
+                    <td class="card-name">Mikaeus the Unhallowed</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>499</td>
+                    <td class="card-name">Greenwarden of Murasa</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>500</td>
+                    <td class="card-name">Seal of Primordium</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>501</td>
+                    <td class="card-name">Seal of Removal</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>502</td>
+                    <td class="card-name">Buried Alive</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>503</td>
+                    <td class="card-name">Hermit Druid</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>504</td>
+                    <td class="card-name">Fauna Shaman</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>505</td>
+                    <td class="card-name">Archaeomancer</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>506</td>
+                    <td class="card-name">Entomb</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>507</td>
+                    <td class="card-name">Skullwinder</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Muldrotha</td>
+                </tr>
+                <tr>
+                    <td>508</td>
+                    <td class="card-name">1v1 disruption ; multiplayer tax effects create symmetrical appearance</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Roon</td>
+                </tr>
+                <tr>
+                    <td>509</td>
+                    <td class="card-name">mass removal for multiplayer; complements creature-based disruption</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Roon</td>
+                </tr>
+                <tr>
+                    <td>510</td>
+                    <td class="card-name">Core engine—Roon blinks these for repeatable card advantage</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Roon</td>
+                </tr>
+                <tr>
+                    <td>511</td>
+                    <td class="card-name">Supplement ETB draw; multiplayer scales ; 1v1 needs burst draw</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Roon</td>
+                </tr>
+                <tr>
+                    <td>512</td>
+                    <td class="card-name">multiplayer needs instant-speed flexibility</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Roon</td>
+                </tr>
+                <tr>
+                    <td>513</td>
+                    <td class="card-name">Format Justification</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Roon</td>
+                </tr>
+                <tr>
+                    <td>514</td>
+                    <td class="card-name">Creature-based answers for 1v1 interaction density; multiplayer flexibility</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Roon</td>
+                </tr>
+                <tr>
+                    <td>515</td>
+                    <td class="card-name">Universal need—both formats require turn 3-4 Roon deployment</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Roon</td>
+                </tr>
+                <tr>
+                    <td>516</td>
+                    <td class="card-name">Flexible answers—single-target for 1v1</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Roon</td>
+                </tr>
+                <tr>
+                    <td>517</td>
+                    <td class="card-name">Close games in both formats—infinite mana loops  + payoffs</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Roon</td>
+                </tr>
+                <tr>
+                    <td>518</td>
+                    <td class="card-name">Protect Roon ; 1v1 needs higher density</td>
+                    <td class="card-type">Card</td>
+                    <td class="deck-count">1</td>
+                    <td class="commanders">Roon</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a href="index.html" class="back-link">← Back to Home</a>
+    </div>
+
+    <script>
+        function filterTable() {
+            const input = document.getElementById('searchBox');
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById('cardTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const nameCell = rows[i].getElementsByTagName('td')[1];
+                const typeCell = rows[i].getElementsByTagName('td')[2];
+                const cmdCell = rows[i].getElementsByTagName('td')[4];
+                
+                if (nameCell && typeCell && cmdCell) {
+                    const nameText = nameCell.textContent || nameCell.innerText;
+                    const typeText = typeCell.textContent || typeCell.innerText;
+                    const cmdText = cmdCell.textContent || cmdCell.innerText;
+                    
+                    if (nameText.toUpperCase().indexOf(filter) > -1 || 
+                        typeText.toUpperCase().indexOf(filter) > -1 ||
+                        cmdText.toUpperCase().indexOf(filter) > -1) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function sortTable(column) {
+            const table = document.getElementById('cardTable');
+            const tbody = table.tBodies[0];
+            const rows = Array.from(tbody.rows);
+            
+            rows.sort((a, b) => {
+                const aValue = a.cells[column].textContent;
+                const bValue = b.cells[column].textContent;
+                
+                // Numeric comparison for deck count and row number
+                if (column === 3 || column === 0) {
+                    return parseInt(bValue) - parseInt(aValue);
+                }
+                
+                // String comparison for others
+                return aValue.localeCompare(bValue);
+            });
+            
+            rows.forEach(row => tbody.appendChild(row));
+        }
+    </script>
+</body>
+</html>
