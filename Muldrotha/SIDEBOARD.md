@@ -7,12 +7,64 @@
 
 ## Table of Contents
 
-1. [Strong Cards That Didn't Make the Cut](#strong-cards-that-didnt-make-the-cut)
-2. [Meta-Dependent Flex Slots](#meta-dependent-flex-slots)
-3. [Cards We Cut (Potential Re-Adds)](#cards-we-cut-potential-re-adds)
-4. [Budget Alternatives](#budget-alternatives)
-5. [Power Level Adjustments](#power-level-adjustments)
-6. [Testing Candidates](#testing-candidates)
+1. [Moxfield Sideboard Import](#moxfield-sideboard-import)
+2. [Strong Cards That Didn't Make the Cut](#strong-cards-that-didnt-make-the-cut)
+3. [Meta-Dependent Flex Slots](#meta-dependent-flex-slots)
+4. [Cards We Cut (Potential Re-Adds)](#cards-we-cut-potential-re-adds)
+5. [Budget Alternatives](#budget-alternatives)
+6. [Power Level Adjustments](#power-level-adjustments)
+7. [Testing Candidates](#testing-candidates)
+
+---
+
+## Moxfield Sideboard Import
+
+**Quick Import Format**: Copy the tab-delimited section below and paste into Moxfield's sideboard section.
+
+This sideboard includes:
+- **Strong candidates** that didn't make the final cut (high-synergy alternatives)
+- **Cards we cut** that could be swapped back in for meta reasons
+- **Flex options** for testing and adaptation
+
+### Copy Below for Moxfield Sideboard Import
+
+1	Ashiok, Dream Render
+1	Caustic Caterpillar
+1	Crop Rotation
+1	Demonic Consultation
+1	Displacer Kitten
+1	Ledger Shredder
+1	Mana Vault
+1	Mesmeric Orb
+1	Necromancy
+1	Oko, Thief of Crowns
+1	Pitiless Plunderer
+1	Siren Stormtamer
+1	Veil of Summer
+1	Windfall
+
+**Total Sideboard Cards**: 14
+
+---
+
+### Sideboard Categories
+
+**Testing Priorities (Add First)**:
+- Ashiok, Dream Render - Hate piece + self-mill
+- Siren Stormtamer - Repeatable protection
+- Secrets of the Dead - If you need more card draw
+- Caustic Caterpillar - Redundant removal
+
+**Meta-Dependent Swaps**:
+- Veil of Summer - Against heavy blue/black control
+- Demonic Consultation - If you want more consistent Thoracle wins
+- Windfall - If you need burst draw/disruption
+
+**Cards We Cut (Reconsider Based on Testing)**:
+- Necromancy - Flash reanimation
+- Mana Vault - Fast mana
+- Pitiless Plunderer - Altar synergy
+- Crop Rotation - Utility land tutor
 
 ---
 
