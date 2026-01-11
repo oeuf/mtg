@@ -393,6 +393,189 @@ Your 15 instants + heavy counterspell suite means you trigger Rashmi on every pl
 
 ---
 
+## Part 3: Dimir Commander Swap Analysis
+
+**Critical Note:** Dropping green loses ~20-25 cards including:
+- Ramp: Bloom Tender, Sakura-Tribe Elder, Nature's Lore, Exploration
+- Value Engines: The Gitrog Monster, Survival of the Fittest, Sylvan Library, Birthing Pod
+- Recursion: Ramunap Excavator, Eternal Witness, Life from the Loam, Nyx Weaver
+- Removal: Seal of Primordium, Pernicious Deed, Assassin's Trophy
+- Protection: Spore Frog, Veil of Summer
+- Tutors: Worldly Tutor
+- Creatures: Glarb, Teval, Sidisi, Yarok (all require green)
+
+**What You Keep:**
+- Full Thoracle/Consultation combo
+- All black tutors (Vampiric, Entomb, Buried Alive)
+- All reanimation (Reanimate, Animate Dead, Necromancy)
+- All blue counterspells
+- Strong black creatures (Opposition Agent, Orcish Bowmasters, Dauthi Voidwalker)
+
+---
+
+### 1. The Scarab God
+
+**EDHREC Data:** 12,366 decks ([source](https://edhrec.com/commanders/the-scarab-god))
+
+**From [Draftsim: The Scarab God Commander Deck Guide](https://draftsim.com/scarab-god-edh-deck/):**
+
+> "The Scarab God is a card that dominated most of its Standard format, and it's a powerful Dimir commander. It's legendary and has abilities that suit Commander well—reanimation from any graveyard is one great feature, and it can dodge commander tax."
+
+> "The basic premise is getting The Scarab God onto the battlefield as quickly as possible, discarding expensive creatures and recurring them while creating a value engine with affordable creatures to flood the battlefield and ping everyone for more damage every turn."
+
+**From [TappedOut Primer: God of the Rising FULL Moon](https://tappedout.net/mtg-decks/the-scarab-god-by-vexenx/):**
+
+> "The god works especially well with boardwipes because you can replay your commander for its initial cost while others must pay additional tax. That's also why including many 'destroy creature' ETBs is valuable—you plan to continuously snipe opponents' commanders or best creatures in between boardwipes."
+
+**From [MTG Salvation Forum](https://www.mtgsalvation.com/forums/the-game/commander-edh/multiplayer-commander-decklists/791203-the-scarab-god-value-creatures-and-laboratory):**
+
+> "One infinite combo combines Altar of Dementia, Gravecrawler, and Rooftop Storm to generate infinite mill."
+
+**Your Cards That Transfer:**
+- Thassa's Oracle + Demonic Consultation (primary win)
+- All reanimation spells
+- Altar of Dementia (combo piece)
+- Gravecrawler (Zombie synergy + combo)
+- All black tutors
+- All blue counterspells
+- Orcish Bowmasters, Opposition Agent, Dauthi Voidwalker
+
+**Cards You'd Add:**
+- Rooftop Storm (~$8) — enables Gravecrawler combo
+- Gary (Gray Merchant of Asphodel) (~$1)
+- More Zombies for tribal synergy
+
+**Swap Assessment:** ~20-25 cards changed. Cost: $40-80.
+
+---
+
+### 2. Araumi of the Dead Tide
+
+**EDHREC Data:** 3,392 decks ([source](https://edhrec.com/commanders/araumi-of-the-dead-tide))
+
+**From [TappedOut Primer: To Drown the World in Death](https://tappedout.net/mtg-decks/to-drown-the-world-in-death-araumi-edh-primer/):**
+
+> "The deck is all about milling yourself to provide fuel for Araumi's ability, then encoring creatures to create 3 token copies (assuming 3 opponents) for triple the value."
+
+> "The primary goal is to quickly and efficiently fill the graveyard with cards like Stitcher's Supplier, Stinkweed Imp, and Doom Whisperer, then start encoring whatever creature you need for the situation."
+
+**From [Draftsim: Araumi Self-Mill Commander Deck Guide](https://draftsim.com/edh-self-mill-deck/):**
+
+> "One main win-con is triggering Gray Merchant of Asphodel multiple times in the same turn with high devotion. Token copies keep their mana costs, so encoring Gary with Araumi immediately drains all opponents for at least 21."
+
+**From [PlayEDH: Araumi Two Years Later](https://www.playedh.com/articles/araumi-of-the-dead-tide-two-years-later):**
+
+> "One strategy is to mill your whole library at once, then recur your win-con with Dread Return. This is achieved by pairing Mesmeric Orb with self-untapping permanents like Basalt Monolith or Aphetto Alchemist."
+
+**Your Cards That Transfer:**
+- Mesmeric Orb (sideboard) — essential for self-mill
+- Stitcher's Supplier (sideboard)
+- Altar of Dementia
+- All reanimation spells
+- Thassa's Oracle (win after milling deck)
+- Mulldrifter (encore = draw 6)
+- Plaguecrafter (encore = each opponent sacs 3)
+
+**Key Synergy:** Your existing self-mill package transfers directly to Araumi.
+
+**Swap Assessment:** ~20-25 cards changed. Cost: $30-60.
+
+---
+
+### 3. Toxrill, the Corrosive
+
+**EDHREC Data:** 7,848 decks ([source](https://edhrec.com/commanders/toxrill-the-corrosive))
+
+**From [Draftsim: Toxrill Commander Deck Guide](https://draftsim.com/toxrill-edh-deck/):**
+
+> "Toxrill is all about controlling the board state. Every end step (not just your own), you place slime counters on creatures you don't control. And as long as Toxrill is on the battlefield, creatures get -1/-1 for each slime counter on them."
+
+> "Toxrill slowly weakens your opponents' creatures until they die. It's a great commander to run against token decks."
+
+**From [TCGPlayer: Let's Build Toxrill](https://infinite.tcgplayer.com/article/Let-s-Build-a-MTG-Toxrill-Commander-Deck/7ce6738c-283b-4cf0-9074-1daa60287831/):**
+
+> "There's a Toxrill-specific land destruction combo: Urborg, Tomb of Yawgmoth turns every land into swamps; Kormus Bell makes all swamps 1/1 creatures; from here, you just move to your end step and Toxrill will place slime counters on all of your opponents' 1/1 lands, killing them in the process."
+
+**From [MTGNexus: Toxrill's Toxic Control](https://www.mtgnexus.com/viewtopic.php?t=42173):**
+
+> "An infinite mana combo uses Dramatic Reversal imprinted on Isochron Scepter with enough mana rocks to produce at least three mana. Once you have infinite colored mana, you can cast your Commander infinite times, sacrificing it to its own ability to draw your whole deck."
+
+**Your Cards That Transfer:**
+- Urborg, Tomb of Yawgmoth (combo piece!)
+- All counterspells
+- Cyclonic Rift
+- All black removal
+- Sol Ring, Arcane Signet, mana rocks
+- Thassa's Oracle (win after drawing deck)
+
+**Playstyle Note:** Very different from Muldrotha—pure control, not graveyard focused.
+
+**Swap Assessment:** ~30-35 cards changed. Cost: $50-100.
+
+---
+
+### 4. Satoru Umezawa
+
+**EDHREC Data:** 12,542 decks ([source](https://edhrec.com/commanders/satoru-umezawa))
+
+**From [Draftsim: Satoru Umezawa Commander Deck Guide](https://draftsim.com/satoru-umezawa-commander-deck/):**
+
+> "Every single creature in your hand has ninjutsu thanks to Satoru's static ability. And it curves out perfectly with a 1- or 2-mana unblockable creature, your commander on three, and then a ninjutsu'd Eldrazi or Phyrexian Praetor on four."
+
+**From [CoolStuffInc: Commanding Kamigawa by Mark Wischkaemper](https://www.coolstuffinc.com/a/markwischkaemper-01112022-commanding-kamigawa-satoru-umezawa):**
+
+> "You want to get out creatures like Jin-Gitaxias, Core Augur, Blightsteel Colossus, and It that Betrays."
+
+**From [MTG Rocks: Satoru Infinite Combos](https://mtgrocks.com/satoru-umezawa-an-mtg-commander-buyers-guide/):**
+
+> "This is a deck highly dependent on the commander, as its main win condition is through 'Infinite Ninjutsu' combos. These combos are only possible thanks to the interaction between Satoru Umezawa and any creature with an ETB ability that untaps lands: Peregrine Drake, Great Whale, or Palinchron."
+
+**Your Cards That Transfer:**
+- Baleful Strix (evasive + ETB draw)
+- Opposition Agent (flash in with ninjutsu)
+- Orcish Bowmasters
+- All counterspells
+- All black tutors (find combo pieces)
+- Consecrated Sphinx (sideboard — huge ninjutsu target)
+
+**Different Strategy:** This is NOT a graveyard deck. It's a tempo/combo deck that cheats big creatures into play. Very different from Muldrotha.
+
+**Swap Assessment:** ~35-40 cards changed. Cost: $80-150.
+
+---
+
+### 5. Umbris, Fear Manifest
+
+**EDHREC Data:** 8,470 decks ([source](https://edhrec.com/commanders/umbris-fear-manifest))
+
+**From [PlayEDH: Explosive Engineering - Umbris](https://www.playedh.com/articles/explosive-engineering-low-power-umbris):**
+
+> "Umbris, Fear Manifest is a really fun twist on the mill strategy set up by earlier commanders such as Phenax by changing the mill strategy into an exile strategy and adding in commander damage."
+
+> "Your opponents collectively having 20 cards in exile is enough to make Umbris a one-shot kill from commander damage alone."
+
+**From [TappedOut: Umbris Exile Mill Deck](https://tappedout.net/mtg-decks/umbris-fear-manifest-exile-mill-deck/):**
+
+> "Umbris, Fear Manifest grows into an enormous size by exiling cards, which it accomplishes with an army of Horror creatures combined with a ton of mill and exile effects."
+
+**Mill-to-Exile Strategy:**
+
+> "Milling a lot of cards into the graveyard and then exiling all graveyards is a solid strategy. Umbris functions off of exiling cards, not so much milling directly."
+
+**Your Cards That Transfer:**
+- Ashiok, Dream Render (sideboard) — exiles graveyards!
+- Dauthi Voidwalker — exiles creatures
+- Bojuka Bog — exiles graveyards
+- All mill cards (Mesmeric Orb, etc.)
+- All counterspells
+- Thassa's Oracle (alternate win)
+
+**Key Synergy:** Your Ashiok and Dauthi Voidwalker are already exiling cards for Umbris.
+
+**Swap Assessment:** ~25-30 cards changed. Cost: $40-80.
+
+---
+
 ## Muldrotha Combo Lines (From cEDH Primers)
 
 ### Lion's Eye Diamond Combo
@@ -446,7 +629,7 @@ Your 15 instants + heavy counterspell suite means you trigger Rashmi on every pl
 | **Glarb** | 4 | Surveil control | 3-5 | [CoolStuffInc](https://www.coolstuffinc.com/a/abesargent-08142024-casting-big-stuff-with-glarb-calamitys-augur-in-commander) |
 | **Teval** | 4 | Reanimator | 0-2 | [CoolStuffInc](https://www.coolstuffinc.com/a/juiliansison-seo-03312025-teval-the-balanced-scale-sultais-newest-graveyard-menace) |
 
-### Simic Commanders
+### Simic Commanders (Lose ~25 Black Cards)
 
 | Commander | CMC | Strategy | Cards Changed | Source |
 |-----------|-----|----------|---------------|--------|
@@ -455,6 +638,16 @@ Your 15 instants + heavy counterspell suite means you trigger Rashmi on every pl
 | **Aesi** | 6 | Landfall value | 25-30 | [Nearly Identical](https://edhrec.com/articles/nearly-identical-tatyova-or-aesi) |
 | **Rashmi** | 4 | Cascade control | 30-35 | [Moxfield Primer](https://moxfield.com/decks/iwlYb-Moq0CbTyM11XdZyQ/primer) |
 | **Uro** | 3 | Value/Escape | 30-35 | [MTGGoldfish](https://www.mtggoldfish.com/articles/commander-spotlight-uro-titan-of-nature-s-wrath) |
+
+### Dimir Commanders (Lose ~20 Green Cards)
+
+| Commander | CMC | Strategy | Cards Changed | Source |
+|-----------|-----|----------|---------------|--------|
+| **The Scarab God** | 5 | Zombie reanimator | 20-25 | [Draftsim](https://draftsim.com/scarab-god-edh-deck/) |
+| **Araumi** | 3 | Encore self-mill | 20-25 | [TappedOut Primer](https://tappedout.net/mtg-decks/to-drown-the-world-in-death-araumi-edh-primer/) |
+| **Toxrill** | 7 | Slime control | 30-35 | [Draftsim](https://draftsim.com/toxrill-edh-deck/) |
+| **Satoru Umezawa** | 3 | Ninjutsu combo | 35-40 | [Draftsim](https://draftsim.com/satoru-umezawa-commander-deck/) |
+| **Umbris** | 5 | Exile mill | 25-30 | [PlayEDH](https://www.playedh.com/articles/explosive-engineering-low-power-umbris) |
 
 ---
 
@@ -471,6 +664,12 @@ Your 15 instants + heavy counterspell suite means you trigger Rashmi on every pl
 
 ### Best Simic Option
 **Tatyova, Benthic Druid** — Already in your sideboard. Per [EDHREC Nearly Identical](https://edhrec.com/articles/nearly-identical-tatyova-or-aesi), Tatyova and Aesi share 90% card overlap, so the shell is well-documented.
+
+### Best Dimir Option (Graveyard Focus)
+**Araumi of the Dead Tide** — Your self-mill package (Mesmeric Orb, Stitcher's Supplier, Altar of Dementia) transfers directly. Per [TappedOut Primer](https://tappedout.net/mtg-decks/to-drown-the-world-in-death-araumi-edh-primer/), encoring Mulldrifter draws 6 cards, encoring Plaguecrafter makes each opponent sacrifice 3 permanents. You keep Thoracle as an alternate win.
+
+### Best Dimir Option (Control Focus)
+**The Scarab God** — Per [Draftsim](https://draftsim.com/scarab-god-edh-deck/), Scarab God "can dodge commander tax" and reanimates from ANY graveyard. Your Gravecrawler + Altar of Dementia combo transfers, and you keep your entire Thoracle/Consultation package.
 
 ---
 
@@ -530,3 +729,27 @@ Your 15 instants + heavy counterspell suite means you trigger Rashmi on every pl
 33. [Moxfield: Make No Gravetide Image](https://moxfield.com/decks/qULIEoTSeUqKxmUPjrRRJw/primer)
 34. [Moxfield: Rashmi Embrace Eternity](https://moxfield.com/decks/iwlYb-Moq0CbTyM11XdZyQ/primer)
 35. [Moxfield: cEDH Tatyova](https://moxfield.com/decks/ZURT8jgaeUencfkulYRNlA/primer)
+
+### Dimir Sources (Part 3)
+36. [EDHREC: The Scarab God Commander Page](https://edhrec.com/commanders/the-scarab-god)
+37. [Draftsim: The Scarab God Commander Deck Guide](https://draftsim.com/scarab-god-edh-deck/)
+38. [TappedOut: God of the Rising FULL Moon Primer](https://tappedout.net/mtg-decks/the-scarab-god-by-vexenx/)
+39. [MTG Salvation: The Scarab God Value Creatures](https://www.mtgsalvation.com/forums/the-game/commander-edh/multiplayer-commander-decklists/791203-the-scarab-god-value-creatures-and-laboratory)
+40. [EDHREC: Araumi of the Dead Tide Commander Page](https://edhrec.com/commanders/araumi-of-the-dead-tide)
+41. [TappedOut: To Drown the World in Death (Araumi Primer)](https://tappedout.net/mtg-decks/to-drown-the-world-in-death-araumi-edh-primer/)
+42. [Draftsim: Araumi Self-Mill Commander Deck Guide](https://draftsim.com/edh-self-mill-deck/)
+43. [PlayEDH: Araumi of the Dead Tide - Two Years Later](https://www.playedh.com/articles/araumi-of-the-dead-tide-two-years-later)
+44. [EDHREC: Toxrill, the Corrosive Commander Page](https://edhrec.com/commanders/toxrill-the-corrosive)
+45. [Draftsim: Toxrill Commander Deck Guide](https://draftsim.com/toxrill-edh-deck/)
+46. [TCGPlayer: Let's Build a MTG Toxrill Commander Deck](https://infinite.tcgplayer.com/article/Let-s-Build-a-MTG-Toxrill-Commander-Deck/7ce6738c-283b-4cf0-9074-1daa60287831/)
+47. [MTGNexus: Toxrill's Toxic Control](https://www.mtgnexus.com/viewtopic.php?t=42173)
+48. [EDHREC: Satoru Umezawa Commander Page](https://edhrec.com/commanders/satoru-umezawa)
+49. [Draftsim: Satoru Umezawa Commander Deck Guide](https://draftsim.com/satoru-umezawa-commander-deck/)
+50. [CoolStuffInc: Commanding Kamigawa - Satoru Umezawa by Mark Wischkaemper](https://www.coolstuffinc.com/a/markwischkaemper-01112022-commanding-kamigawa-satoru-umezawa)
+51. [MTG Rocks: Satoru Umezawa Infinite Combos Guide](https://mtgrocks.com/satoru-umezawa-an-mtg-commander-buyers-guide/)
+52. [EDHREC: Umbris, Fear Manifest Commander Page](https://edhrec.com/commanders/umbris-fear-manifest)
+53. [PlayEDH: Explosive Engineering - Umbris Low Power](https://www.playedh.com/articles/explosive-engineering-low-power-umbris)
+54. [TappedOut: Umbris Exile Mill Deck](https://tappedout.net/mtg-decks/umbris-fear-manifest-exile-mill-deck/)
+55. [CoolStuffInc: Best Reanimator Commanders by Abe Sargent](https://www.coolstuffinc.com/a/abesargent-seo-05062024-what-are-the-best-reanimator-commanders)
+56. [TheGamer: The 21 Best Dimir Commanders](https://www.thegamer.com/magic-gathering-strongest-dimir-commanders/)
+57. [Draftsim: The 31 Best Reanimator Commanders Ranked](https://draftsim.com/reanimator-commanders-edh/)
