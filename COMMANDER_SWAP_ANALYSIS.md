@@ -1,8 +1,33 @@
 # Muldrotha Deck Analysis & Commander Swap Guide
 
-## Executive Summary
+## Research Methodology & Sources
 
-This report analyzes your Muldrotha deck, compares card type distributions to recommended averages, and identifies **5 Sultai** and **5 Simic** commanders you could swap to with minimal changes or cost.
+This analysis draws from the following sources, with direct citations throughout:
+
+### Primary Sources Consulted
+1. **EDHREC Data** (via web search - direct page access blocked)
+   - Muldrotha: 21,154 decks, ranked #27 ([source](https://edhrec.com/commanders/muldrotha-the-gravetide))
+   - Average deck data: 29 lands + 4 mana rocks per EDHREC database ([EDHREC Superior Numbers](https://edhrec.com/articles/superior-numbers-land-counts))
+
+2. **Expert Articles**
+   - [EDHREC Commander Showdown: Muldrotha vs Tasigur](https://articles.edhrec.com/commander-showdown-muldrotha-vs-tasigur/)
+   - [EDHREC Commander Showdown: Muldrotha vs Yarok](https://articles.edhrec.com/commander-showdown-muldrotha-vs-yarok/)
+   - [EDHREC Nearly Identical: Tatyova vs Aesi](https://edhrec.com/articles/nearly-identical-tatyova-or-aesi) - 90% similarity coefficient
+   - [CoolStuffInc: Top 5 Sultai Commanders 2025 by Julian Sison](https://www.coolstuffinc.com/a/juliansison-seo-04092025-the-top-5-sultai-commanders)
+   - [CoolStuffInc: Teval, the Balanced Scale by Julian Sison](https://www.coolstuffinc.com/a/juiliansison-seo-03312025-teval-the-balanced-scale-sultais-newest-graveyard-menace)
+   - [Draftsim: All 33 Sultai Commanders Ranked](https://draftsim.com/mtg-sultai-commanders/)
+   - [Draftsim: How Many Lands in EDH](https://draftsim.com/mtg-edh-deck-number-of-lands/)
+   - [Draftsim: How Many Mana Rocks in EDH](https://draftsim.com/how-many-mana-rocks-edh/)
+
+3. **cEDH Primers** (Moxfield - direct access blocked, info from search results)
+   - [Consulting Muldrotha's Compost](https://moxfield.com/decks/lTmusKpoxka6uGnbWncaIw/primer) - Demonic Consultation + Thoracle focus
+   - [Make No Gravetide Image](https://moxfield.com/decks/qULIEoTSeUqKxmUPjrRRJw/primer) - LED combo primer
+   - [Six CMC Under](https://moxfield.com/decks/446L-ip5kEqMfF4T2-EwDQ/primer) - Lion's Eye Diamond combo explanations
+
+4. **Combo Databases**
+   - [Commander Spellbook: LED + Muldrotha + Animate Dead + Phantasmal Image](https://commanderspellbook.com/combo/624-3518-3605-5131/)
+   - [Commander Spellbook: Kinnan + Basalt Monolith](https://commanderspellbook.com/combo/129-4131/)
+   - [EDHREC Combos: Demonic Consultation + Thassa's Oracle](https://edhrec.com/combos/dimir/742-1295) - appears in 129,792 decks (6.84%)
 
 ---
 
@@ -10,564 +35,498 @@ This report analyzes your Muldrotha deck, compares card type distributions to re
 
 ### Main Deck Breakdown (100 cards)
 
-| Card Type | Your Count | % of Deck | Recommended Range | Status |
-|-----------|------------|-----------|-------------------|--------|
-| **Lands (Total)** | 34 | 34% | 35-38 | ⚠️ Slightly Low |
-| - Basics | 10 | 10% | 8-12 | ✅ Good |
-| - Fetch Lands | 4 | 4% | 3-5 | ✅ Good |
-| - Dual/Shock | 6 | 6% | 4-6 | ✅ Good |
-| - Utility Lands | 14 | 14% | 8-12 | ⚠️ High (intentional for Muldrotha) |
-| **Creatures** | 24 | 24% | 20-30 | ✅ Good |
-| **Artifacts** | 9 | 9% | 8-12 | ✅ Good |
-| **Enchantments** | 10 | 10% | 8-12 | ✅ Good |
-| **Instants** | 15 | 15% | 8-12 | ⚠️ High |
-| **Sorceries** | 6 | 6% | 5-10 | ✅ Good |
-| **Planeswalkers** | 0 | 0% | 0-3 | ✅ Fine |
-| **Commander** | 1 | 1% | 1 | ✅ |
+| Card Type | Your Count | EDHREC Average | Notes |
+|-----------|------------|----------------|-------|
+| **Lands** | 34 | 29 ([source](https://edhrec.com/articles/superior-numbers-land-counts)) | You're above average |
+| **Basics** | 10 | Varies | Standard for 3-color |
+| **Creatures** | 24 | ~25-30 | Reasonable |
+| **Artifacts** | 9 | ~8-10 | Normal |
+| **Enchantments** | 10 | ~8-10 | Normal |
+| **Instants** | 15 | ~8-10 | High (control build) |
+| **Sorceries** | 6 | ~6-8 | Normal |
+| **Mana Rocks** | 4-5 | 4 ([source](https://edhrec.com/articles/superior-numbers-land-counts)) | Average |
 
-### Mana Sources Analysis
+### What the Data Actually Says About Land Counts
 
-| Category | Count | Recommended | Notes |
-|----------|-------|-------------|-------|
-| **Total Lands** | 34 | 35-37 | Consider +1-2 lands |
-| **Mana Rocks** | 5 | 6-10 | Sol Ring, Arcane Signet, Lotus Petal, Mana Vault (SB), The One Ring |
-| **Mana Dorks** | 2 | 2-4 | Bloom Tender, Deathrite Shaman (SB) |
-| **Land Ramp** | 3 | 3-5 | Nature's Lore, Sakura-Tribe Elder, Exploration |
-| **Total Ramp** | 10 | 10-14 | ✅ Adequate |
+From [EDHREC's Superior Numbers column](https://edhrec.com/articles/superior-numbers-land-counts):
+> "The average deck on EDHREC is running 29 lands and four mana rocks... 29 lands and 4 rocks feels really, really low."
 
-### Color Fixing Assessment
+**Nate Burgess Formula** (cited in EDHREC):
+> Number of lands = 31 + (colors in identity) + (commander CMC)
+> For Muldrotha: 31 + 3 + 6 = **40 lands**
 
-Your mana base is **well-constructed** for a 3-color deck:
-- **4 Fetch lands**: Misty Rainforest, Verdant Catacombs, Polluted Delta + implicit fetching
-- **3 Shock lands**: Breeding Pool, Watery Grave, Overgrown Tomb
-- **6 Other duals**: Morphic Pool, Rejuvenating Springs, Drowned Catacomb, Woodland Cemetery, Hinterland Harbor, Shipwreck Marsh
-- **2 Rainbow lands**: Command Tower, (Urborg + Yavimaya combo)
-- **1 Pain land**: Underground River, Llanowar Wastes
+From [CoolStuffInc's Ramp Guide by Mark Wischkaemper](https://www.coolstuffinc.com/a/markwischkaemper-06222023-how-much-ramp-is-right-for-your-commander-deck):
+> "The typical number of mana sources you should run is 43 to 55 total. Aim for between 33-40 lands and your mana rocks and other sources should be 10-15."
 
-**Recommendation**: Your fixing is strong. The Urborg + Yavimaya combo is clever for color fixing.
+**Your deck: 34 lands + ~10 ramp sources = 44 total mana sources** — within recommended range.
 
----
+### What the Data Says About Mana Rocks
 
-## Recommended Starting Amounts by Card Type
+From [Draftsim's Mana Rock Guide](https://draftsim.com/how-many-mana-rocks-edh/):
+> "A lot of deck formulas prescribe 10-12 ramp spells, including mana rocks, mana dorks, sorceries, etc."
+> "Typically around eight rocks is common, with more for commanders with high mana costs."
 
-Based on expert consensus from multiple sources:
+From [EDHREC Mana Rock Rankings](https://edhrec.com/articles/ranking-every-mana-rock-with-edhrec-finale-the-top-nine-mana-rocks-and-sol-ring):
+> "Sol Ring is the only card on EDHREC to be in more than 300,000 decks."
+> "Arcane Signet feels like it outclasses both [Signets and Talismans] because it functions like a Command Tower."
 
-| Card Type | Budget Deck | Mid-Power | High-Power/cEDH | Your Deck |
-|-----------|-------------|-----------|-----------------|-----------|
-| **Lands** | 38-40 | 35-37 | 30-33 | 34 |
-| **Basics** | 12-15 | 8-12 | 5-8 | 10 |
-| **Ramp (total)** | 10-12 | 10-14 | 12-16 | 10 |
-| **Mana Rocks** | 4-6 | 6-10 | 8-12 | 5 |
-| **Card Draw** | 8-10 | 10-12 | 10-15 | ~12 |
-| **Removal** | 8-10 | 10-12 | 8-10 | ~10 |
-| **Board Wipes** | 2-4 | 3-4 | 2-3 | 3 |
-| **Counterspells** | 2-4 | 4-6 | 8-12 | 9 |
-| **Creatures** | 25-35 | 20-30 | 15-25 | 24 |
-| **Win Conditions** | 3-5 | 2-4 | 2-3 | 3 |
-
-### Your Deck Assessment
-
-Your deck leans **high-power** with:
-- Heavy counterspell suite (9 counters including Pact, Force, Fierce Guardianship)
-- Compact win conditions (Thoracle + Demonic Consultation)
-- Efficient tutors (Vampiric, Worldly, Mystical, Entomb, Buried Alive)
-- Premium fast mana (Ancient Tomb, Lotus Petal, Sol Ring)
+**Note:** Mana Crypt was banned in Commander in 2024.
 
 ---
 
 ## Part 1: Sultai Commander Swap Analysis
 
-### Overview
+### Key Insight: Your Deck Contains 5 Alternate Commanders
 
-Your deck already contains several Sultai legends that could helm the deck:
-- **Sidisi, Brood Tyrant** (in main deck)
-- **Tasigur, the Golden Fang** (in main deck)
-- **Yarok, the Desecrated** (in main deck)
-- **Glarb, Calamity's Augur** (in main deck)
-- **Teval, the Balanced Scale** (in main deck)
-
-This is excellent deck construction—you can literally swap commanders with **zero card changes**.
+Your deck already includes: **Sidisi, Tasigur, Yarok, Glarb, and Teval** in the 99.
 
 ---
 
 ### 1. Tasigur, the Golden Fang
 
-**Currently in your deck: YES ✅**
+**EDHREC Data:** 6,200+ decks
 
-| Attribute | Details |
-|-----------|---------|
-| **Mana Cost** | 5B (Delve reduces to 1B typically) |
-| **Strategy** | Control/Combo, Political recursion |
-| **Power Level** | cEDH viable |
-| **EDHREC Rank** | #89 (6,200+ decks) |
+**From [EDHREC Commander Showdown: Muldrotha vs Tasigur](https://articles.edhrec.com/commander-showdown-muldrotha-vs-tasigur/):**
 
-**Cards to Keep (High Synergy):**
-| Card | Synergy Reason |
-|------|----------------|
-| Demonic Consultation | Wins with Thoracle |
-| Thassa's Oracle | Primary win condition |
-| Counterspell suite (all 9) | Control shell essential |
-| Mystic Remora, Rhystic Study | Card advantage |
-| Life from the Loam | Fills graveyard for Delve |
-| Reality Shift | Creates loop with Tasigur activation |
+> "Comparing Tasigur to Muldrotha is somewhat disingenuous—while at first glance, they're both Sultai recursion commanders, in spirit, they're entirely separate animals."
 
-**Cards with Reduced Value:**
-| Card | Reason |
-|------|--------|
-| Secrets of the Dead | Less self-mill focus |
-| River Kelpie | Fewer cast-from-graveyard triggers |
-| Kaya's Ghostform | Less commander-dependent |
+> "Tasigur is far more similar to Thrasios, Triton Hero in intention, controlling the board until an infinite mana combo puts your entire deck into your hand."
 
-**Swap Cost: $0** (already in deck)
-**Cards Changed: 0-3**
+> "Since Tasigur runs so many classic Sultai removal spells (sometimes criticized as 'goodstuff' cards), it makes him appear less unique than some others."
 
-**Playstyle Shift**: More controlling, more political. You activate Tasigur to "ask" opponents which card to return, creating table dynamics. The Consultation/Thoracle combo remains your primary win.
+**From [MTGNexus Tasigur Primer](https://www.mtgnexus.com/viewtopic.php?t=893):**
+> "Tasigur lists heavily rely on Birthing Pod or cards with similar effects like Food Chain."
+
+**Your Cards That Synergize:**
+- Demonic Consultation + Thassa's Oracle (your existing win condition works perfectly)
+- Your 9 counterspells are ideal for Tasigur control
+- Birthing Pod (in your deck)
+- Life from the Loam fills graveyard for Delve
+
+**Cards That Lose Value:**
+- Secrets of the Dead, River Kelpie (fewer graveyard casts)
+- Kaya's Ghostform (Tasigur is cheap to recast anyway)
+
+**Swap Assessment:** 0-3 cards changed. Your deck is already well-suited for Tasigur.
 
 ---
 
 ### 2. Sidisi, Brood Tyrant
 
-**Currently in your deck: YES ✅**
+**EDHREC Data:** 7,467 decks, ranked #260 ([source](https://edhrec.com/commanders/sidisi-brood-tyrant))
 
-| Attribute | Details |
-|-----------|---------|
-| **Mana Cost** | 1BGU |
-| **Strategy** | Self-mill, Zombie tokens, Aggro-combo |
-| **Power Level** | Mid to High |
-| **EDHREC Rank** | #118 (7,400+ decks) |
+**From [MTG Salvation Sidisi Primer](https://www.mtgsalvation.com/forums/the-game/commander-edh/multiplayer-commander-decklists/571213-sidisi-brood-tyrant-zombie-horde-and-shenanigans-3):**
 
-**Cards to Keep (High Synergy):**
-| Card | Synergy Reason |
-|------|----------------|
-| Mesmeric Orb (SB) | All-star—each untap = Sidisi trigger |
-| Altar of Dementia | Mill + sac outlet |
-| Stitcher's Supplier (SB) | Mill on ETB and death |
-| Satyr Wayfinder (SB) | Mill + land to hand |
-| Gravecrawler | Zombie synergy + recurring threat |
-| Bloodghast | Recurring creature for mill value |
-| Life from the Loam | Dredge fuels Sidisi |
+> "Mesmeric Orb is an all-star in the deck—it mills opponents and yourself, and each instance is a separate trigger which Sidisi, Brood Tyrant loves."
 
-**Cards with Reduced Value:**
-| Card | Reason |
-|------|--------|
-| Secrets of the Dead | Fewer cast-from-graveyard effects |
-| Most enchantments | Sidisi wants creature density (50%+) |
-| Non-creature ramp | Replace with Wood Elves, Farhaven Elf |
+> "Sidisi's ability triggers only when a creature card gets put into your graveyard from your library, not based on quantity—even if hit with Traumatize, you'll only generate a single 2/2 zombie."
 
-**Swap Cost: $0** (already in deck)
-**Recommended Additions from Sideboard**: Mesmeric Orb, Stitcher's Supplier, Satyr Wayfinder
-**Cards Changed: 5-10** (swap instants/sorceries for creatures)
+**Optimal Creature Density:**
+> "A commonly suggested ratio is 1:3 for creature cards (approximately 33% of the deck) in order to maintain the probability of self-milling a creature."
 
-**Playstyle Shift**: More aggressive, more creature-focused. You want 45-50 creatures for consistent Sidisi triggers. Consider adding Snarling Gorehound, Altar of the Brood.
+**Your Deck Problem:** You have 24 creatures (24%). Sidisi wants ~33 creatures (33+ cards).
+
+**Cards That Synergize:**
+- Mesmeric Orb (in your sideboard) — essential for Sidisi
+- Altar of Dementia
+- Stitcher's Supplier (sideboard)
+- Gravecrawler (Zombie synergy)
+- Life from the Loam (Dredge)
+
+**Cards That Lose Value:**
+- Most of your 15 instants (Sidisi wants creature density)
+- Non-creature ramp
+
+**Swap Assessment:** 10-15 cards changed. You need significantly more creatures.
 
 ---
 
 ### 3. Yarok, the Desecrated
 
-**Currently in your deck: YES ✅**
+**EDHREC Data:** 15,000+ decks, ranked #25
 
-| Attribute | Details |
-|-----------|---------|
-| **Mana Cost** | 3BGU |
-| **Strategy** | ETB value, Combo |
-| **Power Level** | High |
-| **EDHREC Rank** | #25 (15,000+ decks) |
+**From [EDHREC Commander Showdown: Muldrotha vs Yarok](https://articles.edhrec.com/commander-showdown-muldrotha-vs-yarok/):**
 
-**Cards to Keep (High Synergy):**
-| Card | Synergy Reason |
-|------|----------------|
-| Mulldrifter | Draw 4 cards |
-| Plaguecrafter | Double edict effect |
-| Eternal Witness | Return 2 cards |
-| Opposition Agent | Double flash trigger |
-| Sakura-Tribe Elder | Ramp 2 lands |
-| Baleful Strix | Draw 2, deathtouch |
-| Thassa's Oracle | Double trigger = easier win |
+> "The fundamental question is whether you want Muldrotha to revive things from your graveyard to re-trigger their enter-the-battlefield effects, or Yarok to re-trigger those effects right away."
 
-**Cards with Reduced Value:**
-| Card | Reason |
-|------|--------|
-| Survival of the Fittest | Not ETB focused |
-| Gravecrawler | No ETB |
-| Bloodghast | No ETB |
-| Secrets of the Dead | Wrong trigger type |
+> "Where Muldrotha is the tortoise, moving slow and steady and inexorable toward victory, Yarok is the hare, leaping toward the finish line in crazy bursts of value."
 
-**Swap Cost: $0** (already in deck)
-**Cards Changed: 8-12**
+> "Yarok, the Desecrated is nuts. To call this a Panharmonicon commander is accurate, but misses a few fine details."
 
-**Recommended Adds for Yarok:**
-- Panharmonicon ($8)
-- Peregrine Drake ($0.50) - goes infinite with Deadeye Navigator
-- Palinchron ($25) - instant infinite mana
-- Deadeye Navigator ($5)
-- Risen Reef ($2)
-- Shrieking Drake ($0.25) - infinite ETBs with cost reducers
+**Specific Card Recommendations from the Article:**
+- **Necromancy** (in your sideboard): "has an ETB trigger that turns it into an Aura, which Yarok doubles, allowing you to grab two creatures from graveyards simultaneously."
+- **Stone-Seeder Hierophant**: "untaps twice whenever you play a land"
 
-**Playstyle Shift**: More explosive value turns. Less graveyard-dependent, more resilient to grave hate. Combos differently—usually infinite mana + draw into Thoracle.
+**From [TappedOut Forum](https://tappedout.net/mtg-forum/commander/muldrotha-vs-yarok/):**
+> "Yarok is pretty spicy, and does things none of the others do. It is more versatile and less susceptible to [graveyard] hate, unlike Muldrotha."
+
+**Your Cards That Synergize (ETB creatures):**
+- Mulldrifter (draw 4)
+- Plaguecrafter (double edict)
+- Eternal Witness (return 2 cards)
+- Sakura-Tribe Elder (ramp 2 lands)
+- Baleful Strix (draw 2)
+- Thassa's Oracle (double trigger wins easier)
+
+**Cards That Lose Value:**
+- Gravecrawler, Bloodghast (no ETB)
+- Secrets of the Dead (wrong trigger)
+- Survival of the Fittest (not ETB focused)
+
+**Swap Assessment:** 8-12 cards changed. Add ETB creatures, cut graveyard recursion that doesn't ETB.
 
 ---
 
 ### 4. Glarb, Calamity's Augur
 
-**Currently in your deck: YES ✅**
+**EDHREC Data:** 17,586 decks ([source](https://edhrec.com/commanders/glarb-calamitys-augur))
 
-| Attribute | Details |
-|-----------|---------|
-| **Mana Cost** | 1BGU |
-| **Strategy** | Surveil value, Top-deck manipulation |
-| **Power Level** | Mid-High |
-| **EDHREC Rank** | New (Bloomburrow) |
+**From [CoolStuffInc: Casting Big Stuff with Glarb by Abe Sargent](https://www.coolstuffinc.com/a/abesargent-08142024-casting-big-stuff-with-glarb-calamitys-augur-in-commander):**
 
-**Cards to Keep (High Synergy):**
-| Card | Synergy Reason |
-|------|----------------|
-| Sylvan Library | Top-deck synergy |
-| Ledger Shredder (SB) | Connive synergy |
-| All graveyard payoffs | Surveil fills yard |
-| Fetchlands | Shuffle after surveil |
+> "A Glarb deck is all about using Glarb's effect to make the most of the abilities of your other creatures. If you enjoy having an open-ended commander with tons of different options and utility, Glarb is the commander for you."
 
-**Cards with Reduced Value:**
-| Card | Reason |
-|------|--------|
-| Self-mill cards | Surveil is more controlled |
-| Aggressive graveyard fillers | Less explosive milling |
+**From [TheGamer Glarb Guide](https://www.thegamer.com/magic-the-gathering-glarb-calamitys-augur-commander-deck-guide/):**
 
-**Swap Cost: $0** (already in deck)
-**Cards Changed: 3-5**
+> "You can use Glarb's surveil ability at any point so long as it isn't tapped. It is best to use it during the end step before you start your turn."
 
-**Playstyle Shift**: More controlling, more surgical graveyard filling. You always know what's coming and can plan accordingly.
+> "The ability to play lands from the top of your library is the main attraction, especially when combined with cards that let you play multiple lands a turn."
+
+**From [Commander's Herald Max Power Glarb](https://commandersherald.com/max-power-glarb-calamitys-augur/):**
+
+> "There is an adage when it comes to Competitive EDH commanders: to be considered, a cEDH commander needs to either provide card advantage, ramp, or be part of a two-card combo. Glarb is noted as potentially doing almost all three."
+
+**Your Cards That Synergize:**
+- Sylvan Library (top-deck manipulation)
+- Fetchlands (shuffle after surveil)
+- Exploration (play extra lands from top)
+- Ledger Shredder (sideboard — connive synergy)
+
+**Swap Assessment:** 3-5 cards changed. Glarb is more controlling, less explosive.
 
 ---
 
 ### 5. Teval, the Balanced Scale
 
-**Currently in your deck: YES ✅**
+**EDHREC Data:** New commander from Tarkir: Dragonstorm 2025
 
-| Attribute | Details |
-|-----------|---------|
-| **Mana Cost** | 2BGU |
-| **Strategy** | Reanimator, Graveyard value |
-| **Power Level** | High |
-| **EDHREC Rank** | New (Tarkir: Dragonstorm 2025) |
+**From [CoolStuffInc: Teval, the Balanced Scale by Julian Sison](https://www.coolstuffinc.com/a/juiliansison-seo-03312025-teval-the-balanced-scale-sultais-newest-graveyard-menace):**
 
-**Cards to Keep (High Synergy):**
-| Card | Synergy Reason |
-|------|----------------|
-| All reanimation spells | Core strategy |
-| Self-mill package | Fills yard for Teval |
-| Fetch lands | Teval returns lands |
-| Bloodghast, Gravecrawler | Trigger "leaves graveyard" |
-| Altar of Dementia | Sac outlet + mill |
+> "Most graveyard commanders care about what's inside the yard (like Muldrotha), but Teval actually pays you for taking things out. This opens up a new angle that takes advantage of effects that exile, reanimate, or otherwise interact with the yard in ways other decks don't."
+
+> "Teval's effect triggers for each instance of a card leaving your graveyard and is not once per turn. This means you can keep utilizing Teval to generate a ton of Zombie tokens."
+
+**From [CoolStuffInc Top 5 Sultai Commanders 2025](https://www.coolstuffinc.com/a/juliansison-seo-04092025-the-top-5-sultai-commanders):**
+
+> "One of the biggest surprises in 2025 was Muldrotha, the Gravetide being dethroned from the Sultai reanimator throne. Teval does more: he mills, reanimates (a land), and also rewards you with a token when a card leaves the graveyard."
+
+**From [EDHREC Teval page](https://edhrec.com/commanders/teval-the-balanced-scale):**
+> In Teval decks, Muldrotha appears in 48% of decks with +29% synergy.
+> In upgraded Teval reanimator builds, Muldrotha appears in 65% of decks with +47% synergy.
 
 **Why Teval May Be Better Than Muldrotha:**
-1. **Lower CMC**: 4 vs 6 mana
-2. **Built-in mill**: ETB mills 4
-3. **Token generation**: 1/1 when cards leave yard
-4. **Land recursion**: Returns a land automatically
+1. **CMC**: 4 vs 6 mana
+2. **ETB mill**: Mills 4 cards when entering
+3. **Not once-per-turn**: Token generation stacks
+4. **Built-in land recursion**
 
-**Swap Cost: $0** (already in deck)
-**Cards Changed: 0-2**
+**Your Cards That Synergize:**
+- Bloodghast, Gravecrawler (trigger "leaves graveyard" repeatedly)
+- Animate Dead, Reanimate, Necromancy (all trigger Teval)
+- Altar of Dementia (mill + sac)
+- Fetchlands (return with Teval)
 
-**Playstyle Shift**: Very similar to Muldrotha but faster and with token generation. Less flexible (only returns lands automatically) but more resilient.
+**Swap Assessment:** 0-2 cards changed. Nearly identical playstyle to Muldrotha.
 
 ---
 
 ## Part 2: Simic Commander Swap Analysis
 
-Dropping black means losing: Tutors (Vampiric, Demonic Consultation, Entomb), Reanimation (Reanimate, Animate Dead), Black creatures, and Thoracle combo lines.
-
-### Cards You Lose When Dropping Black
-
-| Card | Replacement Cost |
-|------|------------------|
-| Vampiric Tutor | N/A (no replacement) |
-| Demonic Consultation | N/A |
-| Entomb | N/A |
-| Buried Alive | N/A |
-| Reanimate | N/A |
-| Animate Dead | N/A |
-| Toxic Deluge | Cyclonic Rift (already have) |
-| Opposition Agent | N/A |
-| Dauthi Voidwalker | N/A |
-| Orcish Bowmasters | N/A |
-| Syr Konrad | N/A |
-| And ~15 more black cards... | |
-
-**Total Black Cards: ~25-28**
-**Approximate Value Lost: $400-600**
+**Critical Note:** Dropping black loses ~25-28 cards including:
+- Tutors: Vampiric Tutor, Demonic Consultation, Entomb, Buried Alive
+- Reanimation: Reanimate, Animate Dead, Necromancy
+- Removal: Toxic Deluge, Assassin's Trophy
+- Value: Opposition Agent, Orcish Bowmasters, Dauthi Voidwalker
 
 ---
 
 ### 1. Tatyova, Benthic Druid
 
-**Currently in your SIDEBOARD: YES ✅**
+**EDHREC Data:** 7,900+ decks, ranked #243
 
-| Attribute | Details |
-|-----------|---------|
-| **Mana Cost** | 3GU |
-| **Strategy** | Landfall, Card draw engine |
-| **Power Level** | Mid to cEDH |
-| **EDHREC Rank** | #47 (7,900+ decks) |
+**From [EDHREC Nearly Identical: Tatyova or Aesi](https://edhrec.com/articles/nearly-identical-tatyova-or-aesi):**
 
-**Cards to Keep from Your Deck:**
-| Card | Synergy | Keep? |
-|------|---------|-------|
-| The Gitrog Monster | ❌ | Has black—can't use |
-| Exploration | Landfall enabler | ✅ |
-| Life from the Loam | Land recursion | ✅ |
-| Ramunap Excavator | Land recursion | ✅ |
-| Sakura-Tribe Elder | Ramp + landfall | ✅ |
-| Nature's Lore | Land ramp | ✅ |
-| Crop Rotation (SB) | Instant landfall | ✅ |
-| Mystic Remora | Card draw | ✅ |
-| Rhystic Study | Card draw | ✅ |
-| Cyclonic Rift | Board control | ✅ |
-| All blue counters | Protection | ✅ |
-| Breeding Pool | Mana | ✅ |
-| Fetch lands | Landfall triggers | ✅ |
-| Boseiju, Otawara, Channel lands | Utility | ✅ |
+> "Based on data provided by MtGDS, Tatyova and Aesi have a similarity coefficient of 90%."
 
-**Cards You'd Add:**
-| Card | Price | Purpose |
-|------|-------|---------|
-| Retreat to Coralhelm | $3 | Combo piece |
-| Simic Growth Chamber | $0.25 | Bounce land combo |
-| Oboro, Palace in the Clouds | $15 | Infinite landfall |
-| Walking Atlas | $1 | Put lands into play |
-| Sakura-Tribe Scout | $2 | Put lands into play |
-| Aesi, Tyrant of Gyre Strait | $5 | Redundancy |
-| Kodama of the East Tree | $8 | Landfall value |
+> "Tatyova felt like the quintessential Simic commander, as she cares about getting lands into play and drawing cards."
 
-**Reusable Cards: ~35-40**
-**New Cards Needed: ~25-30**
-**Estimated Swap Cost: $50-100**
+**From [Moxfield cEDH Tatyova Primer](https://moxfield.com/decks/ZURT8jgaeUencfkulYRNlA/primer):**
 
-**Combo Win**: Tatyova + Retreat to Coralhelm + Walking Atlas + bounce land = draw entire deck, win with Thassa's Oracle.
+> "cEDH Tatyova Combo allows the basic mechanic of playing lands to be used as a card draw and mana ramp engine, as you don't need to spend mana to play lands. You can cast Tatyova as early as turn 1 and win as early as turns 3-4."
+
+**Combo Line (from [TappedOut Tatyova Primer](https://tappedout.net/mtg-decks/tatyova-benthic-druid-primer/)):**
+> "Tatyova + Walking Atlas/Sakura-Tribe Scout + Simic Growth Chamber/Oboro, Palace in the Clouds + Retreat to Coralhelm: Tap one of the creatures to put a bounce land onto the battlefield. The land entering triggers Tatyova and Retreat to Coralhelm. Use Coralhelm to untap the creature and repeat to draw your entire library."
+
+**Your Cards That Transfer:**
+- Exploration, Life from the Loam, Ramunap Excavator
+- All fetchlands (landfall triggers)
+- Mystic Remora, Rhystic Study
+- Cyclonic Rift, blue counterspells
+- Thassa's Oracle (win after drawing deck)
+
+**Cards You Need to Add:**
+- Retreat to Coralhelm (~$3)
+- Simic Growth Chamber (~$0.25)
+- Walking Atlas (~$1)
+- Sakura-Tribe Scout (~$2)
+
+**Swap Assessment:** ~25-30 cards changed. Estimated cost: $50-100.
 
 ---
 
 ### 2. Kinnan, Bonder Prodigy
 
-| Attribute | Details |
-|-----------|---------|
-| **Mana Cost** | GU |
-| **Strategy** | Mana doubling, Big mana combo |
-| **Power Level** | cEDH |
-| **EDHREC Rank** | #52 (6,800+ decks) |
+**EDHREC Data:** 6,800+ decks, ranked #52
 
-**Cards to Keep from Your Deck:**
-| Card | Synergy |
-|------|---------|
-| Sol Ring | Taps for 4 with Kinnan |
-| Arcane Signet | Taps for 4 |
-| Mana Vault (SB) | Taps for 6 |
-| Bloom Tender | Taps for 6+ |
-| Lotus Petal | Fast mana |
-| Basalt Monolith | ❌ Not in deck—ADD THIS (infinite mana with Kinnan) |
-| Thassa's Oracle | Win condition |
-| All blue counters | Protection |
+**From [Learn cEDH: Kinnan](https://learncedh.com/decklists/kinnan):**
+
+> "Kinnan, Bonder Prodigy is a dynamic and proactive commander that leverages explosive mana production and infinite mana combos to dominate cEDH tables."
+
+**From [EDHREC Combos: Kinnan + Basalt Monolith](https://edhrec.com/combos/simic/129-4131):**
+
+> "This combo produces infinite colorless mana and appears in over 39,386 decks."
+
+**The Combo (from [Commander Spellbook](https://commanderspellbook.com/combo/129-4131/)):**
+> "With Kinnan, Bonder Prodigy in play: Cast Basalt Monolith, tap it for 4 mana (3 + 1 from Kinnan's ability), activate Basalt Monolith's second ability to untap it leaving 1 mana floating. Repeat to create infinite colorless mana."
+
+**From [TheGamer Kinnan cEDH Guide](https://www.thegamer.com/magic-the-gathering-mtg-kinan-bonder-prodigy-cedh-deck-guide/):**
+
+> "Basalt Monolith gives you infinite colorless mana, but since Kinnan requires colored mana for his ability, you cannot win without a mana sink."
+> "You can use that infinite mana to feed into Kinnan's other ability to get non-Humans on the battlefield. When you have infinite mana, you can continuously use this ability to play through your entire deck and eventually get Thrasios, Triton Hero on the battlefield."
+
+**Your Cards That Transfer:**
+- Sol Ring (taps for 4 with Kinnan)
+- Arcane Signet (taps for 4)
+- Mana Vault (sideboard — taps for 6)
+- Bloom Tender (taps for 6+)
+- Thassa's Oracle (win condition)
 
 **Critical Addition:**
-| Card | Price | Purpose |
-|------|-------|---------|
-| Basalt Monolith | $2 | INFINITE MANA with Kinnan |
+- Basalt Monolith (~$2) — **THIS IS THE COMBO PIECE**
 
-**Kinnan + Basalt Monolith = Infinite colorless mana**
-Then activate Kinnan repeatedly to find Thassa's Oracle.
-
-**Reusable Cards: ~25-30**
-**New Cards Needed: ~35-40**
-**Estimated Swap Cost: $80-150**
+**Swap Assessment:** ~35-40 cards changed. Completely different deck. Cost: $80-150.
 
 ---
 
 ### 3. Aesi, Tyrant of Gyre Strait
 
-| Attribute | Details |
-|-----------|---------|
-| **Mana Cost** | 4GU |
-| **Strategy** | Landfall, Card advantage |
-| **Power Level** | Mid |
-| **EDHREC Rank** | #35 (9,500+ decks) |
+**EDHREC Data:** 9,500+ decks (most-built Simic commander)
 
-**Cards to Keep from Your Deck:**
-| Card | Synergy |
-|------|---------|
-| Exploration | Extra land drops |
-| Ramunap Excavator | Land recursion |
-| Life from the Loam | Land recursion |
-| All fetch lands | Double draw triggers |
-| Tatyova (SB) | In the 99 for redundancy |
-| Mystic Remora, Rhystic Study | More card draw |
-| Cyclonic Rift | Board control |
-| Thassa's Oracle | Win condition |
+**From [EDHREC Nearly Identical: Tatyova or Aesi](https://edhrec.com/articles/nearly-identical-tatyova-or-aesi):**
+
+> "Aesi currently rules as the most built Simic commander, with 7,000 decks—twice the number of decks that Tatyova has."
+
+> "Aesi may cost one more mana, but being able to play an additional land for a turn and draw two cards is a whole world of a difference."
+
+> "It's no surprise that having a commander that can ramp you in the command zone is better than gaining one life."
 
 **Aesi vs Tatyova:**
-- Aesi has extra land drop built in
-- Aesi is bigger (5/5 vs 3/3)
-- Aesi costs 1 more mana
-- Aesi draws unconditionally (Tatyova gains life too)
+| Attribute | Aesi | Tatyova |
+|-----------|------|---------|
+| CMC | 6 | 5 |
+| Extra land drop | Yes (built-in) | No |
+| Lifegain | No | Yes |
+| Body | 5/5 | 3/3 |
+| Cards drawn per land | 1 | 1 |
 
-**Reusable Cards: ~35-40**
-**New Cards Needed: ~25-30**
-**Estimated Swap Cost: $40-80**
+**Swap Assessment:** Similar to Tatyova. ~25-30 cards changed. Cost: $40-80.
 
 ---
 
 ### 4. Rashmi, Eternities Crafter
 
-| Attribute | Details |
-|-----------|---------|
-| **Mana Cost** | 2GU |
-| **Strategy** | Cascade-like value, Control |
-| **Power Level** | Mid-High |
-| **EDHREC Rank** | #138 (4,200+ decks) |
+**EDHREC Data:** 4,200+ decks
 
-**Cards to Keep from Your Deck:**
-| Card | Synergy |
-|------|---------|
-| All counterspells | Trigger Rashmi on opponent's turn |
-| Mystical Tutor | Stack top of library |
-| Worldly Tutor | Stack top of library |
-| Sylvan Library | Top deck manipulation |
-| Seedborn Muse (SB) | Untap to cast on each turn |
-| Cyclonic Rift | High CMC cascade |
-| Fierce Guardianship | Free spell + Rashmi trigger |
+**From [Moxfield Rashmi Primer "Embrace Eternity"](https://moxfield.com/decks/iwlYb-Moq0CbTyM11XdZyQ/primer):**
 
-**Why Rashmi Works with Your Shell:**
-Your heavy instant package means you trigger Rashmi on every player's turn. With Seedborn Muse, you're casting and cascading constantly.
+> "'Embrace Eternity' is a cascade & control deck focused on top deck manipulation, cascading frequently and playing cards/generating value on each opponent's turn. The primary engine pieces are Seedborn Muse & Leyline of Anticipation / Vedalken Orrery."
 
-**Reusable Cards: ~30-35**
-**New Cards Needed: ~30-35**
-**Estimated Swap Cost: $60-100**
+**From [Moxfield Rashmi Draw-Go](https://moxfield.com/decks/k120PKGfZEC4FAwuGoQu6g):**
+
+> "Rashmi falls into an unusual cEDH archetype, Draw-Go. Unlike other cEDH decks, you do not lose value when countering spells because Rashmi allows you to break the typical disadvantage of counterspells."
+
+**From [TappedOut Rashmi Control Primer](https://tappedout.net/mtg-decks/ok-in-response-im-going-to-cast/):**
+
+> "Counterspell becomes Dismiss with her on the battlefield, or better. You could Counterspell and get a free Coiling Oracle for instance."
+
+**Why Your Deck Works for Rashmi:**
+Your 15 instants + heavy counterspell suite means you trigger Rashmi on every player's turn. Your existing:
+- Mystical Tutor, Worldly Tutor (stack top of library)
+- Sylvan Library (top-deck manipulation)
+- Seedborn Muse (sideboard) — cast on each player's turn
+
+**Swap Assessment:** ~30-35 cards changed. Cost: $60-100.
 
 ---
 
 ### 5. Uro, Titan of Nature's Wrath
 
-| Attribute | Details |
-|-----------|---------|
-| **Mana Cost** | 1GU (Escape: 4 + exile 5) |
-| **Strategy** | Value, Ramp, Lifegain |
-| **Power Level** | Mid-High (banned in multiple formats for power) |
-| **EDHREC Rank** | #189 (3,100+ decks) |
+**EDHREC Data:** 1,985 decks
 
-**Cards to Keep from Your Deck:**
-| Card | Synergy |
-|------|---------|
-| Self-mill cards | Fill yard for Escape |
-| Life from the Loam | Dredge + lands |
-| Ramunap Excavator | Land recursion |
-| Fetch lands | Fill graveyard |
-| Exploration | Extra land drops |
+**From [MTGGoldfish Commander Spotlight: Uro](https://www.mtggoldfish.com/articles/commander-spotlight-uro-titan-of-nature-s-wrath):**
 
-**Why Uro:**
-- Built-in card advantage
-- Lifegain for stabilization
-- Difficult to permanently remove
-- Rewards self-mill strategy you already have
+> "Escape is what makes Uro really powerful—it allows you to swing with an undercosted 6/6 that repeatedly gives you Growth Spiral-like value."
 
-**Reusable Cards: ~30-35**
-**New Cards Needed: ~30-35**
-**Estimated Swap Cost: $50-90** (Uro itself is ~$15)
+> "To fill the graveyard, you want to play as many fetchlands as possible and supplement with cantrips like Brainstorm or Thought Scour, plus ramp spells."
+
+**From [CoolStuffInc Around the Wheel: Uro by Mark Wischkaemper](https://www.coolstuffinc.com/a/markwischkaemper-03042020-around-the-wheel-uro-titan-of-natures-wrath):**
+
+> "You can discard Uro with cards like Frantic Search and Windfall, pitch him to tutors like Survival of the Fittest and Fauna Shaman, mill him with Mesmeric Orb and Satyr Wayfinder, or tutor him directly to the graveyard with Entomb and Buried Alive."
+
+**Your Cards That Transfer:**
+- Survival of the Fittest (discard Uro directly)
+- Life from the Loam (dredge + lands)
+- Ramunap Excavator
+- Fetchlands (fill graveyard + extra land value)
+- Exploration
+
+**Swap Assessment:** ~30-35 cards changed. Cost: $50-90 (Uro ~$15).
 
 ---
 
-## Commander Comparison Matrix
+## Muldrotha Combo Lines (From cEDH Primers)
 
-### Sultai Commanders (No Black Cards Lost)
+### Lion's Eye Diamond Combo
 
-| Commander | CMC | Swap Cost | Cards Changed | Playstyle | Power |
-|-----------|-----|-----------|---------------|-----------|-------|
-| **Muldrotha** | 6 | N/A | N/A | Graveyard value | High |
-| **Tasigur** | 1-2 | $0 | 0-3 | Control/Combo | cEDH |
-| **Sidisi** | 4 | $0 | 5-10 | Zombie aggro-mill | Mid-High |
-| **Yarok** | 5 | $30-50 | 8-12 | ETB combo | High |
-| **Glarb** | 4 | $0 | 3-5 | Surveil control | Mid-High |
-| **Teval** | 4 | $0 | 0-2 | Reanimator value | High |
+**From [Commander Spellbook](https://commanderspellbook.com/combo/624-3518-3605-5131/) and [Moxfield Primer](https://moxfield.com/decks/446L-ip5kEqMfF4T2-EwDQ/primer):**
 
-### Simic Commanders (Lose ~25 Black Cards)
+**Requirements:** Muldrotha + Lion's Eye Diamond + Dance of the Dead/Animate Dead + Phantasmal Image
 
-| Commander | CMC | Swap Cost | Cards Changed | Playstyle | Power |
-|-----------|-----|-----------|---------------|-----------|-------|
-| **Tatyova** | 5 | $50-100 | 25-30 | Landfall combo | Mid-cEDH |
-| **Kinnan** | 2 | $80-150 | 35-40 | Big mana combo | cEDH |
-| **Aesi** | 6 | $40-80 | 25-30 | Landfall value | Mid |
-| **Rashmi** | 4 | $60-100 | 30-35 | Cascade control | Mid-High |
-| **Uro** | 3 | $50-90 | 30-35 | Value/Escape | Mid-High |
+**Loop:**
+1. Phantasmal Image enters as copy of Muldrotha
+2. Legend rule sends original Muldrotha to graveyard
+3. Cast LED from graveyard (costs 0), crack for 3 mana
+4. Cast Dance of the Dead from graveyard targeting Muldrotha
+5. Muldrotha returns, legend rule sends Image to graveyard
+6. Repeat — net +1 mana each loop
 
----
+**Result:** Infinite mana, infinite ETB/LTB, infinite storm count.
 
-## Expert Recommendations
+### Displacer Kitten Combo
 
-### From Draftsim's Muldrotha Guide:
-> "Muldrotha's biggest downfall is being 6cmc with no way to reduce the cost. No matter how strong you want to build this deck, it's always going to be on the slower side."
+**From [EDHREC Combos](https://edhrec.com/combos/muldrotha-the-gravetide):**
 
-### From CoolStuffInc's Top 5 Sultai Commanders (2025):
-> "Teval does more than Muldrotha: he mills, reanimates a land, and rewards you with a token when a card leaves the graveyard. This is the newest option and specifically designed for graveyard strategies."
+> "With Muldrotha & Kitten in play, play Lion's Eye Diamond. Kitten flickers Muldrotha, resetting the count of artifacts you can play from the graveyard. Sacrifice Lion's Eye Diamond for mana, then replay Lion's Eye Diamond. Rinse & repeat for infinite colored mana."
 
-### From MTG Salvation Forums:
-> "Yarok is more versatile and less susceptible to graveyard hate, unlike Muldrotha."
+**Note:** You have Displacer Kitten in your sideboard.
 
-### From TappedOut Primer:
-> "Every time a new Muldrotha enters the battlefield, it does not retain information from previous versions. So when you cast Phantasmal Image and it becomes a Muldrotha, you're able to cast an entire new set of permanents."
+### Thoracle Consultation
 
----
+**From [EDHREC Combos](https://edhrec.com/combos/dimir/742-1295):**
 
-## Final Recommendations
+> "The Demonic Consultation + Thassa's Oracle combo appears in 129,792 decks (6.84% of 1,898,268 decks tracked)."
 
-### If You Want Minimal Changes:
-**Teval, the Balanced Scale** — Already in your deck. Functionally similar to Muldrotha but:
-- 2 mana cheaper
-- Built-in mill
-- Token generation
-- More resilient gameplan
+**From [Learn cEDH: When To Play Thassa's Oracle](https://learncedh.com/intermediate-course/when-to-play-thassas-oracle):**
 
-### If You Want Higher Power:
-**Tasigur, the Golden Fang** — Already in your deck. Your control package and Consultation/Oracle combo are already optimized for Tasigur.
+> "Unlike Lab Man and Jace, Thassa's Oracle is an enter the battlefield effect rather than a replacement effect, so with the correct setup you don't need to wait to draw a card. It is also cheaper to play at 2 mana rather than 3 or 4."
 
-### If You Want a Different Experience (Still Sultai):
-**Yarok, the Desecrated** — Requires ~$30-50 in new ETB creatures but plays completely differently. More explosive, less graveyard-dependent.
-
-### If You Want to Build Simic:
-**Tatyova, Benthic Druid** — Already in your sideboard. Reuses the most cards from your Muldrotha shell (lands, land-recursion, counters). The Landfall combo is consistent and powerful.
+> "The biggest strength is even if they destroy Thassa's Oracle in response, it checks if your devotion is greater or equal to the number of cards in your deck."
 
 ---
 
-## Appendix: Your Full Deck Categorized
+## Summary Comparison Matrix
 
-### Lands (34)
-**Fetches (4):** Misty Rainforest, Verdant Catacombs, Polluted Delta, (implicit)
-**Shocks (3):** Breeding Pool, Watery Grave, Overgrown Tomb
-**Other Duals (8):** Morphic Pool, Rejuvenating Springs, Drowned Catacomb, Woodland Cemetery, Hinterland Harbor, Shipwreck Marsh, Underground River, Llanowar Wastes
-**Utility (9):** Command Tower, Ancient Tomb, Phyrexian Tower, Urborg, Yavimaya, Bojuka Bog, Boseiju, Takenuma, Command Beacon
-**Basics (10):** 4 Forest, 3 Island, 3 Swamp
+### Sultai Commanders
 
-### Creatures (24)
-Syr Konrad, Bloom Tender, Sakura-Tribe Elder, The Gitrog Monster, River Kelpie, Baleful Strix, Glen Elendra Archmage, Ramunap Excavator, Spore Frog, Mulldrifter, Nyx Weaver, Thassa's Oracle, Opposition Agent, Dauthi Voidwalker, Orcish Bowmasters, Sidisi Brood Tyrant, Eternal Witness, Bloodghast, Plaguecrafter, Glarb, Gravecrawler, Teval, Tasigur, Yarok
+| Commander | CMC | Strategy | Cards Changed | Source |
+|-----------|-----|----------|---------------|--------|
+| **Muldrotha** | 6 | Graveyard value | N/A | [EDHREC](https://edhrec.com/commanders/muldrotha-the-gravetide) |
+| **Tasigur** | 1-2 | Control/Combo | 0-3 | [Commander Showdown](https://articles.edhrec.com/commander-showdown-muldrotha-vs-tasigur/) |
+| **Sidisi** | 4 | Zombie mill | 10-15 | [MTG Salvation](https://www.mtgsalvation.com/forums/the-game/commander-edh/multiplayer-commander-decklists/571213-sidisi-brood-tyrant-zombie-horde-and-shenanigans-3) |
+| **Yarok** | 5 | ETB combo | 8-12 | [Commander Showdown](https://articles.edhrec.com/commander-showdown-muldrotha-vs-yarok/) |
+| **Glarb** | 4 | Surveil control | 3-5 | [CoolStuffInc](https://www.coolstuffinc.com/a/abesargent-08142024-casting-big-stuff-with-glarb-calamitys-augur-in-commander) |
+| **Teval** | 4 | Reanimator | 0-2 | [CoolStuffInc](https://www.coolstuffinc.com/a/juiliansison-seo-03312025-teval-the-balanced-scale-sultais-newest-graveyard-menace) |
 
-### Artifacts (9)
-Ashnod's Altar, Lotus Petal, Sol Ring, Altar of Dementia, Birthing Pod, Arcane Signet, Lightning Greaves, The One Ring, Phyrexian Altar
+### Simic Commanders
 
-### Enchantments (10)
-Secrets of the Dead, Survival of the Fittest, Sylvan Library, Seal of Primordium, Kaya's Ghostform, Exploration, Pernicious Deed, Rhystic Study, Mystic Remora, Animate Dead
-
-### Instants (15)
-Counterspell, Fact or Fiction, Mystical Tutor, Entomb, Pact of Negation, Force of Negation, Fierce Guardianship, Worldly Tutor, Mana Drain, Force of Will, Vampiric Tutor, Swan Song, Assassin's Trophy, Cyclonic Rift, Demonic Consultation
-
-### Sorceries (6)
-Buried Alive, Toxic Deluge, Reanimate, Nature's Lore, Life from the Loam, Living Death
+| Commander | CMC | Strategy | Cards Changed | Source |
+|-----------|-----|----------|---------------|--------|
+| **Tatyova** | 5 | Landfall combo | 25-30 | [Nearly Identical](https://edhrec.com/articles/nearly-identical-tatyova-or-aesi) |
+| **Kinnan** | 2 | Big mana combo | 35-40 | [Learn cEDH](https://learncedh.com/decklists/kinnan) |
+| **Aesi** | 6 | Landfall value | 25-30 | [Nearly Identical](https://edhrec.com/articles/nearly-identical-tatyova-or-aesi) |
+| **Rashmi** | 4 | Cascade control | 30-35 | [Moxfield Primer](https://moxfield.com/decks/iwlYb-Moq0CbTyM11XdZyQ/primer) |
+| **Uro** | 3 | Value/Escape | 30-35 | [MTGGoldfish](https://www.mtggoldfish.com/articles/commander-spotlight-uro-titan-of-nature-s-wrath) |
 
 ---
 
-## Sources
+## Recommendations
 
-- [Draftsim: All 33 Sultai Commanders Ranked](https://draftsim.com/mtg-sultai-commanders/)
-- [CoolStuffInc: Top 5 Sultai Commanders 2025](https://www.coolstuffinc.com/a/juliansison-seo-04092025-the-top-5-sultai-commanders)
-- [Draftsim: Muldrotha Commander Deck Guide](https://draftsim.com/muldrotha-edh-deck/)
-- [EDHREC: Muldrotha, the Gravetide](https://edhrec.com/commanders/muldrotha-the-gravetide)
-- [TappedOut: Muldrotha Primer](https://tappedout.net/mtg-decks/muldrotha-the-gravetide-primer/)
-- [EDHREC: Tatyova, Benthic Druid](https://edhrec.com/commanders/tatyova-benthic-druid)
-- [EDHREC: Sidisi, Brood Tyrant](https://edhrec.com/commanders/sidisi-brood-tyrant)
-- [Draftsim: Tatyova Commander Deck Guide](https://draftsim.com/tatyova-edh-deck/)
-- [TheGamer: Best Sultai Commanders](https://www.thegamer.com/magic-gathering-best-sultai-commanders/)
+### Minimal Effort (Sultai)
+**Teval, the Balanced Scale** — Per [CoolStuffInc 2025](https://www.coolstuffinc.com/a/juliansison-seo-04092025-the-top-5-sultai-commanders), Teval has "dethroned Muldrotha" for Sultai reanimator. You change 0-2 cards.
+
+### Higher cEDH Viability (Sultai)
+**Tasigur, the Golden Fang** — Your Consultation/Oracle package is already optimized. Per [EDHREC Commander Showdown](https://articles.edhrec.com/commander-showdown-muldrotha-vs-tasigur/), Tasigur is "far more similar to Thrasios" as a control/combo commander.
+
+### Different Playstyle (Sultai)
+**Yarok, the Desecrated** — Per [EDHREC Commander Showdown](https://articles.edhrec.com/commander-showdown-muldrotha-vs-yarok/), Yarok is "the hare" to Muldrotha's "tortoise." More explosive, less graveyard-dependent.
+
+### Best Simic Option
+**Tatyova, Benthic Druid** — Already in your sideboard. Per [EDHREC Nearly Identical](https://edhrec.com/articles/nearly-identical-tatyova-or-aesi), Tatyova and Aesi share 90% card overlap, so the shell is well-documented.
+
+---
+
+## Data Limitations & Honest Assessment
+
+### What I Could Not Access Directly:
+- EDHREC page data (403 blocked) — used search result snippets
+- Moxfield primer full text (403 blocked) — used search result snippets
+- TappedOut full decklists (403 blocked) — used search result snippets
+- Actual synergy percentage scores from EDHREC
+
+### What I Extrapolated vs. Cited:
+- Card counts in your deck: **Manually counted from your list**
+- "Cards changed" estimates: **Extrapolated based on strategy requirements from primers**
+- Dollar cost estimates: **Not verified with current prices**
+
+### Recommendations That Are My Analysis (Not Cited):
+- The assessment that your deck is "already well-suited for Tasigur" is my conclusion based on your card choices matching what primers recommend
+- The specific cards I flagged as "losing value" in each swap are logical inferences, not from primers
+
+---
+
+## Full Source List
+
+1. [EDHREC: Muldrotha Commander Page](https://edhrec.com/commanders/muldrotha-the-gravetide)
+2. [EDHREC: Commander Showdown - Muldrotha vs Tasigur](https://articles.edhrec.com/commander-showdown-muldrotha-vs-tasigur/)
+3. [EDHREC: Commander Showdown - Muldrotha vs Yarok](https://articles.edhrec.com/commander-showdown-muldrotha-vs-yarok/)
+4. [EDHREC: Nearly Identical - Tatyova or Aesi](https://edhrec.com/articles/nearly-identical-tatyova-or-aesi)
+5. [EDHREC: Superior Numbers - Land Counts](https://edhrec.com/articles/superior-numbers-land-counts)
+6. [EDHREC: Combos - Demonic Consultation + Thassa's Oracle](https://edhrec.com/combos/dimir/742-1295)
+7. [EDHREC: Combos - Kinnan + Basalt Monolith](https://edhrec.com/combos/simic/129-4131)
+8. [EDHREC: Teval Commander Page](https://edhrec.com/commanders/teval-the-balanced-scale)
+9. [EDHREC: Glarb Commander Page](https://edhrec.com/commanders/glarb-calamitys-augur)
+10. [EDHREC: Sidisi Commander Page](https://edhrec.com/commanders/sidisi-brood-tyrant)
+11. [CoolStuffInc: Top 5 Sultai Commanders 2025 by Julian Sison](https://www.coolstuffinc.com/a/juliansison-seo-04092025-the-top-5-sultai-commanders)
+12. [CoolStuffInc: Teval, the Balanced Scale by Julian Sison](https://www.coolstuffinc.com/a/juiliansison-seo-03312025-teval-the-balanced-scale-sultais-newest-graveyard-menace)
+13. [CoolStuffInc: Glarb by Abe Sargent](https://www.coolstuffinc.com/a/abesargent-08142024-casting-big-stuff-with-glarb-calamitys-augur-in-commander)
+14. [CoolStuffInc: Uro by Mark Wischkaemper](https://www.coolstuffinc.com/a/markwischkaemper-03042020-around-the-wheel-uro-titan-of-natures-wrath)
+15. [CoolStuffInc: Ramp Guide by Mark Wischkaemper](https://www.coolstuffinc.com/a/markwischkaemper-06222023-how-much-ramp-is-right-for-your-commander-deck)
+16. [Draftsim: All 33 Sultai Commanders Ranked](https://draftsim.com/mtg-sultai-commanders/)
+17. [Draftsim: How Many Lands in EDH](https://draftsim.com/mtg-edh-deck-number-of-lands/)
+18. [Draftsim: How Many Mana Rocks in EDH](https://draftsim.com/how-many-mana-rocks-edh/)
+19. [MTG Salvation: Sidisi Primer](https://www.mtgsalvation.com/forums/the-game/commander-edh/multiplayer-commander-decklists/571213-sidisi-brood-tyrant-zombie-horde-and-shenanigans-3)
+20. [MTGNexus: Tasigur Primer](https://www.mtgnexus.com/viewtopic.php?t=893)
+21. [MTGGoldfish: Uro Commander Spotlight](https://www.mtggoldfish.com/articles/commander-spotlight-uro-titan-of-nature-s-wrath)
+22. [TheGamer: Kinnan cEDH Guide](https://www.thegamer.com/magic-the-gathering-mtg-kinan-bonder-prodigy-cedh-deck-guide/)
+23. [TheGamer: Glarb Guide](https://www.thegamer.com/magic-the-gathering-glarb-calamitys-augur-commander-deck-guide/)
+24. [Commander's Herald: Max Power Glarb](https://commandersherald.com/max-power-glarb-calamitys-augur/)
+25. [Learn cEDH: Kinnan](https://learncedh.com/decklists/kinnan)
+26. [Learn cEDH: When To Play Thassa's Oracle](https://learncedh.com/intermediate-course/when-to-play-thassas-oracle)
+27. [Commander Spellbook: LED Combo](https://commanderspellbook.com/combo/624-3518-3605-5131/)
+28. [Commander Spellbook: Kinnan + Basalt Monolith](https://commanderspellbook.com/combo/129-4131/)
+29. [TappedOut: Muldrotha vs Yarok Forum](https://tappedout.net/mtg-forum/commander/muldrotha-vs-yarok/)
+30. [TappedOut: Tatyova Primer](https://tappedout.net/mtg-decks/tatyova-benthic-druid-primer/)
+31. [Moxfield: Consulting Muldrotha's Compost (cEDH)](https://moxfield.com/decks/lTmusKpoxka6uGnbWncaIw/primer)
+32. [Moxfield: Six CMC Under (cEDH)](https://moxfield.com/decks/446L-ip5kEqMfF4T2-EwDQ/primer)
+33. [Moxfield: Make No Gravetide Image](https://moxfield.com/decks/qULIEoTSeUqKxmUPjrRRJw/primer)
+34. [Moxfield: Rashmi Embrace Eternity](https://moxfield.com/decks/iwlYb-Moq0CbTyM11XdZyQ/primer)
+35. [Moxfield: cEDH Tatyova](https://moxfield.com/decks/ZURT8jgaeUencfkulYRNlA/primer)
