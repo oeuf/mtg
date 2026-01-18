@@ -10,14 +10,13 @@ class FunctionalRoleParser:
         "ramp": [
             r"search (?:your library|a library) for (?:a|up to \d+).*\bland",
             r"put (?:a|up to \d+).*\bland.*onto the battlefield",
-            r"add \{[WUBRGC]\}",
-            r"(?:add|adds) [WUBRGC] to your mana pool",
+            r"add \{[wubrgc]+\}",
+            r"(?:add|adds) [wubrgc]+ to your mana pool",
             r"add .*mana",
         ],
         "card_draw": [
-            r"draw (?:a|an|\d+|X) cards?",
+            r"draw (?:a|an|one|two|three|\d+|X) cards?",
             r"draw cards equal to",
-            r"draws? (?:a|an|\d+) cards?",
         ],
         "removal": [
             r"destroy target (?:creature|permanent|artifact|enchantment)",

@@ -8,7 +8,7 @@ class MechanicExtractor:
 
     TRIGGERED_ABILITY_PATTERNS = {
         "etb_trigger": r"[Ww]hen .* enters the battlefield",
-        "dies_trigger": r"[Ww]hen .* (?:dies|is put into .* graveyard from the battlefield)",
+        "dies_trigger": r"[Ww]henever .* (?:dies|is put into .* graveyard from the battlefield)",
         "attack_trigger": r"[Ww]henever .* attacks?",
         "cast_trigger": r"[Ww]henever (?:you cast|a player casts)",
         "draw_trigger": r"[Ww]henever (?:you draw|a player draws)",
@@ -16,7 +16,7 @@ class MechanicExtractor:
     }
 
     STATIC_ABILITY_PATTERNS = {
-        "cost_reduction": r"(?:spells?|cards?) (?:you cast )?(?:cost|costs) \{?\d+\}? less",
+        "cost_reduction": r"(?:spells?|cards?) (?:you cast )?(?:cost|costs) .* less",
         "anthem": r"(?:creatures?|permanents?) you control (?:get|have) \+\d+/\+\d+",
         "tax_effect": r"(?:spells?|abilities) .* (?:cost|costs) \{?\d+\}? more",
     }
@@ -34,12 +34,12 @@ class MechanicExtractor:
         oracle_text = card_data.get("oracle_text", "")
 
         for mechanic, pattern in cls.TRIGGERED_ABILITY_PATTERNS.items():
-            if re.search(pattern, oracle_text):
+            if re.search(pattern, oracle_text, re.IGNORECASE):
                 mechanics.append(mechanic)
 
         # 3. Static abilities
         for mechanic, pattern in cls.STATIC_ABILITY_PATTERNS.items():
-            if re.search(pattern, oracle_text):
+            if re.search(pattern, oracle_text, re.IGNORECASE):
                 mechanics.append(mechanic)
 
         return list(set(mechanics))  # Remove duplicates
