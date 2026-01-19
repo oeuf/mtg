@@ -90,3 +90,38 @@ def test_enrichment_preserves_original_data():
     # New properties added
     assert "card_draw" in result["functional_categories"]
     assert result["mana_efficiency"] > 0
+
+
+def test_full_enrichment_pipeline_with_fixtures():
+    """Test enrichment with parsed MTGJSON fixture data."""
+    from src.data.atomic_cards_parser import AtomicCardsParser
+
+    # Parse fixture
+    parser = AtomicCardsParser()
+    cards = parser.parse("tests/fixtures/mtgjson/sample_atomic_cards.json")
+
+    # Enrich
+    enriched = enrich_card_data(cards)
+
+    # Verify all cards enriched
+    assert len(enriched) == 5
+
+    # Verify Sol Ring gets ramp role and fast_mana flag
+    sol_ring = next(c for c in enriched if c["name"] == "Sol Ring")
+    assert "ramp" in sol_ring["functional_categories"]
+    assert sol_ring["is_fast_mana"] is True
+
+    # Verify Muldrotha is marked as commander
+    muldrotha = next(c for c in enriched if c["name"] == "Muldrotha, the Gravetide")
+    assert muldrotha["can_be_commander"] is True
+    assert muldrotha["is_legendary"] is True
+
+    # Verify Eternal Witness gets ETB trigger and recursion
+    witness = next(c for c in enriched if c["name"] == "Eternal Witness")
+    assert "etb_trigger" in witness["mechanics"]
+    assert "recursion" in witness["functional_categories"]
+
+    # Verify Isochron Scepter has Imprint keyword
+    scepter = next(c for c in enriched if c["name"] == "Isochron Scepter")
+    assert "Imprint" in scepter["keywords"]
+    assert "Imprint" in scepter["mechanics"]

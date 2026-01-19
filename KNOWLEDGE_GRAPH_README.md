@@ -111,18 +111,33 @@ goblins = DeckbuildingQueries.find_token_generators(
 
 ## Testing
 
+The project has three test levels:
+
+1. **Unit Tests** (fast, no dependencies)
+   ```bash
+   pytest tests/unit -v
+   ```
+
+2. **Integration Tests** (uses Neo4j)
+   ```bash
+   pytest tests/integration -v
+   ```
+
+3. **E2E Tests** (requires Neo4j with test credentials)
+   ```bash
+   export NEO4J_TEST_PASSWORD=testpass
+   pytest tests/e2e -m e2e -v
+   ```
+
+### With Coverage
 ```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=src --cov-report=html
-
-# Run specific test file
-pytest tests/unit/test_functional_roles.py -v
+pytest tests/ --cov=src --cov-report=html
+open htmlcov/index.html
 ```
 
-Current test coverage: 21/21 tests passing
+Current test coverage: 60+ tests (67% code coverage)
+
+See `tests/README.md` for detailed documentation
 
 ## Project Structure
 
