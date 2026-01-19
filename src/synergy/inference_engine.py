@@ -70,6 +70,27 @@ class SynergyInferenceEngine:
                 "strength": 0.9,
                 "reason": "Commander enables graveyard strategies"
             })
+            # Playing from graveyard also synergizes with ETB effects
+            synergies.append({
+                "mechanic": "etb_trigger",
+                "synergy_type": "benefits_from",
+                "strength": 0.85,
+                "reason": "Replaying permanents triggers ETBs again"
+            })
+            # Self-mill helps fill graveyard
+            synergies.append({
+                "mechanic": "self_mill",
+                "synergy_type": "benefits_from",
+                "strength": 0.9,
+                "reason": "Self-mill fills graveyard with targets"
+            })
+            # Sacrifice outlets let you reuse permanents
+            synergies.append({
+                "mechanic": "sacrifice_outlet",
+                "synergy_type": "benefits_from",
+                "strength": 0.85,
+                "reason": "Sacrifice permanents to replay them"
+            })
 
         # Token synergy
         if "token" in oracle_text:

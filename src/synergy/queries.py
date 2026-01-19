@@ -12,24 +12,43 @@ class DeckbuildingQueries:
                               max_cmc: int = 4,
                               min_strength: float = 0.7,
                               limit: int = 50) -> list[dict]:
-        """Find cards that synergize with commander via shared mechanics."""
+        """Find cards that synergize with commander via mechanics OR functional roles."""
 
+        # Find cards that either share mechanics or fill useful roles
+        # Score = synergy_bonus + (0.5 * role_count) to balance both factors
         query = """
         MATCH (cmd:Commander {name: $commander_name})
-              -[s:SYNERGIZES_WITH_MECHANIC]->(m:Mechanic)
-              <-[:HAS_MECHANIC]-(card:Card)
+        MATCH (card:Card)
         WHERE card.cmc <= $max_cmc
-          AND s.strength >= $min_strength
           AND NOT card:Commander
+          AND ALL(c IN card.color_identity WHERE c IN cmd.color_identity)
+
+        // Check for mechanic synergy
+        OPTIONAL MATCH (cmd)-[s:SYNERGIZES_WITH_MECHANIC]->(m:Mechanic)<-[:HAS_MECHANIC]-(card)
+
+        // Check for role match
+        OPTIONAL MATCH (card)-[:FILLS_ROLE]->(r:Functional_Role)
+
+        WITH card,
+             max(coalesce(s.strength, 0)) AS synergy_score,
+             collect(DISTINCT m.name) AS shared_mechanics,
+             collect(DISTINCT r.name) AS roles
+        WHERE synergy_score >= $min_strength OR size(roles) > 0
+
+        // Combined score balances synergy and role coverage
+        WITH card, synergy_score, shared_mechanics, roles,
+             (synergy_score + 0.3 * size(roles)) AS combined_score
+
         RETURN DISTINCT card.name AS name,
                card.mana_cost AS mana_cost,
                card.type_line AS type,
                card.cmc AS cmc,
                card.oracle_text AS text,
-               m.name AS shared_mechanic,
-               s.strength AS synergy_strength,
-               card.functional_categories AS roles
-        ORDER BY s.strength DESC, card.cmc ASC
+               shared_mechanics,
+               synergy_score AS synergy_strength,
+               roles,
+               combined_score
+        ORDER BY combined_score DESC, card.cmc ASC
         LIMIT $limit
         """
 
@@ -145,19 +164,22 @@ class DeckbuildingQueries:
             "cards_by_role": {}
         }
 
-        # Find synergistic cards for each role
+        # Find cards for each role, prioritizing synergistic ones
         for role, count in roles_needed.items():
+            # Query finds all cards with this role, optionally with synergy
+            # Scores: synergy bonus + base role score
             query_cards = """
             MATCH (cmd:Commander {name: $commander_name})
-                  -[s:SYNERGIZES_WITH_MECHANIC]->(m:Mechanic)
-                  <-[:HAS_MECHANIC]-(card:Card)
-                  -[:FILLS_ROLE]->(r:Functional_Role {name: $role})
+            MATCH (card:Card)-[:FILLS_ROLE]->(r:Functional_Role {name: $role})
             WHERE NOT card:Commander
+              AND ALL(c IN card.color_identity WHERE c IN cmd.color_identity)
+            OPTIONAL MATCH (cmd)-[s:SYNERGIZES_WITH_MECHANIC]->(m:Mechanic)<-[:HAS_MECHANIC]-(card)
+            WITH card, max(coalesce(s.strength, 0)) AS synergy_bonus
             RETURN DISTINCT card.name AS name,
                    card.mana_cost AS cost,
                    card.cmc AS cmc,
-                   s.strength AS synergy
-            ORDER BY s.strength DESC, card.cmc ASC
+                   synergy_bonus AS synergy
+            ORDER BY synergy_bonus DESC, card.cmc ASC
             LIMIT $count
             """
 
