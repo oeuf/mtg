@@ -71,3 +71,31 @@ def test_is_free_spell():
         "oracle_text": "Counter target spell."
     }
     assert PropertyCalculator.is_free_spell(card) is False
+
+
+def test_extract_subtypes_creature():
+    """Test subtype extraction from creature type line."""
+    type_line = "Legendary Creature — Elf Druid"
+    result = PropertyCalculator.extract_subtypes(type_line)
+    assert result == ["Elf", "Druid"]
+
+
+def test_extract_subtypes_land():
+    """Test subtype extraction from land type line."""
+    type_line = "Basic Land — Island"
+    result = PropertyCalculator.extract_subtypes(type_line)
+    assert result == ["Island"]
+
+
+def test_extract_subtypes_no_subtypes():
+    """Test cards without subtypes."""
+    type_line = "Instant"
+    result = PropertyCalculator.extract_subtypes(type_line)
+    assert result == []
+
+
+def test_extract_subtypes_artifact_creature():
+    """Test artifact creature subtypes."""
+    type_line = "Artifact Creature — Golem"
+    result = PropertyCalculator.extract_subtypes(type_line)
+    assert result == ["Golem"]
