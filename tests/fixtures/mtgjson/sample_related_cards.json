@@ -1,0 +1,19 @@
+{
+  "data": {
+    "Dramatic Reversal": {
+      "spellbook": ["Isochron Scepter"],
+      "tokens": [],
+      "reverseRelated": ["Isochron Scepter"]
+    },
+    "Isochron Scepter": {
+      "spellbook": [],
+      "tokens": [],
+      "reverseRelated": ["Dramatic Reversal"]
+    },
+    "Muldrotha, the Gravetide": {
+      "spellbook": [],
+      "tokens": [],
+      "reverseRelated": []
+    }
+  }
+}

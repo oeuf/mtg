@@ -1,0 +1,70 @@
+{
+  "data": {
+    "Sol Ring": [{
+      "name": "Sol Ring",
+      "manaCost": "{1}",
+      "manaValue": 1,
+      "type": "Artifact",
+      "text": "{T}: Add {C}{C}.",
+      "colorIdentity": [],
+      "colors": [],
+      "keywords": [],
+      "legalities": {"commander": "Legal"},
+      "isReserved": false,
+      "edhrecRank": 1
+    }],
+    "Muldrotha, the Gravetide": [{
+      "name": "Muldrotha, the Gravetide",
+      "manaCost": "{3}{B}{G}{U}",
+      "manaValue": 6,
+      "type": "Legendary Creature — Elemental Avatar",
+      "text": "During each of your turns, you may play one permanent card of each permanent type from your graveyard.",
+      "colorIdentity": ["B", "G", "U"],
+      "colors": ["B", "G", "U"],
+      "keywords": [],
+      "legalities": {"commander": "Legal"},
+      "leadershipSkills": {"commander": true},
+      "isReserved": false,
+      "edhrecRank": 50
+    }],
+    "Eternal Witness": [{
+      "name": "Eternal Witness",
+      "manaCost": "{1}{G}{G}",
+      "manaValue": 3,
+      "type": "Creature — Human Shaman",
+      "text": "When Eternal Witness enters the battlefield, you may return target card from your graveyard to your hand.",
+      "colorIdentity": ["G"],
+      "colors": ["G"],
+      "keywords": [],
+      "legalities": {"commander": "Legal"},
+      "isReserved": false,
+      "edhrecRank": 100
+    }],
+    "Dramatic Reversal": [{
+      "name": "Dramatic Reversal",
+      "manaCost": "{1}{U}",
+      "manaValue": 2,
+      "type": "Instant",
+      "text": "Untap all nonland permanents you control.",
+      "colorIdentity": ["U"],
+      "colors": ["U"],
+      "keywords": [],
+      "legalities": {"commander": "Legal"},
+      "isReserved": false,
+      "edhrecRank": 200
+    }],
+    "Isochron Scepter": [{
+      "name": "Isochron Scepter",
+      "manaCost": "{2}",
+      "manaValue": 2,
+      "type": "Artifact",
+      "text": "Imprint — When Isochron Scepter enters the battlefield, you may exile an instant card with mana value 2 or less from your hand.\n{2}, {T}: You may copy the exiled card. If you do, you may cast the copy without paying its mana cost.",
+      "colorIdentity": [],
+      "colors": [],
+      "keywords": ["Imprint"],
+      "legalities": {"commander": "Legal"},
+      "isReserved": false,
+      "edhrecRank": 300
+    }]
+  }
+}
