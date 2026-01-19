@@ -31,6 +31,9 @@ def enrich_card_data(cards: list[dict]) -> list[dict]:
         )
         card["is_fast_mana"] = property_calc.is_fast_mana(card)
         card["is_free_spell"] = property_calc.is_free_spell(card)
+        card["subtypes"] = property_calc.extract_subtypes(
+            card.get("type_line", "")
+        )
 
         enriched.append(card)
 

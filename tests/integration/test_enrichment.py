@@ -125,3 +125,26 @@ def test_full_enrichment_pipeline_with_fixtures():
     scepter = next(c for c in enriched if c["name"] == "Isochron Scepter")
     assert "Imprint" in scepter["keywords"]
     assert "Imprint" in scepter["mechanics"]
+
+
+def test_enrichment_adds_subtypes():
+    """Test that enrichment extracts subtypes from type_line."""
+    cards = [
+        {
+            "name": "Llanowar Elves",
+            "mana_cost": "{G}",
+            "cmc": 1,
+            "type_line": "Creature — Elf Druid",
+            "oracle_text": "{T}: Add {G}.",
+            "color_identity": ["G"],
+            "colors": ["G"],
+            "keywords": [],
+            "is_legendary": False,
+            "is_reserved_list": False,
+            "can_be_commander": False,
+        }
+    ]
+
+    enriched = enrich_card_data(cards)
+
+    assert enriched[0]["subtypes"] == ["Elf", "Druid"]
