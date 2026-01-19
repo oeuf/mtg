@@ -25,7 +25,9 @@
       "legalities": {"commander": "Legal"},
       "leadershipSkills": {"commander": true},
       "isReserved": false,
-      "edhrecRank": 50
+      "edhrecRank": 50,
+      "power": "6",
+      "toughness": "6"
     }],
     "Eternal Witness": [{
       "name": "Eternal Witness",
@@ -38,7 +40,9 @@
       "keywords": [],
       "legalities": {"commander": "Legal"},
       "isReserved": false,
-      "edhrecRank": 100
+      "edhrecRank": 100,
+      "power": "2",
+      "toughness": "1"
     }],
     "Dramatic Reversal": [{
       "name": "Dramatic Reversal",
