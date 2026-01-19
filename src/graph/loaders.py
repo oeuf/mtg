@@ -225,6 +225,32 @@ def create_related_card_relationships(conn: Neo4jConnection,
             pass
 
 
+def create_subtype_relationships(conn: Neo4jConnection, card_data: dict):
+    """Create [:HAS_SUBTYPE] relationships."""
+
+    card_name = card_data["name"]
+    subtypes = card_data.get("subtypes", [])
+
+    for subtype in subtypes:
+        # Create subtype node if doesn't exist
+        query_subtype = """
+        MERGE (s:Subtype {name: $subtype_name})
+        """
+        conn.execute_query(query_subtype, {"subtype_name": subtype})
+
+        # Create relationship
+        query_rel = """
+        MATCH (c:Card {name: $card_name})
+        MATCH (s:Subtype {name: $subtype_name})
+        MERGE (c)-[:HAS_SUBTYPE]->(s)
+        """
+
+        conn.execute_query(query_rel, {
+            "card_name": card_name,
+            "subtype_name": subtype
+        })
+
+
 def integrate_related_cards(conn: Neo4jConnection,
                            related_cards_data: dict):
     """Integrate all RelatedCards.json data into graph."""

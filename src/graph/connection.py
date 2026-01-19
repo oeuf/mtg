@@ -32,6 +32,7 @@ class Neo4jConnection:
             "CREATE CONSTRAINT mechanic_name IF NOT EXISTS FOR (m:Mechanic) REQUIRE m.name IS UNIQUE",
             "CREATE CONSTRAINT role_name IF NOT EXISTS FOR (r:Functional_Role) REQUIRE r.name IS UNIQUE",
             "CREATE CONSTRAINT token_name IF NOT EXISTS FOR (t:Token) REQUIRE t.name IS UNIQUE",
+            "CREATE CONSTRAINT subtype_name IF NOT EXISTS FOR (s:Subtype) REQUIRE s.name IS UNIQUE",
 
             # Indexes for performance
             "CREATE INDEX card_cmc IF NOT EXISTS FOR (c:Card) ON (c.cmc)",

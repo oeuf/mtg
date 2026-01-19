@@ -154,3 +154,27 @@ def test_batch_load_cards_calls_load_for_each_card(capsys):
     captured = capsys.readouterr()
     assert "Loading 3 cards" in captured.out
     assert "Loaded 3 cards" in captured.out
+
+
+from src.graph.loaders import create_subtype_relationships
+
+
+def test_create_subtype_relationships():
+    """Test subtype relationship creation."""
+    mock_conn = Mock(spec=Neo4jConnection)
+
+    card_data = {
+        "name": "Llanowar Elves",
+        "subtypes": ["Elf", "Druid"]
+    }
+
+    create_subtype_relationships(mock_conn, card_data)
+
+    # Should call execute_query 4 times: 2 MERGE subtypes + 2 relationships
+    assert mock_conn.execute_query.call_count == 4
+
+    # Verify HAS_SUBTYPE relationship created
+    calls = mock_conn.execute_query.call_args_list
+    # Check that relationship queries contain HAS_SUBTYPE
+    relationship_queries = [c[0][0] for c in calls if "HAS_SUBTYPE" in c[0][0]]
+    assert len(relationship_queries) == 2
