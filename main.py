@@ -22,6 +22,7 @@ from src.graph.loaders import (
 )
 from src.synergy.inference_engine import SynergyInferenceEngine
 from src.synergy.queries import DeckbuildingQueries
+from src.graph.gds_scoring import GDSScoring
 
 
 def main():
@@ -146,21 +147,33 @@ def main():
     for commander in popular_commanders:
         engine.analyze_commander(conn, commander)
 
+    # Phase 8b: GDS Scoring
+    print("\nPHASE 8b: GDS Scoring")
+    print("-" * 60)
+
+    gds = GDSScoring(conn)
+    gds_results = gds.run_all(min_similarity=0.5, top_k=10)
+
+    print(f"\nGDS Summary:")
+    print(f"  PageRank nodes: {gds_results.get('pagerank', {}).get('nodePropertiesWritten', 0)}")
+    print(f"  Communities: {gds_results.get('communities', {}).get('communityCount', 0)}")
+    print(f"  Similar pairs: {gds_results.get('similarity', {}).get('relationshipsWritten', 0)}")
+
     # Phase 9: Example queries
     print("\nPHASE 9: Example Queries")
     print("-" * 60)
 
-    print("\n1. Cards that synergize with Muldrotha:")
-    muldrotha_cards = DeckbuildingQueries.find_synergistic_cards(
+    print("\n1. Cards that synergize with Muldrotha (GDS-enhanced):")
+    muldrotha_cards = DeckbuildingQueries.find_synergistic_cards_v2(
         conn,
         commander_name="Muldrotha, the Gravetide",
         max_cmc=4,
-        min_strength=0.7,
         limit=10
     )
 
     for i, card in enumerate(muldrotha_cards, 1):
-        print(f"  {i}. {card['name']} ({card['mana_cost']}) - {card['shared_mechanic']}")
+        score = card.get('combined_score', 0)
+        print(f"  {i}. {card['name']} ({card['mana_cost']}) - score: {score:.2f}")
 
     print("\n2. Known combos with Dramatic Reversal:")
     combos = DeckbuildingQueries.find_known_combos(
