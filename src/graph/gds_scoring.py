@@ -98,3 +98,27 @@ class GDSScoring:
             print(f"  Converged: {result[0]['didConverge']}")
 
         return result[0] if result else {}
+
+    def detect_communities(self) -> dict:
+        """Detect communities using Louvain algorithm.
+
+        Returns:
+            Computation statistics including community count
+        """
+        query = f"""
+        CALL gds.louvain.write('{self.GRAPH_NAME}', {{
+            writeProperty: 'community_id'
+        }})
+        YIELD communityCount, modularity, nodePropertiesWritten
+        RETURN communityCount, modularity, nodePropertiesWritten
+        """
+
+        result = self.conn.execute_query(query)
+
+        if result:
+            print(f"✓ Detected communities (Louvain)")
+            print(f"  Communities found: {result[0]['communityCount']}")
+            print(f"  Modularity: {result[0]['modularity']:.3f}")
+            print(f"  Nodes updated: {result[0]['nodePropertiesWritten']}")
+
+        return result[0] if result else {}

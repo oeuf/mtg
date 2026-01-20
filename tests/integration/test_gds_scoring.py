@@ -57,3 +57,23 @@ def test_compute_pagerank():
     assert "gds.pageRank" in call_args
     assert "pagerank_score" in call_args
     assert result["nodePropertiesWritten"] == 100
+
+
+def test_detect_communities():
+    """Test Louvain community detection."""
+    mock_conn = Mock(spec=Neo4jConnection)
+    mock_conn.execute_query.return_value = [{
+        "communityCount": 15,
+        "modularity": 0.65,
+        "nodePropertiesWritten": 100
+    }]
+
+    gds = GDSScoring(mock_conn)
+    result = gds.detect_communities()
+
+    assert mock_conn.execute_query.called
+    call_args = mock_conn.execute_query.call_args[0][0]
+
+    assert "gds.louvain" in call_args
+    assert "community_id" in call_args
+    assert result["communityCount"] == 15
