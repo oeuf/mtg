@@ -77,3 +77,22 @@ def test_detect_communities():
     assert "gds.louvain" in call_args
     assert "community_id" in call_args
     assert result["communityCount"] == 15
+
+
+def test_compute_similarity():
+    """Test node similarity computation."""
+    mock_conn = Mock(spec=Neo4jConnection)
+    mock_conn.execute_query.return_value = [{
+        "relationshipsWritten": 500,
+        "nodesCompared": 100
+    }]
+
+    gds = GDSScoring(mock_conn)
+    result = gds.compute_similarity(min_similarity=0.5, top_k=10)
+
+    assert mock_conn.execute_query.called
+    call_args = mock_conn.execute_query.call_args[0][0]
+
+    assert "gds.nodeSimilarity" in call_args
+    assert "SIMILAR_TO" in call_args
+    assert result["relationshipsWritten"] == 500

@@ -122,3 +122,36 @@ class GDSScoring:
             print(f"  Nodes updated: {result[0]['nodePropertiesWritten']}")
 
         return result[0] if result else {}
+
+    def compute_similarity(self, min_similarity: float = 0.5, top_k: int = 10) -> dict:
+        """Compute node similarity and create SIMILAR_TO relationships.
+
+        Args:
+            min_similarity: Minimum similarity threshold (0-1)
+            top_k: Maximum similar nodes per card
+
+        Returns:
+            Computation statistics
+        """
+        query = f"""
+        CALL gds.nodeSimilarity.write('{self.GRAPH_NAME}', {{
+            writeRelationshipType: 'SIMILAR_TO',
+            writeProperty: 'score',
+            similarityCutoff: $min_similarity,
+            topK: $top_k
+        }})
+        YIELD relationshipsWritten, nodesCompared
+        RETURN relationshipsWritten, nodesCompared
+        """
+
+        result = self.conn.execute_query(query, {
+            "min_similarity": min_similarity,
+            "top_k": top_k
+        })
+
+        if result:
+            print(f"✓ Computed node similarity")
+            print(f"  Nodes compared: {result[0]['nodesCompared']}")
+            print(f"  SIMILAR_TO relationships: {result[0]['relationshipsWritten']}")
+
+        return result[0] if result else {}
