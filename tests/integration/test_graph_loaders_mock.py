@@ -178,3 +178,41 @@ def test_create_subtype_relationships():
     # Check that relationship queries contain HAS_SUBTYPE
     relationship_queries = [c[0][0] for c in calls if "HAS_SUBTYPE" in c[0][0]]
     assert len(relationship_queries) == 2
+
+
+def test_load_card_includes_popularity_score():
+    """Test that card loading includes popularity_score property."""
+    mock_conn = Mock(spec=Neo4jConnection)
+
+    card_data = {
+        "name": "Sol Ring",
+        "mana_cost": "{1}",
+        "cmc": 1,
+        "type_line": "Artifact",
+        "oracle_text": "{T}: Add {C}{C}.",
+        "color_identity": [],
+        "colors": [],
+        "keywords": [],
+        "is_legendary": False,
+        "is_reserved_list": False,
+        "can_be_commander": False,
+        "edhrec_rank": 1,
+        "functional_categories": ["ramp"],
+        "mechanics": [],
+        "mana_efficiency": 0.5,
+        "color_pip_intensity": 0,
+        "is_free_spell": False,
+        "is_fast_mana": True,
+        "subtypes": [],
+        "popularity_score": 0.95,
+        "precon_count": 50
+    }
+
+    load_card_to_graph(mock_conn, card_data)
+
+    # Verify the query includes popularity fields
+    call_args = mock_conn.execute_query.call_args
+    params = call_args[0][1]
+
+    assert params["popularity_score"] == 0.95
+    assert params["precon_count"] == 50

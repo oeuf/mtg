@@ -31,7 +31,10 @@ def load_card_to_graph(conn: Neo4jConnection, card_data: dict):
         c.mana_efficiency = $mana_efficiency,
         c.color_pip_intensity = $color_pip_intensity,
         c.is_free_spell = $is_free_spell,
-        c.is_fast_mana = $is_fast_mana
+        c.is_fast_mana = $is_fast_mana,
+        c.subtypes = $subtypes,
+        c.popularity_score = $popularity_score,
+        c.precon_count = $precon_count
     """
 
     # For commanders, add additional properties
@@ -59,6 +62,9 @@ def load_card_to_graph(conn: Neo4jConnection, card_data: dict):
         "is_free_spell": card_data.get("is_free_spell", False),
         "is_fast_mana": card_data.get("is_fast_mana", False),
         "can_be_commander": card_data.get("can_be_commander", False),
+        "subtypes": card_data.get("subtypes", []),
+        "popularity_score": card_data.get("popularity_score", 0.0),
+        "precon_count": card_data.get("precon_count", 0),
     }
 
     conn.execute_query(query, params)
