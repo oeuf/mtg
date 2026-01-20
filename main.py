@@ -8,12 +8,16 @@ import os
 from src.data.mtgjson_downloader import MTGJSONDownloader
 from src.data.atomic_cards_parser import AtomicCardsParser
 from src.data.related_cards_parser import RelatedCardsParser
+from src.data.precon_downloader import PreconDownloader
+from src.data.precon_parser import PreconParser
+from src.data.enrich_with_popularity import enrich_cards_with_popularity
 from src.parsing.enrichment import enrich_card_data
 from src.graph.connection import Neo4jConnection
 from src.graph.loaders import (
     batch_load_cards,
     create_mechanic_relationships,
     create_role_relationships,
+    create_subtype_relationships,
     integrate_related_cards
 )
 from src.synergy.inference_engine import SynergyInferenceEngine
@@ -36,6 +40,19 @@ def main():
     downloader = MTGJSONDownloader()
     files = downloader.download_all()
 
+    # Phase 1b: Download precon data
+    print("\nPHASE 1b: Precon Data")
+    print("-" * 60)
+
+    precon_downloader = PreconDownloader(data_dir="data")
+    precon_downloader.download_and_extract()
+
+    print("\nParsing precon decks...")
+    precon_parser = PreconParser()
+    precon_counts, total_precons = precon_parser.parse_all_decks_with_total("data/decks")
+    print(f"✓ Parsed {total_precons} Commander precons")
+    print(f"✓ Found {len(precon_counts)} unique cards")
+
     # Phase 2: Parse card data
     print("\nPHASE 2: Data Parsing")
     print("-" * 60)
@@ -53,6 +70,13 @@ def main():
     print("-" * 60)
 
     enriched_cards = enrich_card_data(cards)
+
+    # Add popularity scores
+    print("\nAdding popularity scores...")
+    enriched_cards = enrich_cards_with_popularity(
+        enriched_cards, precon_counts, total_precons
+    )
+    print("✓ Added popularity scores")
 
     # Phase 4: Connect to Neo4j
     print("\nPHASE 4: Database Connection")
@@ -89,6 +113,13 @@ def main():
         create_role_relationships(conn, card)
         if (i + 1) % 1000 == 0:
             print(f"  Processed {i + 1}/{len(enriched_cards)}...")
+
+    print("\nCreating subtype relationships...")
+    for i, card in enumerate(enriched_cards):
+        create_subtype_relationships(conn, card)
+        if (i + 1) % 1000 == 0:
+            print(f"  Processed {i + 1}/{len(enriched_cards)}...")
+    print("✓ Created subtype relationships")
 
     # Phase 7: Integrate RelatedCards
     print("\nPHASE 7: Integrating RelatedCards")
