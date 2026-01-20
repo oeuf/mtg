@@ -96,3 +96,27 @@ def test_compute_similarity():
     assert "gds.nodeSimilarity" in call_args
     assert "SIMILAR_TO" in call_args
     assert result["relationshipsWritten"] == 500
+
+
+def test_run_all_algorithms():
+    """Test running all GDS algorithms in sequence."""
+    mock_conn = Mock(spec=Neo4jConnection)
+    # Return appropriate data for each algorithm call
+    mock_conn.execute_query.return_value = [{
+        "graphName": "synergy-graph",
+        "nodeCount": 100,
+        "relationshipCount": 500,
+        "nodePropertiesWritten": 100,
+        "ranIterations": 20,
+        "didConverge": True,
+        "communityCount": 15,
+        "modularity": 0.65,
+        "relationshipsWritten": 500,
+        "nodesCompared": 100
+    }]
+
+    gds = GDSScoring(mock_conn)
+    gds.run_all()
+
+    # Should call execute_query multiple times (drop + projection + 3 algorithms)
+    assert mock_conn.execute_query.call_count >= 4

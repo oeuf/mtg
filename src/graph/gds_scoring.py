@@ -155,3 +155,41 @@ class GDSScoring:
             print(f"  SIMILAR_TO relationships: {result[0]['relationshipsWritten']}")
 
         return result[0] if result else {}
+
+    def run_all(self, min_similarity: float = 0.5, top_k: int = 10) -> dict:
+        """Run all GDS algorithms in sequence.
+
+        Args:
+            min_similarity: Similarity threshold for node similarity
+            top_k: Max similar nodes per card
+
+        Returns:
+            Combined results from all algorithms
+        """
+        print("\n" + "=" * 60)
+        print("Running GDS Algorithms")
+        print("=" * 60)
+
+        results = {}
+
+        # 1. Create projection
+        print("\n1. Creating graph projection...")
+        results["projection"] = self.create_projection()
+
+        # 2. PageRank
+        print("\n2. Computing PageRank...")
+        results["pagerank"] = self.compute_pagerank()
+
+        # 3. Community detection
+        print("\n3. Detecting communities...")
+        results["communities"] = self.detect_communities()
+
+        # 4. Node similarity
+        print("\n4. Computing node similarity...")
+        results["similarity"] = self.compute_similarity(min_similarity, top_k)
+
+        print("\n" + "=" * 60)
+        print("GDS Algorithms Complete")
+        print("=" * 60)
+
+        return results
