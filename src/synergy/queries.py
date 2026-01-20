@@ -212,3 +212,70 @@ class DeckbuildingQueries:
         """
 
         return conn.execute_query(query, {"commander_name": commander_name})
+
+    @staticmethod
+    def find_synergistic_cards_v2(conn: Neo4jConnection,
+                                  commander_name: str,
+                                  max_cmc: int = 4,
+                                  limit: int = 50) -> list[dict]:
+        """Find synergistic cards using GDS-enhanced scoring.
+
+        Combines:
+        - Mechanic synergy (40%)
+        - PageRank importance (20%)
+        - Popularity score (20%)
+        - Community match bonus (20%)
+        """
+        query = """
+        MATCH (cmd:Commander {name: $commander_name})
+        MATCH (card:Card)
+        WHERE card.cmc <= $max_cmc
+          AND NOT card:Commander
+          AND ALL(c IN card.color_identity WHERE c IN cmd.color_identity)
+
+        // Mechanic synergy
+        OPTIONAL MATCH (cmd)-[s:SYNERGIZES_WITH_MECHANIC]->(m:Mechanic)<-[:HAS_MECHANIC]-(card)
+
+        // Role matches
+        OPTIONAL MATCH (card)-[:FILLS_ROLE]->(r:Functional_Role)
+
+        WITH card, cmd,
+             max(coalesce(s.strength, 0)) AS synergy_score,
+             collect(DISTINCT m.name) AS shared_mechanics,
+             collect(DISTINCT r.name) AS roles
+
+        // GDS scores with defaults
+        WITH card, cmd, synergy_score, shared_mechanics, roles,
+             coalesce(card.pagerank_score, 0) AS pagerank,
+             coalesce(card.popularity_score, 0) AS popularity,
+             CASE WHEN card.community_id = cmd.community_id THEN 1 ELSE 0 END AS community_match
+
+        // Combined score: synergy(40%) + pagerank(20%) + popularity(20%) + community(20%)
+        WITH card, synergy_score, shared_mechanics, roles, pagerank, popularity, community_match,
+             (synergy_score * 0.4 +
+              pagerank * 10 * 0.2 +
+              popularity * 0.2 +
+              community_match * 0.2) AS combined_score
+
+        WHERE combined_score > 0 OR size(roles) > 0
+
+        RETURN DISTINCT card.name AS name,
+               card.mana_cost AS mana_cost,
+               card.type_line AS type,
+               card.cmc AS cmc,
+               card.oracle_text AS text,
+               shared_mechanics,
+               synergy_score AS synergy_strength,
+               roles,
+               combined_score,
+               pagerank AS pagerank_score,
+               community_match = 1 AS community_match
+        ORDER BY combined_score DESC, card.cmc ASC
+        LIMIT $limit
+        """
+
+        return conn.execute_query(query, {
+            "commander_name": commander_name,
+            "max_cmc": max_cmc,
+            "limit": limit
+        })
