@@ -65,3 +65,36 @@ class GDSScoring:
         """
         result = self.conn.execute_query(query, {"name": self.GRAPH_NAME})
         return result[0]["exists"] if result else False
+
+    def compute_pagerank(self, max_iterations: int = 20, damping_factor: float = 0.85) -> dict:
+        """Compute PageRank and write to node properties.
+
+        Args:
+            max_iterations: Maximum iterations for PageRank
+            damping_factor: Damping factor (default 0.85)
+
+        Returns:
+            Computation statistics
+        """
+        query = f"""
+        CALL gds.pageRank.write('{self.GRAPH_NAME}', {{
+            writeProperty: 'pagerank_score',
+            maxIterations: $max_iterations,
+            dampingFactor: $damping_factor
+        }})
+        YIELD nodePropertiesWritten, ranIterations, didConverge
+        RETURN nodePropertiesWritten, ranIterations, didConverge
+        """
+
+        result = self.conn.execute_query(query, {
+            "max_iterations": max_iterations,
+            "damping_factor": damping_factor
+        })
+
+        if result:
+            print(f"✓ Computed PageRank")
+            print(f"  Nodes updated: {result[0]['nodePropertiesWritten']}")
+            print(f"  Iterations: {result[0]['ranIterations']}")
+            print(f"  Converged: {result[0]['didConverge']}")
+
+        return result[0] if result else {}

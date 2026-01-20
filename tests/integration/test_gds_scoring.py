@@ -37,3 +37,23 @@ def test_drop_projection():
     assert mock_conn.execute_query.called
     call_args = mock_conn.execute_query.call_args[0][0]
     assert "gds.graph.drop" in call_args
+
+
+def test_compute_pagerank():
+    """Test PageRank computation."""
+    mock_conn = Mock(spec=Neo4jConnection)
+    mock_conn.execute_query.return_value = [{
+        "nodePropertiesWritten": 100,
+        "ranIterations": 20,
+        "didConverge": True
+    }]
+
+    gds = GDSScoring(mock_conn)
+    result = gds.compute_pagerank()
+
+    assert mock_conn.execute_query.called
+    call_args = mock_conn.execute_query.call_args[0][0]
+
+    assert "gds.pageRank" in call_args
+    assert "pagerank_score" in call_args
+    assert result["nodePropertiesWritten"] == 100
