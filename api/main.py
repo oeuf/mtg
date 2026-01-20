@@ -3,7 +3,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.routers import commanders, cards, decks
+from api.routers import commanders, cards, decks, graph
 
 app = FastAPI(
     title="MTG Commander Knowledge Graph API",
@@ -41,3 +41,4 @@ async def root():
 app.include_router(commanders.router)
 app.include_router(cards.router)
 app.include_router(decks.router)
+app.include_router(graph.router)
