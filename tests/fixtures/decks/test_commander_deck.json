@@ -1,0 +1,12 @@
+{
+  "name": "Test Commander Deck",
+  "type": "Commander",
+  "mainBoard": [
+    {"name": "Sol Ring", "count": 1},
+    {"name": "Command Tower", "count": 1},
+    {"name": "Eternal Witness", "count": 1}
+  ],
+  "commander": [
+    {"name": "Muldrotha, the Gravetide", "count": 1}
+  ]
+}

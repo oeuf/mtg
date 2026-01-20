@@ -1,0 +1,7 @@
+{
+  "name": "Test Standard Deck",
+  "type": "Standard",
+  "mainBoard": [
+    {"name": "Lightning Bolt", "count": 4}
+  ]
+}
