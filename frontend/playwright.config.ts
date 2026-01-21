@@ -20,7 +20,7 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'cd .. && /usr/local/opt/python@3.9/bin/python3.9 -m uvicorn api.main:app --port 8000',
+      command: 'cd .. && NEO4J_PASSWORD=$NEO4J_PASSWORD python3 -m uvicorn api.main:app --port 8000',
       url: 'http://localhost:8000/health',
       reuseExistingServer: !process.env.CI,
       timeout: 30000,
