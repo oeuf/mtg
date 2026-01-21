@@ -52,20 +52,20 @@ export function GraphVisualization({ data, onNodeClick }: Props) {
       .join('g')
       .style('cursor', 'pointer')
       .on('click', (_, d) => onNodeClick?.(d))
-      .call(d3.drag<SVGGElement, GraphNode>()
-        .on('start', (event, d) => {
+      .call(d3.drag<any, any>()
+        .on('start', (event: any, d: any) => {
           if (!event.active) simulation.alphaTarget(0.3).restart();
-          (d as d3.SimulationNodeDatum).fx = (d as d3.SimulationNodeDatum).x;
-          (d as d3.SimulationNodeDatum).fy = (d as d3.SimulationNodeDatum).y;
+          d.fx = d.x;
+          d.fy = d.y;
         })
-        .on('drag', (event, d) => {
-          (d as d3.SimulationNodeDatum).fx = event.x;
-          (d as d3.SimulationNodeDatum).fy = event.y;
+        .on('drag', (event: any, d: any) => {
+          d.fx = event.x;
+          d.fy = event.y;
         })
-        .on('end', (event, d) => {
+        .on('end', (event: any, d: any) => {
           if (!event.active) simulation.alphaTarget(0);
-          (d as d3.SimulationNodeDatum).fx = null;
-          (d as d3.SimulationNodeDatum).fy = null;
+          d.fx = null;
+          d.fy = null;
         }));
 
     node.append('circle')
@@ -88,7 +88,9 @@ export function GraphVisualization({ data, onNodeClick }: Props) {
       node.attr('transform', (d) => `translate(${(d as d3.SimulationNodeDatum).x},${(d as d3.SimulationNodeDatum).y})`);
     });
 
-    return () => simulation.stop();
+    return () => {
+      simulation.stop();
+    };
   }, [data, onNodeClick]);
 
   return (
