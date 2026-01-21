@@ -31,7 +31,7 @@ async def list_commanders(
            c.color_identity AS color_identity,
            c.mechanics AS mechanics,
            c.functional_categories AS functional_categories
-    ORDER BY c.edhrec_rank ASC NULLS LAST
+    ORDER BY COALESCE(c.edhrec_rank, 999999) ASC
     LIMIT $limit
     """
 
