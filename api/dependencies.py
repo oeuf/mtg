@@ -1,10 +1,11 @@
 """FastAPI dependencies for dependency injection."""
 
 import os
+from typing import Optional
 from src.graph.connection import Neo4jConnection
 
 
-_connection: Neo4jConnection | None = None
+_connection: Optional[Neo4jConnection] = None
 
 
 def get_neo4j_connection() -> Neo4jConnection:
