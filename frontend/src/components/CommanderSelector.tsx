@@ -22,9 +22,9 @@ export function CommanderSelector({ onSelect, selected }: Props) {
     <div className="space-y-2">
       <label className="block text-sm font-medium">Commander</label>
       {selected ? (
-        <div className="flex items-center gap-2 p-2 bg-blue-100 rounded">
-          <span className="font-medium">{selected.name}</span>
-          <span className="text-sm text-gray-600">{selected.mana_cost}</span>
+        <div className="flex items-center gap-2 p-2 bg-blue-100 dark:bg-blue-900 rounded">
+          <span className="font-medium text-blue-900 dark:text-blue-100">{selected.name}</span>
+          <span className="text-sm text-blue-700 dark:text-blue-300">{selected.mana_cost}</span>
           <button
             onClick={() => onSelect(null)}
             className="ml-auto text-red-500 hover:text-red-700"
