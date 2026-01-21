@@ -80,43 +80,25 @@ async def get_recommendations(
     commander_name: str,
     max_cmc: int = Query(10, ge=0, le=20),
     limit: int = Query(50, ge=1, le=200),
-    db = Depends(get_db)
+    db: Neo4jConnection = Depends(get_db)
 ):
     """Get card recommendations for a commander."""
-    from api.dependencies import MockNeo4jConnection
-
-    # Check if using mock mode
-    if isinstance(db, MockNeo4jConnection):
-        # Return mock recommendations
-        mock_recs = [
-            {"name": "Sol Ring", "mana_cost": "{1}", "cmc": 1, "type": "Artifact", "combined_score": 0.95, "shared_mechanics": ["mana_production"], "roles": ["ramp"]},
-            {"name": "Eternal Witness", "mana_cost": "{1}{G}{G}", "cmc": 3, "type": "Creature", "combined_score": 0.92, "shared_mechanics": ["etb_trigger", "recursion"], "roles": ["recursion"]},
-            {"name": "Spore Frog", "mana_cost": "{G}", "cmc": 1, "type": "Creature", "combined_score": 0.88, "shared_mechanics": ["sacrifice"], "roles": ["protection"]},
-            {"name": "Sakura-Tribe Elder", "mana_cost": "{1}{G}", "cmc": 2, "type": "Creature", "combined_score": 0.87, "shared_mechanics": ["sacrifice", "ramp"], "roles": ["ramp"]},
-            {"name": "Rhystic Study", "mana_cost": "{2}{U}", "cmc": 3, "type": "Enchantment", "combined_score": 0.85, "shared_mechanics": ["card_draw"], "roles": ["card_draw"]},
-            {"name": "Mystic Remora", "mana_cost": "{U}", "cmc": 1, "type": "Enchantment", "combined_score": 0.84, "shared_mechanics": ["card_draw"], "roles": ["card_draw"]},
-            {"name": "Animate Dead", "mana_cost": "{1}{B}", "cmc": 2, "type": "Enchantment", "combined_score": 0.83, "shared_mechanics": ["recursion"], "roles": ["recursion"]},
-            {"name": "Reanimate", "mana_cost": "{B}", "cmc": 1, "type": "Sorcery", "combined_score": 0.82, "shared_mechanics": ["recursion"], "roles": ["recursion"]},
-            {"name": "Coiling Oracle", "mana_cost": "{G}{U}", "cmc": 2, "type": "Creature", "combined_score": 0.80, "shared_mechanics": ["etb_trigger"], "roles": ["ramp", "card_draw"]},
-            {"name": "Mulldrifter", "mana_cost": "{4}{U}", "cmc": 5, "type": "Creature", "combined_score": 0.78, "shared_mechanics": ["etb_trigger", "evoke"], "roles": ["card_draw"]},
-        ]
-        results = [r for r in mock_recs if r["cmc"] <= max_cmc][:limit]
-    else:
-        try:
-            results = DeckbuildingQueries.find_synergistic_cards_v2(
-                db,
-                commander_name=commander_name,
-                max_cmc=max_cmc,
-                limit=limit
-            )
-        except Exception:
-            results = DeckbuildingQueries.find_synergistic_cards(
-                db,
-                commander_name=commander_name,
-                max_cmc=max_cmc,
-                min_strength=0.0,
-                limit=limit
-            )
+    # Try v2 (GDS-enhanced) first, fall back to v1
+    try:
+        results = DeckbuildingQueries.find_synergistic_cards_v2(
+            db,
+            commander_name=commander_name,
+            max_cmc=max_cmc,
+            limit=limit
+        )
+    except Exception:
+        results = DeckbuildingQueries.find_synergistic_cards(
+            db,
+            commander_name=commander_name,
+            max_cmc=max_cmc,
+            min_strength=0.0,
+            limit=limit
+        )
 
     return [
         RecommendationResponse(
