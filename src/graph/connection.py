@@ -35,6 +35,7 @@ class Neo4jConnection:
             "CREATE CONSTRAINT zone_name IF NOT EXISTS FOR (z:Zone) REQUIRE z.name IS UNIQUE",
             "CREATE CONSTRAINT phase_name IF NOT EXISTS FOR (p:Phase) REQUIRE p.name IS UNIQUE",
             "CREATE CONSTRAINT theme_name IF NOT EXISTS FOR (t:Theme) REQUIRE t.name IS UNIQUE",
+            "CREATE CONSTRAINT subtype_name IF NOT EXISTS FOR (s:Subtype) REQUIRE s.name IS UNIQUE",
 
             # Indexes for performance
             "CREATE INDEX card_cmc IF NOT EXISTS FOR (c:Card) ON (c.cmc)",

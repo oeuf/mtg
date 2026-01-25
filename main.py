@@ -22,6 +22,7 @@ from src.graph.loaders import (
     create_phase_relationships,
     create_theme_nodes,
     batch_create_theme_relationships,
+    batch_create_subtype_relationships,
     THEME_DEFINITIONS
 )
 from src.synergy.inference_engine import SynergyInferenceEngine
@@ -127,6 +128,9 @@ def main():
 
     print("\nCreating theme relationships...")
     batch_create_theme_relationships(conn, enriched_cards)
+
+    print("\nCreating subtype relationships...")
+    batch_create_subtype_relationships(conn, enriched_cards)
 
     # Phase 10: Integrate RelatedCards
     print("\nPHASE 10: Integrating RelatedCards")
