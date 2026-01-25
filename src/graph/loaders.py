@@ -3,6 +3,41 @@
 from .connection import Neo4jConnection
 
 
+# Theme definitions
+THEME_DEFINITIONS = {
+    "reanimation": {
+        "description": "Return creatures from graveyard to battlefield"
+    },
+    "aristocrats": {
+        "description": "Sacrifice creatures for value and death triggers"
+    },
+    "tokens": {
+        "description": "Create and benefit from creature tokens"
+    },
+    "lands_matter": {
+        "description": "Landfall, ramp, and land recursion strategies"
+    },
+    "spellslinger": {
+        "description": "Cast triggers and instant/sorcery synergies"
+    },
+    "graveyard_value": {
+        "description": "Benefit from cards in graveyard"
+    },
+    "lifegain": {
+        "description": "Gain life and benefit from lifegain triggers"
+    },
+    "tribal": {
+        "description": "Creature type synergies"
+    },
+    "voltron": {
+        "description": "Equipment, auras, and commander damage"
+    },
+    "stax": {
+        "description": "Resource denial and tax effects"
+    }
+}
+
+
 def load_card_to_graph(conn: Neo4jConnection, card_data: dict):
     """Create Card or Commander node in graph."""
 
@@ -31,7 +66,10 @@ def load_card_to_graph(conn: Neo4jConnection, card_data: dict):
         c.mana_efficiency = $mana_efficiency,
         c.color_pip_intensity = $color_pip_intensity,
         c.is_free_spell = $is_free_spell,
-        c.is_fast_mana = $is_fast_mana
+        c.is_fast_mana = $is_fast_mana,
+        c.subtypes = $subtypes,
+        c.themes = $themes,
+        c.archetype = $archetype
     """
 
     # For commanders, add additional properties
@@ -59,6 +97,9 @@ def load_card_to_graph(conn: Neo4jConnection, card_data: dict):
         "is_free_spell": card_data.get("is_free_spell", False),
         "is_fast_mana": card_data.get("is_fast_mana", False),
         "can_be_commander": card_data.get("can_be_commander", False),
+        "subtypes": card_data.get("subtypes", []),
+        "themes": card_data.get("themes", []),
+        "archetype": card_data.get("archetype", "utility"),
     }
 
     conn.execute_query(query, params)
@@ -242,3 +283,190 @@ def integrate_related_cards(conn: Neo4jConnection,
             print(f"  Processed {processed}/{total}...")
 
     print(f"✓ Integrated {processed} card relationships")
+
+
+def create_zone_nodes(conn: Neo4jConnection, zones: dict):
+    """
+    Create Zone nodes from rules parser data.
+
+    Args:
+        conn: Neo4j connection
+        zones: Dict from rules parser with zone data
+    """
+    print(f"Creating {len(zones)} zone nodes...")
+
+    for zone_name, zone_data in zones.items():
+        query = """
+        MERGE (z:Zone {name: $name})
+        SET z.rule_number = $rule_number,
+            z.is_public = $is_public,
+            z.is_ordered = $is_ordered,
+            z.description = $description
+        """
+
+        conn.execute_query(query, {
+            "name": zone_name,
+            "rule_number": zone_data["rule_number"],
+            "is_public": zone_data["is_public"],
+            "is_ordered": zone_data["is_ordered"],
+            "description": zone_data.get("description", "")
+        })
+
+    print(f"✓ Created {len(zones)} zone nodes")
+
+
+def create_phase_nodes(conn: Neo4jConnection, phases: dict):
+    """
+    Create Phase nodes from rules parser data.
+
+    Args:
+        conn: Neo4j connection
+        phases: Dict from rules parser with phase data
+    """
+    print(f"Creating {len(phases)} phase nodes...")
+
+    for phase_name, phase_data in phases.items():
+        query = """
+        MERGE (p:Phase {name: $name})
+        SET p.rule_number = $rule_number,
+            p.order = $order,
+            p.parent = $parent,
+            p.is_step = $is_step
+        """
+
+        conn.execute_query(query, {
+            "name": phase_name,
+            "rule_number": phase_data["rule_number"],
+            "order": phase_data["order"],
+            "parent": phase_data.get("parent"),
+            "is_step": phase_data["is_step"]
+        })
+
+    print(f"✓ Created {len(phases)} phase nodes")
+
+
+def create_zone_relationships(conn: Neo4jConnection, card_data: dict):
+    """
+    Create [:INTERACTS_WITH_ZONE] relationships for a card.
+
+    Args:
+        conn: Neo4j connection
+        card_data: Card dict with zone_interactions list
+    """
+    card_name = card_data["name"]
+    zone_interactions = card_data.get("zone_interactions", [])
+
+    for interaction in zone_interactions:
+        query = """
+        MATCH (c:Card {name: $card_name})
+        MATCH (z:Zone {name: $zone_name})
+        MERGE (c)-[:INTERACTS_WITH_ZONE {
+            interaction_type: $interaction_type
+        }]->(z)
+        """
+
+        conn.execute_query(query, {
+            "card_name": card_name,
+            "zone_name": interaction["zone"],
+            "interaction_type": interaction["interaction_type"]
+        })
+
+
+def create_phase_relationships(conn: Neo4jConnection, card_data: dict):
+    """
+    Create [:TRIGGERS_IN_PHASE] relationships for a card.
+
+    Args:
+        conn: Neo4j connection
+        card_data: Card dict with phase_triggers list
+    """
+    card_name = card_data["name"]
+    phase_triggers = card_data.get("phase_triggers", [])
+
+    for trigger in phase_triggers:
+        query = """
+        MATCH (c:Card {name: $card_name})
+        MATCH (p:Phase {name: $phase_name})
+        MERGE (c)-[:TRIGGERS_IN_PHASE {
+            trigger_type: $trigger_type
+        }]->(p)
+        """
+
+        conn.execute_query(query, {
+            "card_name": card_name,
+            "phase_name": trigger["phase"],
+            "trigger_type": trigger["trigger_type"]
+        })
+
+
+def create_theme_nodes(conn: Neo4jConnection, themes: dict):
+    """
+    Create Theme nodes from theme definitions.
+
+    Args:
+        conn: Neo4j connection
+        themes: Dict mapping theme name to metadata
+                Example: {"reanimation": {"description": "..."}}
+    """
+    print(f"Creating {len(themes)} theme nodes...")
+
+    for theme_name, metadata in themes.items():
+        query = """
+        MERGE (t:Theme {name: $name})
+        SET t.description = $description
+        """
+
+        conn.execute_query(query, {
+            "name": theme_name,
+            "description": metadata.get("description", "")
+        })
+
+    print(f"✓ Created {len(themes)} theme nodes")
+
+
+def create_theme_relationships(conn: Neo4jConnection, card_data: dict):
+    """
+    Create [:SUPPORTS_THEME] relationships for a card.
+
+    Args:
+        conn: Neo4j connection
+        card_data: Card dict with themes list
+    """
+    card_name = card_data["name"]
+    themes = card_data.get("themes", [])
+
+    for theme in themes:
+        query = """
+        MATCH (c:Card {name: $card_name})
+        MATCH (t:Theme {name: $theme_name})
+        MERGE (c)-[:SUPPORTS_THEME]->(t)
+        """
+
+        conn.execute_query(query, {
+            "card_name": card_name,
+            "theme_name": theme
+        })
+
+
+def batch_create_theme_relationships(conn: Neo4jConnection, cards: list[dict]):
+    """
+    Create theme relationships for all cards.
+
+    Args:
+        conn: Neo4j connection
+        cards: List of card dicts with themes
+    """
+    total = len(cards)
+    processed = 0
+
+    print(f"Creating theme relationships for {total} cards...")
+
+    for card in cards:
+        if card.get("themes"):  # Only process cards with themes
+            create_theme_relationships(conn, card)
+        processed += 1
+
+        if processed % 1000 == 0:
+            print(f"  Processed {processed}/{total}...")
+
+    print(f"✓ Created theme relationships for {processed} cards")

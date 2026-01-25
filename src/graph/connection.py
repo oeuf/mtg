@@ -32,11 +32,15 @@ class Neo4jConnection:
             "CREATE CONSTRAINT mechanic_name IF NOT EXISTS FOR (m:Mechanic) REQUIRE m.name IS UNIQUE",
             "CREATE CONSTRAINT role_name IF NOT EXISTS FOR (r:Functional_Role) REQUIRE r.name IS UNIQUE",
             "CREATE CONSTRAINT token_name IF NOT EXISTS FOR (t:Token) REQUIRE t.name IS UNIQUE",
+            "CREATE CONSTRAINT zone_name IF NOT EXISTS FOR (z:Zone) REQUIRE z.name IS UNIQUE",
+            "CREATE CONSTRAINT phase_name IF NOT EXISTS FOR (p:Phase) REQUIRE p.name IS UNIQUE",
+            "CREATE CONSTRAINT theme_name IF NOT EXISTS FOR (t:Theme) REQUIRE t.name IS UNIQUE",
 
             # Indexes for performance
             "CREATE INDEX card_cmc IF NOT EXISTS FOR (c:Card) ON (c.cmc)",
             "CREATE INDEX card_color_identity IF NOT EXISTS FOR (c:Card) ON (c.color_identity)",
             "CREATE INDEX card_is_legendary IF NOT EXISTS FOR (c:Card) ON (c.is_legendary)",
+            "CREATE INDEX card_archetype IF NOT EXISTS FOR (c:Card) ON (c.archetype)",
         ]
 
         print("Creating constraints and indexes...")
