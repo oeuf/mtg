@@ -122,3 +122,20 @@ def test_enrich_adds_subtypes():
 
     assert "subtypes" in enriched[0]
     assert enriched[0]["subtypes"] == ["Spirit", "Dragon"]
+
+
+def test_enrich_adds_themes():
+    """Enrichment should add themes to cards."""
+    cards = [{
+        "name": "Eternal Witness",
+        "oracle_text": "When this creature enters, return target card from your graveyard to your hand.",
+        "type_line": "Creature — Human Shaman",
+        "functional_categories": ["recursion"],
+        "mechanics": ["etb_trigger", "recursion"]
+    }]
+
+    # Need to enrich first to get mechanics/roles
+    enriched = enrich_card_data(cards)
+
+    assert "themes" in enriched[0]
+    assert "graveyard_value" in enriched[0]["themes"]

@@ -5,6 +5,7 @@ from .mechanics import MechanicExtractor
 from .properties import PropertyCalculator
 from .zone_detector import ZoneDetector
 from .phase_detector import PhaseDetector
+from .theme_detector import ThemeDetector
 
 
 def enrich_card_data(cards: list[dict]) -> list[dict]:
@@ -15,6 +16,7 @@ def enrich_card_data(cards: list[dict]) -> list[dict]:
     property_calc = PropertyCalculator()
     zone_detector = ZoneDetector()
     phase_detector = PhaseDetector()
+    theme_detector = ThemeDetector()
 
     enriched = []
 
@@ -53,6 +55,9 @@ def enrich_card_data(cards: list[dict]) -> list[dict]:
             {"phase": phase, "trigger_type": data["trigger_type"]}
             for phase, data in phases.items()
         ]
+
+        # Themes (NEW) - must run after mechanics/roles/zones
+        card["themes"] = theme_detector.detect_themes(card)
 
         enriched.append(card)
 
