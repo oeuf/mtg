@@ -139,3 +139,18 @@ def test_enrich_adds_themes():
 
     assert "themes" in enriched[0]
     assert "graveyard_value" in enriched[0]["themes"]
+
+
+def test_enrich_adds_archetype():
+    """Enrichment should add archetype to cards."""
+    cards = [{
+        "name": "Muldrotha, the Gravetide",
+        "cmc": 6,
+        "type_line": "Legendary Creature — Elemental Avatar",
+        "oracle_text": "During each of your turns, you may play a permanent of each type from your graveyard."
+    }]
+
+    enriched = enrich_card_data(cards)
+
+    assert "archetype" in enriched[0]
+    assert enriched[0]["archetype"] in ["combo", "control", "aggro", "midrange", "stax", "tribal", "utility"]
