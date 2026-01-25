@@ -9,12 +9,20 @@ from src.data.mtgjson_downloader import MTGJSONDownloader
 from src.data.atomic_cards_parser import AtomicCardsParser
 from src.data.related_cards_parser import RelatedCardsParser
 from src.parsing.enrichment import enrich_card_data
+from src.parsing.rules_parser import RulesParser
 from src.graph.connection import Neo4jConnection
 from src.graph.loaders import (
     batch_load_cards,
     create_mechanic_relationships,
     create_role_relationships,
-    integrate_related_cards
+    integrate_related_cards,
+    create_zone_nodes,
+    create_phase_nodes,
+    create_zone_relationships,
+    create_phase_relationships,
+    create_theme_nodes,
+    batch_create_theme_relationships,
+    THEME_DEFINITIONS
 )
 from src.synergy.inference_engine import SynergyInferenceEngine
 from src.synergy.queries import DeckbuildingQueries
@@ -36,8 +44,15 @@ def main():
     downloader = MTGJSONDownloader()
     files = downloader.download_all()
 
-    # Phase 2: Parse card data
-    print("\nPHASE 2: Data Parsing")
+    # Phase 2: Parse comprehensive rules
+    print("\nPHASE 2: Parsing Comprehensive Rules")
+    print("-" * 60)
+
+    rules_parser = RulesParser("2025-11-14-rules.md")
+    rules_data = rules_parser.parse_all()
+
+    # Phase 3: Parse card data
+    print("\nPHASE 3: Data Parsing")
     print("-" * 60)
 
     print("Parsing AtomicCards...")
@@ -48,14 +63,14 @@ def main():
     related_parser = RelatedCardsParser()
     related_cards = related_parser.parse(files["related_cards"])
 
-    # Phase 3: Enrich data
-    print("\nPHASE 3: Property Extraction")
+    # Phase 4: Enrich data
+    print("\nPHASE 4: Property Extraction")
     print("-" * 60)
 
     enriched_cards = enrich_card_data(cards)
 
-    # Phase 4: Connect to Neo4j
-    print("\nPHASE 4: Database Connection")
+    # Phase 5: Connect to Neo4j
+    print("\nPHASE 5: Database Connection")
     print("-" * 60)
 
     # Get Neo4j password from environment or use default
@@ -68,14 +83,27 @@ def main():
     )
     conn.create_constraints()
 
-    # Phase 5: Load cards
-    print("\nPHASE 5: Loading Cards")
+    # Phase 6: Create Zone and Phase nodes
+    print("\nPHASE 6: Creating Zone and Phase Nodes")
+    print("-" * 60)
+
+    create_zone_nodes(conn, rules_data["zones"])
+    create_phase_nodes(conn, rules_data["phases"])
+
+    # Phase 7: Create Theme nodes
+    print("\nPHASE 7: Creating Theme Nodes")
+    print("-" * 60)
+
+    create_theme_nodes(conn, THEME_DEFINITIONS)
+
+    # Phase 8: Load cards
+    print("\nPHASE 8: Loading Cards")
     print("-" * 60)
 
     batch_load_cards(conn, enriched_cards)
 
-    # Phase 6: Create basic relationships
-    print("\nPHASE 6: Creating Relationships")
+    # Phase 9: Create basic relationships
+    print("\nPHASE 9: Creating Relationships")
     print("-" * 60)
 
     print("Creating mechanic relationships...")
@@ -90,14 +118,24 @@ def main():
         if (i + 1) % 1000 == 0:
             print(f"  Processed {i + 1}/{len(enriched_cards)}...")
 
-    # Phase 7: Integrate RelatedCards
-    print("\nPHASE 7: Integrating RelatedCards")
+    print("\nCreating zone/phase relationships...")
+    for i, card in enumerate(enriched_cards):
+        create_zone_relationships(conn, card)
+        create_phase_relationships(conn, card)
+        if (i + 1) % 1000 == 0:
+            print(f"  Processed {i + 1}/{len(enriched_cards)}...")
+
+    print("\nCreating theme relationships...")
+    batch_create_theme_relationships(conn, enriched_cards)
+
+    # Phase 10: Integrate RelatedCards
+    print("\nPHASE 10: Integrating RelatedCards")
     print("-" * 60)
 
     integrate_related_cards(conn, related_cards)
 
-    # Phase 8: Infer commander synergies
-    print("\nPHASE 8: Commander Synergy Analysis")
+    # Phase 11: Infer commander synergies
+    print("\nPHASE 11: Commander Synergy Analysis")
     print("-" * 60)
 
     popular_commanders = [
@@ -115,8 +153,8 @@ def main():
     for commander in popular_commanders:
         engine.analyze_commander(conn, commander)
 
-    # Phase 9: Example queries
-    print("\nPHASE 9: Example Queries")
+    # Phase 12: Example queries
+    print("\nPHASE 12: Example Queries")
     print("-" * 60)
 
     print("\n1. Cards that synergize with Muldrotha:")
