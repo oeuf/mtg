@@ -1,199 +1,242 @@
-# Commander Deckbuilding Knowledge Graph
+# MTG Commander Knowledge Graph v2
 
-A Neo4j-based knowledge graph for Magic: The Gathering Commander deckbuilding, using MTGJSON data to provide synergy detection, card recommendations, and combo identification.
+A Neo4j knowledge graph for Magic: The Gathering Commander format, enriched with comprehensive rules parsing, zone interactions, and phase triggers.
 
-## Features
+## Quick Start
 
-- **Synergy Detection** - Find cards that work well with a commander based on shared mechanics
-- **Deck Building Assistant** - Generate deck shells by functional role (8x8 method)
-- **Combo Detection** - Identify known infinite combos from MTGJSON Spellbook
-- **Token Generators** - Find cards that create specific tokens
-- **Card Recommendations** - Get efficient cards for specific roles in your colors
-
-## Technology Stack
-
-- **MTGJSON v5** - Card data source (AtomicCards, Keywords, RelatedCards)
-- **Neo4j Community Edition** - Graph database
-- **Python 3.9+** - Implementation language
-- **pytest** - Testing framework
-
-## Installation
-
-### 1. Install Dependencies
+### 1. Start Neo4j
 
 ```bash
-pip install -r requirements.txt
+./scripts/start_neo4j.sh
 ```
 
-### 2. Install Neo4j
+This starts a Neo4j 5.15.0 container with Graph Data Science plugin.
 
-**Option A: Neo4j Desktop** (Recommended)
-- Download from https://neo4j.com/download/
-- Create a new database
-- Set password and note the connection details
-
-**Option B: Docker**
+**Verify it's running:**
 ```bash
-docker run \
-    --name neo4j \
-    -p 7474:7474 -p 7687:7687 \
-    -e NEO4J_AUTH=neo4j/password \
-    neo4j:latest
+docker ps | grep neo4j
 ```
 
-### 3. Set Neo4j Password
+You should see output showing the container is up.
+
+### 2. Access Neo4j Browser
+
+Open http://localhost:7474 in your browser.
+
+**Login credentials:**
+- Username: `neo4j`
+- Password: `password` (or `mtg-commander` if using existing container)
+
+### 3. Run the Pipeline
 
 ```bash
-export NEO4J_PASSWORD="your_password_here"
-```
-
-Or update the password in `main.py`.
-
-## Usage
-
-### Run Complete Pipeline
-
-```bash
+source venv/bin/activate
 python main.py
 ```
 
-This will:
-1. Download MTGJSON data (~60MB)
-2. Parse Commander-legal cards (~20,000 cards)
-3. Enrich with functional roles and mechanics
-4. Load into Neo4j
-5. Create relationships
-6. Analyze popular commanders
-7. Run example queries
+This executes 11 phases:
+1. Download MTGJSON data
+2. Parse comprehensive rules (2025-11-14)
+3. Parse card data
+4. Enrich cards with derived properties
+5. Connect to Neo4j
+6. Create constraints
+7. Create Zone and Phase nodes
+8. Load cards
+9. Create relationships (mechanics, roles, zones, phases)
+10. Integrate combos
+11. Analyze commanders
 
-### Query Examples
+### 4. Run Test Queries
 
-```python
-from src.graph.connection import Neo4jConnection
-from src.synergy.queries import DeckbuildingQueries
-
-# Connect to Neo4j
-conn = Neo4jConnection(
-    uri="bolt://localhost:7687",
-    user="neo4j",
-    password="password"
-)
-
-# Find synergistic cards for Muldrotha
-cards = DeckbuildingQueries.find_synergistic_cards(
-    conn,
-    commander_name="Muldrotha, the Gravetide",
-    max_cmc=4,
-    min_strength=0.7,
-    limit=50
-)
-
-# Find known combos with Dramatic Reversal
-combos = DeckbuildingQueries.find_known_combos(
-    conn,
-    card_name="Dramatic Reversal"
-)
-
-# Build deck shell
-shell = DeckbuildingQueries.build_deck_shell(
-    conn,
-    commander_name="Muldrotha, the Gravetide"
-)
-
-# Find Goblin token generators in Jund colors
-goblins = DeckbuildingQueries.find_token_generators(
-    conn,
-    token_type="Goblin",
-    color_identity=["B", "R", "G"],
-    max_cmc=4
-)
-```
-
-## Testing
-
-The project has three test levels:
-
-1. **Unit Tests** (fast, no dependencies)
-   ```bash
-   pytest tests/unit -v
-   ```
-
-2. **Integration Tests** (uses Neo4j)
-   ```bash
-   pytest tests/integration -v
-   ```
-
-3. **E2E Tests** (requires Neo4j with test credentials)
-   ```bash
-   export NEO4J_TEST_PASSWORD=testpass
-   pytest tests/e2e -m e2e -v
-   ```
-
-### With Coverage
+**Query cards that interact with graveyards:**
 ```bash
-pytest tests/ --cov=src --cov-report=html
-open htmlcov/index.html
+python scripts/test_queries.py --query graveyard_cards --colors B G
 ```
 
-Current test coverage: 60+ tests (67% code coverage)
-
-See `tests/README.md` for detailed documentation
-
-## Project Structure
-
+**Query cards with upkeep triggers:**
+```bash
+python scripts/test_queries.py --query upkeep_triggers --colors U
 ```
-mtg/
-├── src/
-│   ├── data/               # Data acquisition & parsing
-│   │   ├── mtgjson_downloader.py
-│   │   ├── atomic_cards_parser.py
-│   │   └── related_cards_parser.py
-│   ├── parsing/            # Text analysis
-│   │   ├── functional_roles.py
-│   │   ├── mechanics.py
-│   │   ├── properties.py
-│   │   └── enrichment.py
-│   ├── graph/              # Neo4j operations
-│   │   ├── connection.py
-│   │   └── loaders.py
-│   └── synergy/            # Synergy inference
-│       ├── inference_engine.py
-│       └── queries.py
-├── tests/
-│   └── unit/               # Unit tests
-├── data/
-│   └── raw/                # MTGJSON downloads
-├── main.py                 # Main pipeline
-└── requirements.txt
+
+**View all zone interactions:**
+```bash
+python scripts/test_queries.py --query zone_interactions
+```
+
+**View phase trigger statistics:**
+```bash
+python scripts/test_queries.py --query phase_triggers
 ```
 
 ## Graph Schema
 
 ### Nodes
-- **Card** - Non-commander cards
-- **Commander** - Legendary creatures that can be commanders
-- **Mechanic** - Keywords and abilities
-- **Functional_Role** - Deck roles (Ramp, Draw, Removal, etc.)
-- **Token** - Token creatures
+
+**Card/Commander**
+- Properties: name, mana_cost, cmc, oracle_text, color_identity, types, keywords
+- Derived: mana_efficiency, color_pip_intensity, is_fast_mana, zone_interactions, phase_triggers
+
+**Zone** (8 nodes)
+- library, hand, battlefield, graveyard, stack, exile, command, ante
+- Properties: rule_number, is_public, is_ordered, description
+
+**Phase** (12 nodes)
+- untap, upkeep, draw, main_1, combat phases, main_2, end_step, cleanup
+- Properties: rule_number, order, parent, is_step
+
+**Mechanic**
+- ETB triggers, dies triggers, keywords, cost reduction
+
+**Functional_Role**
+- ramp, card_draw, removal, recursion, protection
 
 ### Relationships
-- `[:HAS_MECHANIC]` - Card has a mechanic
-- `[:FILLS_ROLE]` - Card fills a functional role
-- `[:CREATES_TOKEN]` - Card creates a token
-- `[:COMBOS_WITH]` - Explicit combo from MTGJSON Spellbook
-- `[:COMMONLY_PAIRED_WITH]` - Community pairing from MTGJSON
-- `[:SYNERGIZES_WITH_MECHANIC]` - Commander synergizes with mechanic
 
-## Data Sources
+- `(Card)-[:HAS_MECHANIC]->(Mechanic)`
+- `(Card)-[:FILLS_ROLE]->(Functional_Role)`
+- `(Card)-[:INTERACTS_WITH_ZONE {interaction_type}]->(Zone)`
+- `(Card)-[:TRIGGERS_IN_PHASE {trigger_type}]->(Phase)`
+- `(Card)-[:COMBOS_WITH {strength}]->(Card)`
 
-- **MTGJSON AtomicCards.json** - Core card data
-- **MTGJSON Keywords.json** - Standardized keywords
-- **MTGJSON RelatedCards.json** - Combos, tokens, and pairings
+## Example Queries
 
-Data is downloaded automatically on first run.
+**In Neo4j Browser (http://localhost:7474):**
+
+Find cards that interact with graveyard:
+```cypher
+MATCH (c:Card)-[r:INTERACTS_WITH_ZONE]->(z:Zone {name: "graveyard"})
+RETURN c.name, r.interaction_type, c.oracle_text
+LIMIT 10
+```
+
+Find upkeep triggers:
+```cypher
+MATCH (c:Card)-[r:TRIGGERS_IN_PHASE]->(p:Phase {name: "upkeep"})
+RETURN c.name, r.trigger_type, c.oracle_text
+LIMIT 10
+```
+
+Zone interaction statistics:
+```cypher
+MATCH (z:Zone)<-[r:INTERACTS_WITH_ZONE]-(c:Card)
+RETURN z.name, count(c) as card_count, r.interaction_type
+ORDER BY card_count DESC
+```
+
+## Testing
+
+Run all tests:
+```bash
+source venv/bin/activate
+python -m pytest tests/ -v
+```
+
+Run with coverage:
+```bash
+python -m pytest tests/ --cov=src --cov-report=term-missing
+```
+
+**Verified test results:**
+- 103 tests passing, 9 skipped
+- 79% overall coverage
+- 100% coverage on zone_detector, phase_detector
+- 98% coverage on rules_parser
+
+## Docker Management
+
+**Start Neo4j:**
+```bash
+./scripts/start_neo4j.sh
+```
+
+**Stop Neo4j:**
+```bash
+./scripts/stop_neo4j.sh
+```
+
+**View logs:**
+```bash
+docker logs mtg-neo4j
+```
+
+**Access container shell:**
+```bash
+docker exec -it mtg-neo4j bash
+```
+
+## Port Configuration
+
+- Neo4j Browser: http://localhost:7474
+- Bolt Protocol: bolt://localhost:7687
+
+Change ports in `docker-compose.yml` if needed.
+
+## Rules Parser
+
+The comprehensive rules parser extracts:
+
+1. **Keyword Abilities (Rule 702):** ~150 abilities (flying, haste, etc.)
+2. **Keyword Actions (Rule 701):** ~70 actions (destroy, exile, etc.)
+3. **Zones (Rules 400-408):** All 8 game zones with metadata
+4. **Phases (Rules 500-514):** All 12 phases/steps with ordering
+5. **Commander Rules (Rule 903):** Deck size, life total, commander tax
+
+Parser output enriches card data with:
+- `zone_interactions`: Zones this card references
+- `phase_triggers`: Phases where abilities trigger
+
+## Project Structure
+
+```
+.
+├── docker-compose.yml          # Neo4j container config
+├── main.py                     # 11-phase pipeline
+├── scripts/
+│   ├── start_neo4j.sh         # Start container
+│   ├── stop_neo4j.sh          # Stop container
+│   └── test_queries.py        # Pre-built test queries
+├── src/
+│   ├── data/                  # MTGJSON parsers
+│   ├── graph/                 # Neo4j loaders
+│   │   ├── connection.py      # Database connection
+│   │   └── loaders.py         # Node/relationship creation
+│   ├── parsing/               # Card enrichment
+│   │   ├── rules_parser.py    # Comprehensive rules parser
+│   │   ├── zone_detector.py   # Zone interaction detection
+│   │   ├── phase_detector.py  # Phase trigger detection
+│   │   └── enrichment.py      # Card data enrichment
+│   └── synergy/               # Synergy analysis
+└── tests/                     # 103 tests (79% coverage)
+```
+
+## Troubleshooting
+
+**Container won't start:**
+- Check Docker is running: `docker ps`
+- Check ports 7474/7687 aren't in use: `lsof -i :7474`
+
+**Authentication errors:**
+- Default password is `password`
+- Existing containers may use `mtg-commander`
+- Reset: `docker-compose down -v` then restart
+
+**No data in graph:**
+- Run the pipeline: `python main.py`
+- Check Neo4j logs: `docker logs mtg-neo4j`
+
+**Query timeouts:**
+- Increase timeout in connection.py
+- Check indexes created: Run `SHOW INDEXES` in Neo4j Browser
+
+## Requirements
+
+- Python 3.11+
+- Docker Desktop
+- 4GB RAM minimum
+- Internet connection (for MTGJSON download)
 
 ## License
 
-This project uses data from MTGJSON (https://mtgjson.com/), which is licensed under CC0.
-
-Magic: The Gathering is © Wizards of the Coast.
+Data: MTGJSON (https://mtgjson.com)
+Rules: Wizards of the Coast
