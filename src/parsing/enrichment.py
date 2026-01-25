@@ -3,6 +3,8 @@
 from .functional_roles import FunctionalRoleParser
 from .mechanics import MechanicExtractor
 from .properties import PropertyCalculator
+from .zone_detector import ZoneDetector
+from .phase_detector import PhaseDetector
 
 
 def enrich_card_data(cards: list[dict]) -> list[dict]:
@@ -11,15 +13,18 @@ def enrich_card_data(cards: list[dict]) -> list[dict]:
     role_parser = FunctionalRoleParser()
     mechanic_extractor = MechanicExtractor()
     property_calc = PropertyCalculator()
+    zone_detector = ZoneDetector()
+    phase_detector = PhaseDetector()
 
     enriched = []
 
     print("Enriching card data...")
     for i, card in enumerate(cards):
+        oracle_text = card.get("oracle_text", "")
+        type_line = card.get("type_line", "")
+
         # Functional roles
-        card["functional_categories"] = role_parser.identify_roles(
-            card.get("oracle_text", "")
-        )
+        card["functional_categories"] = role_parser.identify_roles(oracle_text)
 
         # Mechanics
         card["mechanics"] = mechanic_extractor.extract_mechanics(card)
@@ -31,6 +36,23 @@ def enrich_card_data(cards: list[dict]) -> list[dict]:
         )
         card["is_fast_mana"] = property_calc.is_fast_mana(card)
         card["is_free_spell"] = property_calc.is_free_spell(card)
+
+        # Subtypes (NEW)
+        card["subtypes"] = property_calc.extract_subtypes(type_line)
+
+        # Zone interactions
+        zones = zone_detector.detect_zones(oracle_text)
+        card["zone_interactions"] = [
+            {"zone": zone, "interaction_type": data["interaction_type"]}
+            for zone, data in zones.items()
+        ]
+
+        # Phase triggers
+        phases = phase_detector.detect_phases(oracle_text)
+        card["phase_triggers"] = [
+            {"phase": phase, "trigger_type": data["trigger_type"]}
+            for phase, data in phases.items()
+        ]
 
         enriched.append(card)
 

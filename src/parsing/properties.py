@@ -70,3 +70,36 @@ class PropertyCalculator:
                 return True
 
         return False
+
+    @staticmethod
+    def extract_subtypes(type_line: str) -> list[str]:
+        """
+        Extract subtypes from type_line.
+
+        Examples:
+            "Legendary Creature — Spirit Dragon" -> ["Spirit", "Dragon"]
+            "Land — Forest Island" -> ["Forest", "Island"]
+            "Instant" -> []
+
+        Args:
+            type_line: Card type line (e.g., "Creature — Human Wizard")
+
+        Returns:
+            List of subtype strings
+        """
+        if "—" not in type_line:
+            # No subtypes (e.g., "Instant", "Sorcery")
+            return []
+
+        # Split on em dash, take subtype part
+        parts = type_line.split("—")
+        if len(parts) < 2:
+            return []
+
+        # Subtypes are after the em dash, space-separated
+        subtype_string = parts[1].strip()
+
+        # Split on spaces and filter empty strings
+        subtypes = [s.strip() for s in subtype_string.split() if s.strip()]
+
+        return subtypes
