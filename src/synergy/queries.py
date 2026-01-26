@@ -212,3 +212,33 @@ class DeckbuildingQueries:
         """
 
         return conn.execute_query(query, {"commander_name": commander_name})
+
+    @staticmethod
+    def find_similar_cards(conn: Neo4jConnection,
+                          card_name: str,
+                          min_similarity: float = 0.5,
+                          limit: int = 20) -> list[dict]:
+        """Find cards similar to given card using GDS node similarity."""
+        query = """
+        MATCH (c1:Card {name: $card_name})-[sim:SIMILAR_TO]->(c2:Card)
+        WHERE sim.score >= $min_similarity
+
+        OPTIONAL MATCH (c1)-[:HAS_MECHANIC]->(m:Mechanic)<-[:HAS_MECHANIC]-(c2)
+
+        WITH c2, sim.score AS similarity_score, collect(DISTINCT m.name) AS shared_mechanics
+
+        RETURN c2.name AS name,
+               c2.mana_cost AS mana_cost,
+               c2.cmc AS cmc,
+               c2.type_line AS type_line,
+               similarity_score,
+               shared_mechanics
+        ORDER BY similarity_score DESC
+        LIMIT $limit
+        """
+
+        return conn.execute_query(query, {
+            "card_name": card_name,
+            "min_similarity": min_similarity,
+            "limit": limit
+        })
