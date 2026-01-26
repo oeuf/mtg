@@ -34,18 +34,21 @@ source venv/bin/activate
 python main.py
 ```
 
-This executes 11 phases:
+This executes 14 phases:
 1. Download MTGJSON data
 2. Parse comprehensive rules (2025-11-14)
 3. Parse card data
 4. Enrich cards with derived properties
 5. Connect to Neo4j
 6. Create constraints
-7. Create Zone and Phase nodes
+7. Create Theme nodes
 8. Load cards
-9. Create relationships (mechanics, roles, zones, phases)
+9. Create relationships (mechanics, roles, zones, phases, themes, subtypes, card synergies)
 10. Integrate combos
 11. Analyze commanders
+12. Calculate popularity scores
+13. Compute GDS similarity
+14. Example queries
 
 ### 4. Run Test Queries
 
@@ -69,6 +72,48 @@ python scripts/test_queries.py --query zone_interactions
 python scripts/test_queries.py --query phase_triggers
 ```
 
+## V2 Features
+
+### 1. Popularity Scoring
+- **EDHREC Rank Integration**: Cards scored 0.0-1.0 based on EDHREC popularity
+- **Logarithmic Scaling**: Rank 1 = 1.0, Rank 30000 = 0.0
+- **Property**: `card.popularity_score`
+- **Indexed**: Fast filtering by popularity
+
+### 2. GDS-Based Similarity (SIMILAR_TO Relationships)
+- **Neo4j Graph Data Science**: Node similarity algorithm
+- **Based on**: Shared mechanics, roles, themes, subtypes
+- **Relationship**: `(Card)-[:SIMILAR_TO {score}]->(Card)`
+- **Query**: Find cards similar to Sol Ring, Eternal Witness, etc.
+- **Parameters**: topK=10, similarity_cutoff=0.5
+
+### 3. Card-to-Card Synergies (SYNERGIZES_WITH Relationships)
+- **Mechanic Overlap**: Cards sharing 2+ mechanics
+- **Role Complementarity**: etb_trigger + sacrifice_outlet = 0.9
+- **Relationship**: `(Card)-[:SYNERGIZES_WITH {synergy_score, shared_mechanics}]->(Card)`
+- **Query**: Build synergistic packages around key cards
+
+### 4. Enhanced Theme Detection (20 Categories)
+**Original 10 themes:**
+- reanimation, aristocrats, tokens, lands_matter, spellslinger
+- graveyard_value, lifegain, tribal, voltron, stax
+
+**New 10 themes:**
+- **draw_engines**: Repeatable card draw effects
+- **blink**: Exile and return for ETB value
+- **counters**: +1/+1 counters and proliferate
+- **storm**: Spell copying and storm count
+- **artifacts_matter**: Artifact synergies
+- **enchantments_matter**: Enchantment synergies and constellation
+- **group_hug**: Symmetrical benefits for all players
+- **wheels**: Mass discard and draw
+- **superfriends**: Planeswalker synergies
+- **x_spells**: X spell cost manipulation
+
+### 5. Subtype Relationships
+- **HAS_SUBTYPE**: Cards linked to creature types (Elf, Goblin, Zombie, etc.)
+- **Tribal Queries**: Find all Goblins, all Dragons, etc.
+
 ## Graph Schema
 
 ### Nodes
@@ -91,6 +136,14 @@ python scripts/test_queries.py --query phase_triggers
 **Functional_Role**
 - ramp, card_draw, removal, recursion, protection
 
+**Theme** (20 nodes)
+- reanimation, aristocrats, tokens, draw_engines, blink, counters, storm, etc.
+- Properties: description
+
+**Subtype** (415+ nodes)
+- Creature types: Elf, Goblin, Dragon, Zombie, etc.
+- Properties: name
+
 ### Relationships
 
 - `(Card)-[:HAS_MECHANIC]->(Mechanic)`
@@ -98,6 +151,11 @@ python scripts/test_queries.py --query phase_triggers
 - `(Card)-[:INTERACTS_WITH_ZONE {interaction_type}]->(Zone)`
 - `(Card)-[:TRIGGERS_IN_PHASE {trigger_type}]->(Phase)`
 - `(Card)-[:COMBOS_WITH {strength}]->(Card)`
+- `(Card)-[:SUPPORTS_THEME]->(Theme)` **[V2]**
+- `(Card)-[:HAS_SUBTYPE]->(Subtype)` **[V2]**
+- `(Card)-[:SIMILAR_TO {score}]->(Card)` **[V2]**
+- `(Card)-[:SYNERGIZES_WITH {synergy_score, shared_mechanics}]->(Card)` **[V2]**
+- `(Commander)-[:SYNERGIZES_WITH_MECHANIC]->(Mechanic)`
 
 ## Example Queries
 
@@ -122,6 +180,43 @@ Zone interaction statistics:
 MATCH (z:Zone)<-[r:INTERACTS_WITH_ZONE]-(c:Card)
 RETURN z.name, count(c) as card_count, r.interaction_type
 ORDER BY card_count DESC
+```
+
+**V2 Example Queries:**
+
+Find cards similar to Sol Ring:
+```cypher
+MATCH (c1:Card {name: "Sol Ring"})-[s:SIMILAR_TO]->(c2:Card)
+WHERE s.score >= 0.6
+RETURN c2.name, s.score
+ORDER BY s.score DESC
+LIMIT 10
+```
+
+Find high-synergy card pairs:
+```cypher
+MATCH (c1:Card)-[s:SYNERGIZES_WITH]-(c2:Card)
+WHERE s.synergy_score > 0.8
+RETURN c1.name, c2.name, s.synergy_score, s.shared_mechanics
+ORDER BY s.synergy_score DESC
+LIMIT 20
+```
+
+Find popular draw engines:
+```cypher
+MATCH (c:Card)-[:SUPPORTS_THEME]->(t:Theme {name: "draw_engines"})
+WHERE c.popularity_score > 0.7
+RETURN c.name, c.popularity_score, c.edhrec_rank
+ORDER BY c.popularity_score DESC
+LIMIT 10
+```
+
+Find all Goblins with blink synergies:
+```cypher
+MATCH (c:Card)-[:HAS_SUBTYPE]->(s:Subtype {name: "Goblin"})
+WHERE exists((c)-[:SUPPORTS_THEME]->(:Theme {name: "blink"}))
+RETURN c.name, c.mana_cost
+ORDER BY c.cmc ASC
 ```
 
 ## Testing
