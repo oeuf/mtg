@@ -42,6 +42,7 @@ class Neo4jConnection:
             "CREATE INDEX card_color_identity IF NOT EXISTS FOR (c:Card) ON (c.color_identity)",
             "CREATE INDEX card_is_legendary IF NOT EXISTS FOR (c:Card) ON (c.is_legendary)",
             "CREATE INDEX card_archetype IF NOT EXISTS FOR (c:Card) ON (c.archetype)",
+            "CREATE INDEX card_popularity IF NOT EXISTS FOR (c:Card) ON (c.popularity_score)",
         ]
 
         print("Creating constraints and indexes...")
