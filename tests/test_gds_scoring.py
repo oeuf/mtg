@@ -29,3 +29,19 @@ def test_drop_projection():
     gds.drop_projection()
 
     assert mock_conn.execute_query.called
+
+
+def test_compute_node_similarity():
+    """Test node similarity computation."""
+    mock_conn = Mock(spec=Neo4jConnection)
+    mock_conn.execute_query.return_value = [{
+        "nodesCompared": 1000,
+        "relationshipsWritten": 5000
+    }]
+
+    gds = GDSScoring(mock_conn)
+    result = gds.compute_similarity(topK=10, similarity_cutoff=0.5)
+
+    assert result["relationshipsWritten"] > 0
+    call_args = mock_conn.execute_query.call_args[0][0]
+    assert "gds.nodeSimilarity.write" in call_args

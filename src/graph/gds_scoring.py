@@ -51,3 +51,29 @@ class GDSScoring:
             print(f"  Nodes: {result[0]['nodeCount']}")
             print(f"  Relationships: {result[0]['relationshipCount']}")
         return result[0] if result else {}
+
+    def compute_similarity(self, topK: int = 10, similarity_cutoff: float = 0.5) -> dict:
+        """Compute node similarity and write SIMILAR_TO relationships."""
+        print(f"Computing node similarity (topK={topK}, cutoff={similarity_cutoff})...")
+
+        query = """
+        CALL gds.nodeSimilarity.write('synergy-graph', {
+            writeRelationshipType: 'SIMILAR_TO',
+            writeProperty: 'score',
+            topK: $topK,
+            similarityCutoff: $cutoff
+        })
+        YIELD nodesCompared, relationshipsWritten
+        RETURN nodesCompared, relationshipsWritten
+        """
+
+        result = self.conn.execute_query(query, {
+            "topK": topK,
+            "cutoff": similarity_cutoff
+        })
+
+        if result:
+            print(f"✓ Computed similarity for {result[0]['nodesCompared']} nodes")
+            print(f"✓ Created {result[0]['relationshipsWritten']} SIMILAR_TO relationships")
+
+        return result[0] if result else {}
