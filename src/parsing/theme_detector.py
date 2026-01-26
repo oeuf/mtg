@@ -1,6 +1,7 @@
 """Detect high-level strategy themes from card properties."""
 
 import re
+from typing import List
 
 
 class ThemeDetector:
@@ -118,10 +119,70 @@ class ThemeDetector:
                 r"players? can't"
             ],
             "zones": []
+        },
+        "draw_engines": {
+            "mechanics": [],
+            "roles": ["card_draw"],
+            "text_patterns": [r"whenever.*draw.*card", r"draw.*cards?.*equal"],
+            "zones": []
+        },
+        "blink": {
+            "mechanics": [],
+            "roles": [],
+            "text_patterns": [r"exile.*(?:then |,? )return.*to.*battlefield", r"flicker"],
+            "zones": []
+        },
+        "counters": {
+            "mechanics": [],
+            "roles": [],
+            "text_patterns": [r"\+1/\+1 counter", r"proliferate"],
+            "zones": []
+        },
+        "storm": {
+            "mechanics": [],
+            "roles": [],
+            "text_patterns": [r"copy.*instant.*sorcery", r"storm", r"cast.*spell.*turn"],
+            "zones": []
+        },
+        "artifacts_matter": {
+            "mechanics": [],
+            "roles": [],
+            "text_patterns": [r"whenever.*artifact.*enters", r"artifacts?.*you control"],
+            "zones": []
+        },
+        "enchantments_matter": {
+            "mechanics": [],
+            "roles": [],
+            "text_patterns": [r"constellation", r"whenever.*enchantment.*enters", r"enchantments?.*you control"],
+            "zones": []
+        },
+        "group_hug": {
+            "mechanics": [],
+            "roles": [],
+            "text_patterns": [r"each player.*draw", r"each opponent.*draw", r"each player.*may"],
+            "zones": []
+        },
+        "wheels": {
+            "mechanics": [],
+            "roles": [],
+            "text_patterns": [r"each player.*discard.*hand.*draw", r"discard.*hand.*draw.*cards"],
+            "zones": []
+        },
+        "superfriends": {
+            "mechanics": [],
+            "roles": [],
+            "text_patterns": [r"planeswalker", r"loyalty", r"activate.*loyalty.*ability"],
+            "zones": []
+        },
+        "x_spells": {
+            "mechanics": [],
+            "roles": [],
+            "text_patterns": [r"\bx\b.*where x", r"where x is", r"draw x cards"],
+            "zones": []
         }
     }
 
-    def detect_themes(self, card: dict) -> list[str]:
+    def detect_themes(self, card: dict) -> List[str]:
         """
         Detect all themes present on a card.
 
