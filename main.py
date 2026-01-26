@@ -28,6 +28,7 @@ from src.graph.loaders import (
 from src.synergy.inference_engine import SynergyInferenceEngine
 from src.synergy.queries import DeckbuildingQueries
 from src.graph.popularity import PopularityScorer
+from src.graph.gds_scoring import GDSScoring
 
 
 def main():
@@ -165,8 +166,16 @@ def main():
     popularity_scorer = PopularityScorer()
     popularity_scorer.update_all_cards(conn)
 
-    # Phase 13: Example queries
-    print("\nPHASE 13: Example Queries")
+    # Phase 13: GDS Similarity Analysis
+    print("\nPHASE 13: Graph Data Science - Node Similarity")
+    print("-" * 60)
+
+    gds = GDSScoring(conn)
+    gds.create_projection()
+    gds.compute_similarity(topK=10, similarity_cutoff=0.5)
+
+    # Phase 14: Example queries
+    print("\nPHASE 14: Example Queries")
     print("-" * 60)
 
     print("\n1. Cards that synergize with Muldrotha:")
@@ -200,6 +209,11 @@ def main():
 
     for card in goblin_gens[:5]:
         print(f"  • {card['name']} ({card['cost']})")
+
+    print("\n4. Cards similar to Sol Ring:")
+    similar = DeckbuildingQueries.find_similar_cards(conn, card_name="Sol Ring", min_similarity=0.6, limit=5)
+    for card in similar:
+        print(f"  • {card['name']} (similarity: {card['similarity_score']:.2f})")
 
     # Summary
     print("\n" + "=" * 60)
