@@ -20,3 +20,18 @@ def test_find_mechanic_synergies():
 
     assert len(result) == 1
     assert result[0]["mechanic_overlap"] >= 2
+
+
+def test_calculate_role_compatibility():
+    """Test role compatibility scoring."""
+    engine = CardSynergyEngine()
+
+    score = engine.calculate_role_compatibility(
+        roles1=["etb_trigger"], roles2=["sacrifice_outlet"]
+    )
+    assert score > 0.7
+
+    score = engine.calculate_role_compatibility(
+        roles1=["ramp"], roles2=["ramp"]
+    )
+    assert score < 0.3
