@@ -1,7 +1,9 @@
 """Unit tests for popularity scoring."""
 
 import pytest
+from unittest.mock import Mock
 from src.graph.popularity import PopularityScorer
+from src.graph.connection import Neo4jConnection
 
 
 def test_calculate_popularity_score_high_rank():
@@ -30,3 +32,17 @@ def test_calculate_popularity_score_no_rank():
     scorer = PopularityScorer()
     score = scorer.calculate_edhrec_score(edhrec_rank=None)
     assert score == 0.0
+
+
+def test_update_card_popularity_scores():
+    """Test batch update of card popularity scores."""
+    mock_conn = Mock(spec=Neo4jConnection)
+    mock_conn.execute_query.return_value = [{"updated": 100}]
+
+    scorer = PopularityScorer()
+    scorer.update_all_cards(mock_conn)
+
+    assert mock_conn.execute_query.called
+    # Check first call (cards with EDHREC rank)
+    call_args = mock_conn.execute_query.call_args_list[0][0][0]
+    assert "SET c.popularity_score" in call_args
