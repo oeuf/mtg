@@ -29,6 +29,7 @@ from src.synergy.inference_engine import SynergyInferenceEngine
 from src.synergy.queries import DeckbuildingQueries
 from src.graph.popularity import PopularityScorer
 from src.graph.gds_scoring import GDSScoring
+from src.synergy.card_synergies import CardSynergyEngine
 
 
 def main():
@@ -134,6 +135,10 @@ def main():
     print("\nCreating subtype relationships...")
     batch_create_subtype_relationships(conn, enriched_cards)
 
+    print("\nCreating card-to-card synergy relationships...")
+    card_synergy_engine = CardSynergyEngine()
+    card_synergy_engine.create_synergy_relationships(conn, min_shared_mechanics=2, min_synergy_score=0.6)
+
     # Phase 10: Integrate RelatedCards
     print("\nPHASE 10: Integrating RelatedCards")
     print("-" * 60)
@@ -214,6 +219,16 @@ def main():
     similar = DeckbuildingQueries.find_similar_cards(conn, card_name="Sol Ring", min_similarity=0.6, limit=5)
     for card in similar:
         print(f"  • {card['name']} (similarity: {card['similarity_score']:.2f})")
+
+    print("\n5. Cards that synergize with Eternal Witness:")
+    witness_synergies = conn.execute_query("""
+        MATCH (c1:Card {name: 'Eternal Witness'})-[s:SYNERGIZES_WITH]-(c2:Card)
+        RETURN c2.name AS name, s.synergy_score AS score, s.shared_mechanics AS mechanics
+        ORDER BY s.synergy_score DESC
+        LIMIT 5
+    """)
+    for card in witness_synergies:
+        print(f"  • {card['name']} (score: {card['score']:.2f}, mechanics: {card['mechanics']})")
 
     # Summary
     print("\n" + "=" * 60)
