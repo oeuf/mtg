@@ -34,7 +34,17 @@ THEME_DEFINITIONS = {
     },
     "stax": {
         "description": "Resource denial and tax effects"
-    }
+    },
+    "draw_engines": {"description": "Repeatable card draw effects"},
+    "blink": {"description": "Exile and return permanents for ETB value"},
+    "counters": {"description": "+1/+1 counters and proliferate"},
+    "storm": {"description": "Copy spells and spell count synergies"},
+    "artifacts_matter": {"description": "Artifact synergies and interactions"},
+    "enchantments_matter": {"description": "Enchantment synergies and constellation"},
+    "group_hug": {"description": "Symmetrical draw and resource distribution"},
+    "wheels": {"description": "Mass discard and draw effects"},
+    "superfriends": {"description": "Planeswalker synergies and proliferate"},
+    "x_spells": {"description": "X spell cost manipulation"}
 }
 
 
