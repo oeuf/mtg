@@ -53,3 +53,39 @@ class CardSynergyEngine:
             max_score *= 0.3
 
         return max_score
+
+    def create_synergy_relationships(self, conn: Neo4jConnection,
+                                    min_shared_mechanics: int = 2,
+                                    min_synergy_score: float = 0.6) -> dict:
+        """Create SYNERGIZES_WITH relationships between synergistic cards."""
+        print(f"Creating card synergy relationships (min_mechanics={min_shared_mechanics}, min_score={min_synergy_score})...")
+
+        query = """
+        MATCH (c1:Card)-[:HAS_MECHANIC]->(m:Mechanic)<-[:HAS_MECHANIC]-(c2:Card)
+        WHERE id(c1) < id(c2) AND NOT c1:Commander AND NOT c2:Commander
+
+        WITH c1, c2, collect(DISTINCT m.name) AS shared_mechanics
+        WHERE size(shared_mechanics) >= $min_shared
+
+        WITH c1, c2, shared_mechanics,
+             (toFloat(size(shared_mechanics)) / 5.0) AS mechanic_score
+
+        WHERE mechanic_score >= ($min_score * 0.5)
+
+        MERGE (c1)-[s:SYNERGIZES_WITH]->(c2)
+        SET s.synergy_score = mechanic_score,
+            s.shared_mechanics = shared_mechanics,
+            s.source = "mechanic_inference"
+
+        RETURN count(s) AS created
+        """
+
+        result = conn.execute_query(query, {
+            "min_shared": min_shared_mechanics,
+            "min_score": min_synergy_score
+        })
+
+        created = result[0]["created"] if result else 0
+        print(f"✓ Created {created} SYNERGIZES_WITH relationships")
+
+        return {"created": created}

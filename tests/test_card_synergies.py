@@ -35,3 +35,14 @@ def test_calculate_role_compatibility():
         roles1=["ramp"], roles2=["ramp"]
     )
     assert score < 0.3
+
+
+def test_create_synergy_relationships():
+    """Test creating SYNERGIZES_WITH relationships."""
+    mock_conn = Mock()
+    mock_conn.execute_query.return_value = [{"created": 1000}]
+
+    engine = CardSynergyEngine()
+    result = engine.create_synergy_relationships(mock_conn, min_shared_mechanics=2, min_synergy_score=0.6)
+
+    assert result["created"] > 0
