@@ -1,6 +1,7 @@
 """Calculate popularity scores for cards."""
 
 import math
+from typing import Optional
 from src.graph.connection import Neo4jConnection
 
 
@@ -10,7 +11,7 @@ class PopularityScorer:
     MAX_RANK = 30000.0
 
     @staticmethod
-    def calculate_edhrec_score(edhrec_rank: int | None) -> float:
+    def calculate_edhrec_score(edhrec_rank: Optional[int]) -> float:
         """
         Convert EDHREC rank to popularity score (0.0-1.0).
         Lower rank = more popular = higher score.

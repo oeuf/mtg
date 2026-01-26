@@ -1,5 +1,6 @@
 """Neo4j Graph Data Science scoring operations."""
 
+from typing import Dict
 from src.graph.connection import Neo4jConnection
 
 
@@ -24,7 +25,7 @@ class GDSScoring:
         except Exception:
             pass
 
-    def create_projection(self) -> dict:
+    def create_projection(self) -> Dict:
         """Create in-memory graph projection for GDS algorithms."""
         self.drop_projection()
 
@@ -52,7 +53,7 @@ class GDSScoring:
             print(f"  Relationships: {result[0]['relationshipCount']}")
         return result[0] if result else {}
 
-    def compute_similarity(self, topK: int = 10, similarity_cutoff: float = 0.5) -> dict:
+    def compute_similarity(self, topK: int = 10, similarity_cutoff: float = 0.5) -> Dict:
         """Compute node similarity and write SIMILAR_TO relationships."""
         print(f"Computing node similarity (topK={topK}, cutoff={similarity_cutoff})...")
 

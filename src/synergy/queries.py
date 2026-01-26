@@ -1,5 +1,6 @@
 """Pre-built queries for deckbuilding recommendations."""
 
+from typing import List, Dict
 from src.graph.connection import Neo4jConnection
 
 
@@ -217,7 +218,7 @@ class DeckbuildingQueries:
     def find_similar_cards(conn: Neo4jConnection,
                           card_name: str,
                           min_similarity: float = 0.5,
-                          limit: int = 20) -> list[dict]:
+                          limit: int = 20) -> List[Dict]:
         """Find cards similar to given card using GDS node similarity."""
         query = """
         MATCH (c1:Card {name: $card_name})-[sim:SIMILAR_TO]->(c2:Card)

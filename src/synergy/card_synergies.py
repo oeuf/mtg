@@ -1,5 +1,6 @@
 """Infer card-to-card synergies from mechanics and roles."""
 
+from typing import List, Dict
 from src.graph.connection import Neo4jConnection
 
 
@@ -16,7 +17,7 @@ class CardSynergyEngine:
         ("removal", "protection"): 0.5,
     }
 
-    def find_mechanic_synergies(self, conn: Neo4jConnection, min_shared_mechanics: int = 2) -> list[dict]:
+    def find_mechanic_synergies(self, conn: Neo4jConnection, min_shared_mechanics: int = 2) -> List[Dict]:
         """Find pairs of cards with shared mechanics."""
         query = """
         MATCH (c1:Card)-[:HAS_MECHANIC]->(m:Mechanic)<-[:HAS_MECHANIC]-(c2:Card)
@@ -32,7 +33,7 @@ class CardSynergyEngine:
 
         return conn.execute_query(query, {"min_shared": min_shared_mechanics})
 
-    def calculate_role_compatibility(self, roles1: list[str], roles2: list[str]) -> float:
+    def calculate_role_compatibility(self, roles1: List[str], roles2: List[str]) -> float:
         """Calculate compatibility score between two sets of roles."""
         if not roles1 or not roles2:
             return 0.0
@@ -56,7 +57,7 @@ class CardSynergyEngine:
 
     def create_synergy_relationships(self, conn: Neo4jConnection,
                                     min_shared_mechanics: int = 2,
-                                    min_synergy_score: float = 0.6) -> dict:
+                                    min_synergy_score: float = 0.6) -> Dict:
         """Create SYNERGIZES_WITH relationships between synergistic cards."""
         print(f"Creating card synergy relationships (min_mechanics={min_shared_mechanics}, min_score={min_synergy_score})...")
 
