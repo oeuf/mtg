@@ -27,6 +27,7 @@ from src.graph.loaders import (
 )
 from src.synergy.inference_engine import SynergyInferenceEngine
 from src.synergy.queries import DeckbuildingQueries
+from src.graph.popularity import PopularityScorer
 
 
 def main():
@@ -157,8 +158,15 @@ def main():
     for commander in popular_commanders:
         engine.analyze_commander(conn, commander)
 
-    # Phase 12: Example queries
-    print("\nPHASE 12: Example Queries")
+    # Phase 12: Calculate Popularity Scores
+    print("\nPHASE 12: Calculating Popularity Scores")
+    print("-" * 60)
+
+    popularity_scorer = PopularityScorer()
+    popularity_scorer.update_all_cards(conn)
+
+    # Phase 13: Example queries
+    print("\nPHASE 13: Example Queries")
     print("-" * 60)
 
     print("\n1. Cards that synergize with Muldrotha:")
