@@ -91,33 +91,27 @@ class GDSScoring:
             {
                 HAS_MECHANIC: {
                     type: 'HAS_MECHANIC',
-                    orientation: 'UNDIRECTED',
-                    properties: {weight: {defaultValue: 3.0}}
+                    orientation: 'UNDIRECTED'
                 },
                 FILLS_ROLE: {
                     type: 'FILLS_ROLE',
-                    orientation: 'UNDIRECTED',
-                    properties: {weight: {defaultValue: 2.5}}
+                    orientation: 'UNDIRECTED'
                 },
                 SUPPORTS_THEME: {
                     type: 'SUPPORTS_THEME',
-                    orientation: 'UNDIRECTED',
-                    properties: {weight: {defaultValue: 2.0}}
+                    orientation: 'UNDIRECTED'
                 },
                 HAS_SUBTYPE: {
                     type: 'HAS_SUBTYPE',
-                    orientation: 'UNDIRECTED',
-                    properties: {weight: {defaultValue: 1.0}}
+                    orientation: 'UNDIRECTED'
                 },
                 INTERACTS_WITH_ZONE: {
                     type: 'INTERACTS_WITH_ZONE',
-                    orientation: 'UNDIRECTED',
-                    properties: {weight: {defaultValue: 1.0}}
+                    orientation: 'UNDIRECTED'
                 },
                 TRIGGERS_IN_PHASE: {
                     type: 'TRIGGERS_IN_PHASE',
-                    orientation: 'UNDIRECTED',
-                    properties: {weight: {defaultValue: 1.5}}
+                    orientation: 'UNDIRECTED'
                 }
             }
         )
@@ -149,12 +143,10 @@ class GDSScoring:
                     }
                 },
                 COMBOS_WITH: {
-                    orientation: 'UNDIRECTED',
-                    properties: {weight: {defaultValue: 4.0}}
+                    orientation: 'UNDIRECTED'
                 },
                 COMMONLY_PAIRED_WITH: {
-                    orientation: 'UNDIRECTED',
-                    properties: {weight: {defaultValue: 2.0}}
+                    orientation: 'UNDIRECTED'
                 }
             }
         )
@@ -222,8 +214,7 @@ class GDSScoring:
         CALL gds.leiden.write(
             $projection,
             {
-                writeProperty: 'community',
-                relationshipWeightProperty: 'score'
+                writeProperty: 'community'
             }
         )
         YIELD communityCount, modularity, computeMillis
@@ -270,7 +261,6 @@ class GDSScoring:
             {
                 embeddingDimension: $dim,
                 writeProperty: 'embedding',
-                relationshipWeightProperty: 'weight',
                 iterationWeights: [0.0, 1.0, 1.0]
             }
         )
@@ -289,14 +279,32 @@ class GDSScoring:
 
         return result[0] if result else {}
 
-    def compute_knn_similarity(self, projection_name: str = "card-feature-graph",
-                              topK: int = 20) -> Dict:
-        """Compute kNN similarity using embeddings."""
-        print(f"Computing kNN similarity (k={topK}) on '{projection_name}'...")
+    def compute_knn_similarity(self, topK: int = 20) -> Dict:
+        """Compute kNN similarity using embeddings on Card nodes."""
+        print(f"Computing kNN similarity (k={topK}) using embeddings...")
 
-        query = """
+        # First create a temporary projection with just Card nodes and embeddings
+        self.drop_projection("card-embedding-graph")
+
+        query_project = """
+        CALL gds.graph.project(
+            'card-embedding-graph',
+            {
+                Card: {properties: 'embedding'}
+            },
+            '*'
+        )
+        YIELD graphName, nodeCount
+        RETURN graphName, nodeCount
+        """
+
+        proj_result = self.conn.execute_query(query_project)
+        if proj_result:
+            print(f"  Created temp projection: {proj_result[0]['nodeCount']} nodes")
+
+        query_knn = """
         CALL gds.knn.write(
-            $projection,
+            'card-embedding-graph',
             {
                 nodeProperties: ['embedding'],
                 topK: $topK,
@@ -308,14 +316,14 @@ class GDSScoring:
         RETURN nodesCompared, relationshipsWritten, computeMillis
         """
 
-        result = self.conn.execute_query(query, {
-            "projection": projection_name,
-            "topK": topK
-        })
+        result = self.conn.execute_query(query_knn, {"topK": topK})
 
         if result:
             print(f"✓ Compared {result[0]['nodesCompared']} nodes")
             print(f"✓ Created {result[0]['relationshipsWritten']} EMBEDDING_SIMILAR relationships")
             print(f"  Time: {result[0]['computeMillis']}ms")
+
+        # Drop temp projection
+        self.drop_projection("card-embedding-graph")
 
         return result[0] if result else {}
