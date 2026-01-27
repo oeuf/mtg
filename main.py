@@ -139,6 +139,17 @@ def main():
     card_synergy_engine = CardSynergyEngine()
     card_synergy_engine.create_synergy_relationships(conn, min_shared_mechanics=2, min_synergy_score=0.6)
 
+    # Phase 9.5: Enhanced Multi-Dimensional Synergy Scoring
+    print("\nPHASE 9.5: Enhanced Synergy Scoring (ML-powered)")
+    print("-" * 60)
+
+    synergy_engine = CardSynergyEngine()
+    synergy_engine.create_enhanced_synergy_relationships(
+        conn,
+        min_synergy_score=0.5,
+        batch_size=1000
+    )
+
     # Phase 10: Integrate RelatedCards
     print("\nPHASE 10: Integrating RelatedCards")
     print("-" * 60)
@@ -178,6 +189,40 @@ def main():
     gds = GDSScoring(conn)
     gds.create_projection()
     gds.compute_similarity(topK=10, similarity_cutoff=0.5)
+
+    # Phase 13.5: GDS Advanced Topological Features
+    print("\nPHASE 13.5: GDS Topological Link Prediction & Communities")
+    print("-" * 60)
+
+    # Create specialized projections
+    print("\nCreating Card-Feature projection...")
+    gds.create_card_feature_projection()
+
+    print("\nCreating Card-Synergy projection...")
+    gds.create_card_synergy_projection()
+
+    # Compute embeddings and similarity
+    print("\nComputing FastRP embeddings...")
+    gds.compute_fastrp_embeddings("card-feature-graph", embedding_dim=128)
+
+    print("\nComputing kNN similarity...")
+    gds.compute_knn_similarity("card-feature-graph", topK=20)
+
+    # Link prediction (only if synergy relationships exist)
+    print("\nRunning link prediction algorithms...")
+    try:
+        gds.compute_adamic_adar("card-synergy-graph")
+        gds.compute_common_neighbors("card-synergy-graph")
+    except Exception as e:
+        print(f"  Skipping link prediction (need synergy relationships): {e}")
+
+    # Community detection
+    print("\nDetecting communities...")
+    try:
+        gds.compute_leiden_communities("card-synergy-graph")
+        gds.boost_intra_community_synergy(boost_factor=1.2)
+    except Exception as e:
+        print(f"  Skipping community detection: {e}")
 
     # Phase 14: Example queries
     print("\nPHASE 14: Example Queries")
@@ -229,6 +274,49 @@ def main():
     """)
     for card in witness_synergies:
         print(f"  • {card['name']} (score: {card['score']:.2f}, mechanics: {card['mechanics']})")
+
+    print("\n6. Enhanced multi-dimensional synergy for Necropotence:")
+    necro_syn = conn.execute_query("""
+        MATCH (c1:Card {name: 'Necropotence'})-[s:SYNERGIZES_WITH]-(c2:Card)
+        WHERE s.source = 'ml_enhanced'
+        RETURN c2.name AS name,
+               s.synergy_score AS score
+        ORDER BY s.synergy_score DESC
+        LIMIT 5
+    """)
+    if necro_syn:
+        for card in necro_syn:
+            print(f"  • {card['name']} (ML score: {card['score']:.3f})")
+    else:
+        print("  (No enhanced synergies found - run Phase 9.5)")
+
+    print("\n7. Embedding-based similar cards to Sol Ring:")
+    embedding_sim = conn.execute_query("""
+        MATCH (c1:Card {name: 'Sol Ring'})-[s:EMBEDDING_SIMILAR]->(c2:Card)
+        RETURN c2.name AS name, s.score AS score
+        ORDER BY s.score DESC
+        LIMIT 5
+    """)
+    if embedding_sim:
+        for card in embedding_sim:
+            print(f"  • {card['name']} (embedding similarity: {card['score']:.3f})")
+    else:
+        print("  (No embedding similarities found - run Phase 13.5)")
+
+    print("\n8. Community archetypes (top 3):")
+    communities = conn.execute_query("""
+        MATCH (c:Card)
+        WHERE c.community IS NOT NULL
+        RETURN c.community AS community, count(*) AS size, collect(c.name)[0..3] AS samples
+        ORDER BY size DESC
+        LIMIT 3
+    """)
+    if communities:
+        for comm in communities:
+            print(f"  • Community {comm['community']}: {comm['size']} cards")
+            print(f"    Samples: {', '.join(comm['samples'])}")
+    else:
+        print("  (No communities detected - run Phase 13.5)")
 
     # Summary
     print("\n" + "=" * 60)
