@@ -13,6 +13,7 @@ class MechanicExtractor:
         "attack_trigger": r"[Ww]henever .* attacks?",
         "cast_trigger": r"[Ww]henever (?:you cast|a player casts)",
         "draw_trigger": r"[Ww]henever (?:you draw|a player draws)",
+        "discard_trigger": r"[Ww]henever (?:you |a player )?discards?",
         "sacrifice_trigger": r"[Ww]henever you sacrifice",
         "self_mill": r"(?:[Mm]ill|put .* cards? from .* library into .* graveyard)",
     }
@@ -21,12 +22,15 @@ class MechanicExtractor:
     FUNCTIONAL_PATTERNS = {
         "recursion": r"[Rr]eturn .* from .* graveyard",
         "sacrifice_outlet": r"[Ss]acrifice (?:a|an|one|another) (?:creature|permanent|artifact|enchantment).*:",
+        "exile_mechanic": r"[Ee]xile",
+        "life_payment": r"[Pp]ay \d+ life",
     }
 
     STATIC_ABILITY_PATTERNS = {
         "cost_reduction": r"(?:spells?|cards?) (?:you cast )?(?:cost|costs) .* less",
         "anthem": r"(?:creatures?|permanents?) you control (?:get|have) \+\d+/\+\d+",
         "tax_effect": r"(?:spells?|abilities) .* (?:cost|costs) \{?\d+\}? more",
+        "skip_draw": r"[Ss]kip your draw step",
     }
 
     @classmethod
