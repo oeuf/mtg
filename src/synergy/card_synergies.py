@@ -1,5 +1,6 @@
 """Infer card-to-card synergies from mechanics and roles."""
 
+import json
 from typing import List, Dict, Tuple
 from src.graph.connection import Neo4jConnection
 from src.synergy.feature_scorers import FeatureScorers
@@ -242,7 +243,7 @@ class CardSynergyEngine:
                         "name1": pair["name1"],
                         "name2": pair["name2"],
                         "score": score,
-                        "details": details
+                        "details": json.dumps(details)  # Convert to JSON string in Python
                     })
 
             # Batch write to Neo4j
@@ -253,7 +254,7 @@ class CardSynergyEngine:
                 MATCH (c2:Card {name: syn.name2})
                 MERGE (c1)-[s:SYNERGIZES_WITH]-(c2)
                 SET s.synergy_score = syn.score,
-                    s.dimension_scores = apoc.convert.toJson(syn.details),
+                    s.dimension_scores = syn.details,
                     s.source = "ml_enhanced"
                 """
                 conn.execute_query(query_write, {"synergies": synergies})
