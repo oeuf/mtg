@@ -238,7 +238,7 @@ def main():
     )
 
     for i, card in enumerate(muldrotha_cards, 1):
-        print(f"  {i}. {card['name']} ({card['mana_cost']}) - {card['shared_mechanic']}")
+        print(f"  {i}. {card['name']} ({card['mana_cost']}) - {card['shared_mechanics']}")
 
     print("\n2. Known combos with Dramatic Reversal:")
     combos = DeckbuildingQueries.find_known_combos(
