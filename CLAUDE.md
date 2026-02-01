@@ -136,9 +136,8 @@ RETURN c.name, s.score ORDER BY s.score DESC LIMIT 10
 
 ### Run Tests
 ```bash
-pytest tests/ -v
+pytest tests/unit/ -v  # Integration tests hit memory limits on full DB
 pytest tests/test_feature_scorers.py -v  # Synergy scoring tests
-pytest tests/test_card_synergies_integration.py -v  # Integration tests
 ```
 
 ## Development Patterns
@@ -148,6 +147,8 @@ pytest tests/test_card_synergies_integration.py -v  # Integration tests
 2. Test with `MechanicExtractor.extract_mechanics()`
 3. Rerun pipeline to populate
 4. Verify in Neo4j
+
+**Recent patterns:** `discard_trigger`, `exile_mechanic`, `life_payment`, `skip_draw` (case-insensitive with optional modifiers)
 
 ### GDS Algorithm Workflow
 1. Create projection with `gds.create_*_projection()`
@@ -217,7 +218,8 @@ ORDER BY s.synergy_score DESC LIMIT 5
 ### Neo4j Connection Issues
 - Verify container running: `docker ps | grep neo4j`
 - Check password: `echo $NEO4J_PASSWORD`
-- Reset auth: `docker restart neo4j-mtg`
+- **AuthenticationRateLimit:** `docker restart neo4j-mtg && sleep 15 && export NEO4J_PASSWORD="mtg-commander"`
+- **Python Output Buffering:** Always use `python -u main.py` for unbuffered output in background tasks
 
 ### Memory Issues
 - Neo4j memory limit: 1.3 GiB default
@@ -228,6 +230,9 @@ ORDER BY s.synergy_score DESC LIMIT 5
 - Integration tests need Neo4j running
 - Auth rate limits: Wait or restart container
 - Check `pytest.ini` for configuration
+
+### Known Limitations
+- **No APOC Plugin:** Neo4j container lacks APOC - use `json.dumps(data)` in Python instead of `apoc.convert.toJson()`
 
 ## Documentation
 
