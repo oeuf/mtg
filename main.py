@@ -206,7 +206,7 @@ def main():
     gds.compute_fastrp_embeddings("card-feature-graph", embedding_dim=128)
 
     print("\nComputing kNN similarity...")
-    gds.compute_knn_similarity("card-feature-graph", topK=20)
+    gds.compute_knn_similarity(topK=100)
 
     # Link prediction (only if synergy relationships exist)
     print("\nRunning link prediction algorithms...")
