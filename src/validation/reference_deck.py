@@ -1,21 +1,23 @@
 """Load reference decklists for validation."""
 
-from pathlib import Path
-
 
 def load_reference_deck(filepath: str, exclude_commander: bool = False) -> list[str]:
     """Load card names from reference deck file.
 
     Args:
         filepath: Path to deck file (one card name per line)
-        exclude_commander: If True, excludes cards with "Commander" in database
+        exclude_commander: Reserved for future use (currently ignored)
 
     Returns:
         List of card names from the deck
+
+    Raises:
+        FileNotFoundError: If filepath doesn't exist
+        PermissionError: If file is not readable
     """
     cards = []
 
-    with open(filepath, 'r') as f:
+    with open(filepath, 'r', encoding='utf-8') as f:
         for line in f:
             line = line.strip()
 
