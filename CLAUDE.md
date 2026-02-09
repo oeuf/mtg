@@ -1,4 +1,14 @@
-# MTG Commander Knowledge Graph - Project Memory
+# MTG Commander Knowledge Graph
+
+## Quick Start
+
+```bash
+docker-compose up -d && sleep 10         # Start Neo4j
+python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt
+export NEO4J_PASSWORD="password"         # Matches docker-compose.yml
+python -u main.py                        # Run pipeline
+open http://localhost:7474               # Neo4j Browser
+```
 
 ## Project Overview
 
@@ -41,81 +51,51 @@ Graph Schema:
 - `run_enhanced_synergy.py` - Standalone script for Phases 9.5 & 13.5
 
 ### Configuration
-- `docker-compose.yml` - Neo4j container setup
+- `docker-compose.yml` - Neo4j 5.15.0-enterprise (hardcoded auth: neo4j/password)
 - `requirements.txt` - Python dependencies
-- `.env` - Neo4j credentials (NEO4J_PASSWORD)
+- Password: Set `NEO4J_PASSWORD=password` for Python scripts (matches docker-compose)
 
-## Current State (2026-02-01)
+## Status
 
-### ✅ Completed Features
+**Loaded:**
+- 27,619 cards, 658 mechanics, 39,144 HAS_MECHANIC relationships
+- 28,722 FastRP embeddings (128-dim), 2.76M kNN similarities (topK=100)
+- 21,107 Leiden communities (modularity: 0.630)
+- 861,686 community-boosted synergies
 
-**Phase 1: Foundation**
-- ✅ Node types: Card, Commander, Mechanic, Functional_Role, Theme, Subtype, Zone, Phase
-- ✅ Relationship types: 10+ types including HAS_MECHANIC, FILLS_ROLE, INTERACTS_WITH_ZONE
-- ✅ Card properties: 20+ properties including mechanics, themes, functional_categories
-- ✅ Data loading: 27,619 cards, 658 mechanics, 39,144 mechanic relationships
+**Synergy Scoring:**
+7 dimensions (mechanic overlap, role compatibility, theme alignment, zone chains, phase triggers, color compatibility, type synergy) with ensemble weighting. 30 passing tests.
 
-**Phase 2: GDS & ML**
-- ✅ FastRP embeddings: 128-dimensional graph embeddings for 28,722 nodes
-- ✅ kNN similarity: 2.76M EMBEDDING_SIMILAR relationships (topK=100)
-- ✅ Leiden communities: 21,107 communities detected (modularity: 0.630)
-- ✅ Community boosting: 861,686 synergy relationships boosted for same-community cards
+**Known Issues:**
+- **Phase 9.5:** `create_enhanced_synergy_relationships()` creates 0 relationships (batch limit without pagination). Run `python run_enhanced_synergy.py` instead.
 
-**Enhanced SYNERGIZES_WITH**
-- ✅ 7-dimensional feature scoring:
-  1. Mechanic overlap (Jaccard + count bonus)
-  2. Role compatibility (enabler/payoff pairs)
-  3. Theme alignment (shared + complementary)
-  4. Zone chains (write→read interactions)
-  5. Phase alignment (shared triggers)
-  6. Color compatibility (5 levels)
-  7. Type synergy (tribal + card types)
-- ✅ Ensemble scoring with configurable weights
-- ✅ 30 passing tests (100% test coverage for synergy scoring)
-
-### 🚧 Known Issues
-
-1. **Mechanics Extraction** - FIXED (2026-02-01)
-   - Added patterns: discard_trigger, exile_mechanic, life_payment, skip_draw
-   - Necropotence/Necrodominance now properly tagged
-
-2. **Phase 9.5 Batch Limit**
-   - `create_enhanced_synergy_relationships()` creates 0 relationships
-   - Issue: Batch size 1000 + LIMIT without pagination
-   - Workaround: Use `run_enhanced_synergy.py` separately
-
-### ❌ Not Implemented
-
-**Phase 3: Validation**
-- Muldrotha reference deck comparison
-- Ranking accuracy metrics
-
-**Phase 4: FastAPI Backend**
-- `/api/commanders` endpoint
-- `/api/cards` endpoint
-- `/api/decks` endpoint
-- `/api/graph` endpoint
-
-**Phase 5: Next.js Frontend**
-- Deck Builder, Analyzer, Explorer, Lookup UIs
+**Roadmap:**
+- Phase 3: Validation (Muldrotha deck comparison, ranking metrics)
+- Phase 4: FastAPI (`/api/commanders`, `/api/cards`, `/api/decks`, `/api/graph`)
+- Phase 5: Next.js UI (Deck Builder, Analyzer, Explorer, Lookup)
 
 ## How to Run
 
 ### Initial Setup
 ```bash
-# Start Neo4j with GDS
-docker-compose up -d
+# Verify Python 3.9+
+python3 --version
 
-# Install Python dependencies
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+# Start Neo4j
+docker-compose up -d && sleep 10
 
-# Set Neo4j password
-export NEO4J_PASSWORD="mtg-commander"
+# Verify Neo4j running
+docker ps | grep mtg-neo4j
+curl -f http://localhost:7474 && echo "✓ Neo4j accessible"
 
-# Run main pipeline (all phases)
-python main.py
+# Install dependencies
+python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt
+
+# Set password (matches docker-compose.yml)
+export NEO4J_PASSWORD="password"
+
+# Run pipeline
+python -u main.py
 ```
 
 ### Run Enhanced Synergy Only
@@ -161,87 +141,53 @@ pytest tests/test_feature_scorers.py -v  # Synergy scoring tests
 - **Returns:** (score: float, details: dict) with dimension breakdown
 - **Dimensions:** mechanic_overlap, role_compatibility, theme_alignment, zone_chain, phase_alignment, color_compatibility, type_synergy
 
-## Common Queries
+## Cypher Queries
 
-### Find Similar Cards
 ```cypher
+-- Find similar cards
 MATCH (c1:Card {name: 'Necropotence'})-[emb:EMBEDDING_SIMILAR]-(c2:Card)
-RETURN c2.name, emb.score
-ORDER BY emb.score DESC LIMIT 20
-```
+RETURN c2.name, emb.score ORDER BY emb.score DESC LIMIT 20
 
-### Check Card Communities
-```cypher
-MATCH (c:Card)
-WHERE c.community IS NOT NULL
+-- Check communities
+MATCH (c:Card) WHERE c.community IS NOT NULL
 RETURN c.community, count(*) AS size, collect(c.name)[0..5] AS samples
 ORDER BY size DESC LIMIT 10
-```
 
-### Find Cards with Specific Mechanics
-```cypher
+-- Cards with mechanic
 MATCH (c:Card)-[:HAS_MECHANIC]->(m:Mechanic {name: 'etb_trigger'})
 RETURN c.name, c.mana_cost LIMIT 10
-```
 
-### Check Synergy Score Breakdown
-```cypher
+-- Synergy breakdown
 MATCH (c1:Card {name: 'Eternal Witness'})-[s:SYNERGIZES_WITH]-(c2:Card)
 WHERE s.source = 'ml_enhanced'
 RETURN c2.name, s.synergy_score, s.dimension_scores
 ORDER BY s.synergy_score DESC LIMIT 5
 ```
 
-## Recent Changes
-
-### 2026-02-01
-- ✅ Reran kNN with topK=100 (was 20)
-- ✅ Fixed mechanics extraction for Necropotence-like cards
-- ✅ Added patterns: discard_trigger, exile_mechanic, life_payment, skip_draw
-- ✅ Necrodominance similarity: 0.9451 (previously not in top-20)
-
-### 2026-01-26
-- ✅ Implemented 7-dimensional synergy scoring
-- ✅ Integrated FastRP embeddings and kNN
-- ✅ Added Leiden community detection
-- ✅ Created 2.76M embedding similarity relationships
-
-## Next Steps
-
-1. **Rerun Pipeline** - Populate mechanics for all cards with new patterns
-2. **Phase 3: Validation** - Compare recommendations against reference decks
-3. **Phase 4: FastAPI** - Build REST API endpoints
-4. **Phase 5: Frontend** - Build Next.js UI
 
 ## Troubleshooting
 
-### Neo4j Connection Issues
-- Verify container running: `docker ps | grep neo4j`
-- Check password: `echo $NEO4J_PASSWORD`
-- **AuthenticationRateLimit:** `docker restart neo4j-mtg && sleep 15 && export NEO4J_PASSWORD="mtg-commander"`
-- **Python Output Buffering:** Always use `python -u main.py` for unbuffered output in background tasks
+**Neo4j Connection Failures:**
+```bash
+# Verify container runs
+docker ps | grep mtg-neo4j
 
-### Memory Issues
-- Neo4j memory limit: 1.3 GiB default
-- Increase in `docker-compose.yml` if needed
-- GDS algorithms run in-memory (require sufficient RAM)
+# Fix AuthenticationRateLimit
+docker restart mtg-neo4j && sleep 15 && export NEO4J_PASSWORD="password"
+```
 
-### Test Failures
-- Integration tests need Neo4j running
-- Auth rate limits: Wait or restart container
-- Check `pytest.ini` for configuration
+**Python Buffering:** Use `python -u main.py` for unbuffered output in background tasks.
 
-### Known Limitations
-- **No APOC Plugin:** Neo4j container lacks APOC - use `json.dumps(data)` in Python instead of `apoc.convert.toJson()`
+**Memory:** Neo4j defaults to 1.3 GiB. GDS algorithms run in-memory; increase `docker-compose.yml` limits if OOM errors occur.
+
+**Tests:** Integration tests need Neo4j. Auth rate limits: restart container.
+
+**APOC Missing:** Container lacks APOC. Use `json.dumps(data)` instead of `apoc.convert.toJson()`.
 
 ## Documentation
 
-- `ENHANCED_SYNERGY_IMPLEMENTATION.md` - Complete synergy scoring implementation details
-- `VERIFICATION_EVIDENCE.md` - Test/verification evidence from Knowledge Graph V2
-- `docs/plans/` - Phase-by-phase implementation plans
-
-## Contact & Links
-
+- `ENHANCED_SYNERGY_IMPLEMENTATION.md` - Synergy scoring details
+- `VERIFICATION_EVIDENCE.md` - Test evidence
+- `docs/plans/` - Implementation plans
 - **MTGJSON:** https://mtgjson.com
-- **Neo4j GDS Docs:** https://neo4j.com/docs/graph-data-science/current/
-- **Project Plans:** `docs/plans/2026-01-19-*.md`
+- **Neo4j GDS:** https://neo4j.com/docs/graph-data-science/current/
