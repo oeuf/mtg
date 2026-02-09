@@ -11,9 +11,28 @@ from app.models.commander import Commander
 
 
 @pytest.fixture
-def client():
-    """Synchronous test client for testing."""
-    return TestClient(app)
+def mock_neo4j_session():
+    """Mock Neo4j session for integration tests."""
+    session = MagicMock()
+    # Default: return empty results for any query
+    result = MagicMock()
+    result.data.return_value = []
+    result.single.return_value = None
+    session.run.return_value = result
+    return session
+
+
+@pytest.fixture
+def client(mock_neo4j_session):
+    """Synchronous test client with mocked Neo4j dependency."""
+    from app.dependencies import get_neo4j_session
+
+    def override_get_session():
+        yield mock_neo4j_session
+
+    app.dependency_overrides[get_neo4j_session] = override_get_session
+    yield TestClient(app)
+    app.dependency_overrides.clear()
 
 
 @pytest.fixture

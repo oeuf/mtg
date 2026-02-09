@@ -47,13 +47,12 @@ class TestDeckEndpoints:
             "cards": cards_data,
         }
         response = client.post("/api/decks/analyze", json=payload)
-        # Should return:
-        # {
-        #     "total_cards": 41,
-        #     "avg_cmc": float,
-        #     "color_distribution": Dict,
-        #     "type_distribution": Dict,
-        #     "role_distribution": Dict,
-        #     "mana_curve": Dict
-        # }
-        assert response.status_code == 404
+        assert response.status_code == 200
+        data = response.json()
+        assert "total_cards" in data
+        assert data["total_cards"] == 41
+        assert "avg_cmc" in data
+        assert data["avg_cmc"] == 0.0
+        assert "color_distribution" in data
+        assert "type_distribution" in data
+        assert "mana_curve" in data
