@@ -1,6 +1,7 @@
 """Graph metadata API router."""
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 from neo4j import Session
 
 from app.dependencies import get_neo4j_session
@@ -102,4 +103,7 @@ def get_graph_health(session: Session = Depends(get_neo4j_session)):
         session.run("RETURN 1")
         return {"status": "healthy", "message": "Connected to Neo4j"}
     except Exception as e:
-        return {"status": "unhealthy", "message": str(e)}
+        return JSONResponse(
+            status_code=503,
+            content={"status": "unhealthy", "message": str(e)},
+        )

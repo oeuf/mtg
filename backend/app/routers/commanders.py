@@ -15,6 +15,10 @@ def get_commanders(
     session: Session = Depends(get_neo4j_session),
 ):
     """List all commanders with stats."""
+    count_result = session.run("MATCH (c:Commander) RETURN count(c) AS total")
+    count_record = count_result.single()
+    total = count_record["total"] if count_record else 0
+
     result = session.run(
         "MATCH (c:Commander) "
         "RETURN c.name AS name, c.color_identity AS color_identity, "
@@ -25,7 +29,7 @@ def get_commanders(
         limit=limit,
     )
     commanders = result.data()
-    return {"total": len(commanders), "commanders": commanders}
+    return {"total": total, "commanders": commanders}
 
 
 @router.get("/commanders/{name}")
