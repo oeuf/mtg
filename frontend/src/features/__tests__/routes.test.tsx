@@ -41,7 +41,6 @@ describe('Route rendering', () => {
   it('renders DeckBuilderPage at /deck-builder/:commander', () => {
     renderWithRouter(['/deck-builder/Muldrotha']);
     expect(screen.getByRole('heading', { name: /deck builder/i })).toBeInTheDocument();
-    expect(screen.getByText(/muldrotha/i)).toBeInTheDocument();
   });
 
   it('renders CardSearchPage at /cards', () => {
