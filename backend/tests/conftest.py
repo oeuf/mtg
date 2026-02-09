@@ -1,5 +1,7 @@
 """Shared test fixtures and configuration."""
 
+from unittest.mock import MagicMock
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -66,3 +68,51 @@ def muldrotha_commander_name() -> str:
 def color_identity_blue_black() -> list[str]:
     """Blue-black color identity for tests."""
     return ["U", "B"]
+
+
+@pytest.fixture
+def mock_connection():
+    """Mock Neo4j connection for service tests."""
+    conn = MagicMock()
+    session = MagicMock()
+    conn.session.return_value.__enter__ = MagicMock(return_value=session)
+    conn.session.return_value.__exit__ = MagicMock(return_value=False)
+
+    sample_records = [
+        {
+            "card_name": "Eternal Witness",
+            "score": 0.85,
+            "mechanic_overlap_count": 3,
+            "has_color_match": True,
+            "edhrec_rank": 50,
+        },
+        {
+            "card_name": "Satyr Wayfinder",
+            "score": 0.72,
+            "mechanic_overlap_count": 2,
+            "has_color_match": True,
+            "edhrec_rank": 120,
+        },
+        {
+            "card_name": "Mulldrifter",
+            "score": 0.65,
+            "mechanic_overlap_count": 1,
+            "has_color_match": True,
+            "edhrec_rank": 80,
+        },
+    ]
+
+    # Make records behave like neo4j Record objects (dict-like)
+    mock_records = []
+    for rec in sample_records:
+        mock_rec = MagicMock()
+        mock_rec.__getitem__ = lambda self, key, r=rec: r[key]
+        mock_rec.get = lambda key, default=None, r=rec: r.get(key, default)
+        mock_rec.data.return_value = rec
+        mock_records.append(mock_rec)
+
+    result = MagicMock()
+    result.__iter__ = MagicMock(return_value=iter(mock_records))
+    session.run.return_value = result
+
+    return conn
