@@ -125,7 +125,7 @@ def mock_connection():
     mock_records = []
     for rec in sample_records:
         mock_rec = MagicMock()
-        mock_rec.__getitem__ = lambda self, key, r=rec: r[key]
+        mock_rec.__getitem__ = lambda _, key, r=rec: r[key]
         mock_rec.get = lambda key, default=None, r=rec: r.get(key, default)
         mock_rec.data.return_value = rec
         mock_records.append(mock_rec)

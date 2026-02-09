@@ -20,28 +20,18 @@ class TestCommandersEndpoints:
         response = client.get(f"/api/commanders/{muldrotha_commander_name}")
         assert response.status_code == 404
 
-    def test_get_commander_synergies(self, client, muldrotha_commander_name):
-        """GET /api/commanders/{name}/synergies returns synergy list."""
+    def test_get_commander_synergies_not_found(self, client, muldrotha_commander_name):
+        """GET /api/commanders/{name}/synergies returns 404 when commander not found."""
         response = client.get(
             f"/api/commanders/{muldrotha_commander_name}/synergies"
         )
-        assert response.status_code == 200
-        data = response.json()
-        assert "commander" in data
-        assert "synergies" in data
-        assert isinstance(data["synergies"], list)
-        assert data["commander"] == muldrotha_commander_name
+        assert response.status_code == 404
 
-    def test_get_commander_recommendations(
+    def test_get_commander_recommendations_not_found(
         self, client, muldrotha_commander_name
     ):
-        """GET /api/commanders/{name}/recommendations returns recommendations."""
+        """GET /api/commanders/{name}/recommendations returns 404 when commander not found."""
         response = client.get(
             f"/api/commanders/{muldrotha_commander_name}/recommendations"
         )
-        assert response.status_code == 200
-        data = response.json()
-        assert "commander" in data
-        assert "recommendations" in data
-        assert isinstance(data["recommendations"], list)
-        assert data["commander"] == muldrotha_commander_name
+        assert response.status_code == 404

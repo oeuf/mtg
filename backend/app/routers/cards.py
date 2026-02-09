@@ -63,6 +63,12 @@ def search_cards(
     params["skip"] = skip
     params["limit"] = limit
 
+    count_query = f"MATCH (c:Card) {where_clause} RETURN count(c) AS total"
+    count_params = {k: v for k, v in params.items() if k not in ("skip", "limit")}
+    count_result = session.run(count_query, count_params)
+    count_record = count_result.single()
+    total = count_record["total"] if count_record else 0
+
     query = f"""
         MATCH (c:Card)
         {where_clause}
@@ -75,7 +81,7 @@ def search_cards(
     records = result.data()
 
     return {
-        "total": len(records),
+        "total": total,
         "page": page,
         "limit": limit,
         "results": records,
@@ -105,6 +111,10 @@ def get_similar_cards(
     session: Session = Depends(get_neo4j_session),
 ):
     """Get cards similar to the given card via embedding similarity."""
+    exists = session.run("MATCH (c:Card {name: $name}) RETURN c", {"name": name})
+    if exists.single() is None:
+        raise HTTPException(status_code=404, detail=f"Card '{name}' not found")
+
     result = session.run(
         """
         MATCH (c:Card {name: $name})-[s:EMBEDDING_SIMILAR]-(other:Card)
@@ -129,6 +139,10 @@ def get_card_synergies(
     session: Session = Depends(get_neo4j_session),
 ):
     """Get cards with synergy to the given card."""
+    exists = session.run("MATCH (c:Card {name: $name}) RETURN c", {"name": name})
+    if exists.single() is None:
+        raise HTTPException(status_code=404, detail=f"Card '{name}' not found")
+
     result = session.run(
         """
         MATCH (c:Card {name: $name})-[s:SYNERGIZES_WITH]-(other:Card)

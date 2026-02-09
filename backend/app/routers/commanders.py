@@ -60,6 +60,12 @@ def get_commander_synergies(
     session: Session = Depends(get_neo4j_session),
 ):
     """Get synergistic cards for a commander."""
+    exists = session.run(
+        "MATCH (c:Commander {name: $name}) RETURN c", name=name
+    )
+    if exists.single() is None:
+        raise HTTPException(status_code=404, detail=f"Commander '{name}' not found")
+
     result = session.run(
         "MATCH (cmd:Commander {name: $name})-[s:SYNERGIZES_WITH]-(card:Card) "
         "WHERE NOT card:Commander "
@@ -80,6 +86,12 @@ def get_commander_recommendations(
     session: Session = Depends(get_neo4j_session),
 ):
     """Get card recommendations for a commander deck."""
+    exists = session.run(
+        "MATCH (c:Commander {name: $name}) RETURN c", name=name
+    )
+    if exists.single() is None:
+        raise HTTPException(status_code=404, detail=f"Commander '{name}' not found")
+
     result = session.run(
         "MATCH (cmd:Commander {name: $name})-[s:EMBEDDING_SIMILAR]->(card:Card) "
         "WHERE NOT card:Commander "

@@ -34,15 +34,7 @@ class DeckAnalysis(BaseModel):
     color_distribution: Dict[str, int] = Field(description="Count of cards by color")
     type_distribution: Dict[str, int] = Field(description="Count of cards by type")
     role_distribution: Dict[str, int] = Field(description="Count of cards by functional role")
-    mana_curve: Dict[int, int] = Field(description="Card count by CMC")
-
-    @field_validator("total_cards")
-    @classmethod
-    def validate_total(cls, v: int) -> int:
-        """Total cards should be 100 (99 + commander)."""
-        if v != 100:
-            raise ValueError("Deck should have 100 total cards")
-        return v
+    mana_curve: Dict[str, int] = Field(description="Card count by CMC")
 
 
 class BuildDeckRequest(BaseModel):

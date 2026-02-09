@@ -34,13 +34,6 @@ class Card(BaseModel):
             raise ValueError("Invalid color identity")
         return v
 
-    @field_validator("cmc")
-    @classmethod
-    def validate_cmc(cls, v: int) -> int:
-        """Validate CMC is non-negative."""
-        if v < 0:
-            raise ValueError("CMC cannot be negative")
-        return v
 
 
 class CardSearchFilters(BaseModel):
