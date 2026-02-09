@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  /* MTG mana colors */
+  --color-mana-white: #F0F2C0;
+  --color-mana-blue: #0E68AB;
+  --color-mana-black: #150B00;
+  --color-mana-red: #D3202A;
+  --color-mana-green: #00733E;
+
+  /* Brand colors */
+  --color-brand-50: #f0f4ff;
+  --color-brand-100: #dbe4ff;
+  --color-brand-500: #4c6ef5;
+  --color-brand-600: #3b5bdb;
+  --color-brand-700: #364fc7;
+  --color-brand-900: #1b2559;
+
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
