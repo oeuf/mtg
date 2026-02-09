@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+**/**/.pyc
 build/
 develop-eggs/
 dist/
@@ -66,10 +67,17 @@ venv.bak/
 Thumbs.db
 
 # Project specific
-data/raw/*.json
-data/processed/
+data/
 *.db
 *.sqlite
+*.pdf
+backend_venv/
+
+# Scratch/temp files
+cards_that_untap_artifacts.json
+cards_without_edhrec_rank.md
+query_untap_artifacts.cypher
+2025-11-14-rules.*
 
 # Neo4j
 .neo4j/
