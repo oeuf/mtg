@@ -6,6 +6,7 @@ import HomePage from '../home/HomePage';
 import CommanderSelectPage from '../commanders/CommanderSelectPage';
 import DeckBuilderPage from '../deck-builder/DeckBuilderPage';
 import CardSearchPage from '../card-search/CardSearchPage';
+import CardDetailPage from '../cards/CardDetailPage';
 import CollectionPage from '../collection/CollectionPage';
 
 function renderWithRouter(initialEntries: string[]) {
@@ -20,6 +21,7 @@ function renderWithRouter(initialEntries: string[]) {
           <Route path="/commanders" element={<CommanderSelectPage />} />
           <Route path="/deck-builder/:commander" element={<DeckBuilderPage />} />
           <Route path="/cards" element={<CardSearchPage />} />
+          <Route path="/cards/:name" element={<CardDetailPage />} />
           <Route path="/collection" element={<CollectionPage />} />
         </Routes>
       </MemoryRouter>

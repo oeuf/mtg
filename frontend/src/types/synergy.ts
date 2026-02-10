@@ -24,6 +24,13 @@ export interface SimilarCardResponse {
   reason: string | null;
 }
 
+/** Combo involving a card. */
+export interface ComboResponse {
+  name: string;
+  combo_name: string | null;
+  description: string | null;
+}
+
 /** Recommendation response for deck building. */
 export interface RecommendationResponse {
   card_name: string;

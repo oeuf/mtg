@@ -4,6 +4,7 @@ export type {
   SynergyDimensions,
   SynergyResponse,
   SimilarCardResponse,
+  ComboResponse,
   RecommendationResponse,
 } from "./synergy";
 export type {

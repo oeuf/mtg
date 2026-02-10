@@ -80,3 +80,8 @@ class TestCardsSearchEndpoints:
         """GET /api/cards/{name}/synergies returns 404 when card not found."""
         response = client.get(f"/api/cards/{sample_card.name}/synergies")
         assert response.status_code == 404
+
+    def test_get_card_combos_not_found(self, client, sample_card):
+        """GET /api/cards/{name}/combos returns 404 when card not found."""
+        response = client.get(f"/api/cards/{sample_card.name}/combos")
+        assert response.status_code == 404

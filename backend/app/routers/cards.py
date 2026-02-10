@@ -158,3 +158,32 @@ def get_card_synergies(
         "card": name,
         "synergies": records,
     }
+
+
+@router.get("/cards/{name}/combos")
+def get_card_combos(
+    name: str,
+    limit: int = Query(10, ge=1, le=50, description="Number of combos"),
+    session: Session = Depends(get_neo4j_session),
+):
+    """Get known combos involving the given card."""
+    exists = session.run("MATCH (c:Card {name: $name}) RETURN c", {"name": name})
+    if exists.single() is None:
+        raise HTTPException(status_code=404, detail=f"Card '{name}' not found")
+
+    result = session.run(
+        """
+        MATCH (c:Card {name: $name})-[cb:COMBOS_WITH]-(other:Card)
+        RETURN other.name AS name, cb.combo_name AS combo_name,
+               cb.description AS description
+        ORDER BY cb.combo_name
+        LIMIT $limit
+        """,
+        {"name": name, "limit": limit},
+    )
+    records = result.data()
+
+    return {
+        "card": name,
+        "combos": records,
+    }

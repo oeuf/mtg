@@ -5,6 +5,7 @@ import type {
   Commander,
   SynergyResponse,
   SimilarCardResponse,
+  ComboResponse,
   RecommendationResponse,
   DeckShell,
   DeckAnalysis,
@@ -62,6 +63,12 @@ export const cardsAPI = {
   getSynergies(name: string) {
     return api.get<SynergyResponse[]>(
       `/api/cards/${encodeURIComponent(name)}/synergies`,
+    );
+  },
+
+  getCombos(name: string) {
+    return api.get<{ card: string; combos: ComboResponse[] }>(
+      `/api/cards/${encodeURIComponent(name)}/combos`,
     );
   },
 
