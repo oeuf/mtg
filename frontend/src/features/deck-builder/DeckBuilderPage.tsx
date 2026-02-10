@@ -33,6 +33,8 @@ export default function DeckBuilderPage() {
     }
   }, [commanderData, setCommander]);
 
+  const deckCardNames = useMemo(() => deck.map((c) => c.name), [deck]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-900 text-white p-8">
@@ -50,8 +52,6 @@ export default function DeckBuilderPage() {
       </div>
     );
   }
-
-  const deckCardNames = useMemo(() => deck.map((c) => c.name), [deck]);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">

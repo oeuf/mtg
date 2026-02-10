@@ -103,9 +103,9 @@ describe('useDeckBuilder', () => {
 
   describe('clearDeck', () => {
     it('empties deck', () => {
+      useDeckBuilder.getState().setCommander(makeCommander());
       useDeckBuilder.getState().addCard(makeCard({ name: 'Sol Ring' }));
       useDeckBuilder.getState().addCard(makeCard({ name: 'Arcane Signet' }));
-      useDeckBuilder.getState().setCommander(makeCommander());
       expect(useDeckBuilder.getState().deck).toHaveLength(2);
 
       useDeckBuilder.getState().clearDeck();
