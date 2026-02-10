@@ -9,11 +9,12 @@ interface CardGridProps {
   page: number;
   onPageChange: (page: number) => void;
   isLoading: boolean;
+  onCardClick?: (name: string) => void;
 }
 
 const PAGE_SIZE = 20;
 
-export function CardGrid({ cards, total, page, onPageChange, isLoading }: CardGridProps) {
+export function CardGrid({ cards, total, page, onPageChange, isLoading, onCardClick }: CardGridProps) {
   const totalPages = Math.ceil(total / PAGE_SIZE);
   const start = (page - 1) * PAGE_SIZE + 1;
   const end = Math.min(page * PAGE_SIZE, total);
@@ -33,7 +34,7 @@ export function CardGrid({ cards, total, page, onPageChange, isLoading }: CardGr
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {cards.map((card) => (
-          <CardCard key={card.name} card={card} />
+          <CardCard key={card.name} card={card} onClick={onCardClick} />
         ))}
       </div>
       <div className="flex justify-between items-center mt-6">

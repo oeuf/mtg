@@ -4,6 +4,11 @@ import CardSearchPage from '../CardSearchPage';
 import { useCardSearch } from '../useCardSearch';
 import type { Card, CardSearchFilters } from '../../../types';
 
+// Mock react-router-dom
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => vi.fn(),
+}));
+
 // Mock useCardSearch
 vi.mock('../useCardSearch', () => ({
   useCardSearch: vi.fn(),

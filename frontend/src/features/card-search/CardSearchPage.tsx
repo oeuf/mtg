@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useCardSearch } from './useCardSearch';
 import { FilterPanel } from '../../components/filters';
 import { CardGrid } from '../../components/cards';
@@ -5,6 +6,7 @@ import { LoadingSpinner } from '../../components/LoadingSpinner';
 import type { CardSearchFilters } from '../../types';
 
 export default function CardSearchPage() {
+  const navigate = useNavigate();
   const {
     results,
     isLoading,
@@ -45,6 +47,7 @@ export default function CardSearchPage() {
               page={page}
               onPageChange={setPage}
               isLoading={isLoading}
+              onCardClick={(name) => navigate(`/cards/${encodeURIComponent(name)}`)}
             />
           </main>
         </div>
