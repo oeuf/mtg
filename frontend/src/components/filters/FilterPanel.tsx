@@ -1,0 +1,91 @@
+import { CheckboxGroup } from './CheckboxGroup';
+import { RangeSlider } from './RangeSlider';
+import { Button } from '../ui/Button';
+
+const CARD_TYPES = ['Creature', 'Instant', 'Sorcery', 'Artifact', 'Enchantment', 'Planeswalker', 'Land'];
+const RARITIES = ['Common', 'Uncommon', 'Rare', 'Mythic'];
+const ROLES = ['Ramp', 'Draw', 'Removal', 'Counterspell', 'Board Wipe', 'Tutor', 'Protection'];
+const COLORS = ['W', 'U', 'B', 'R', 'G'] as const;
+
+interface FilterPanelProps {
+  filters: Record<string, unknown>;
+  onUpdateFilter: (key: string, value: unknown) => void;
+  onClear: () => void;
+}
+
+export function FilterPanel({ filters, onUpdateFilter, onClear }: FilterPanelProps) {
+  const selectedColors = (filters.colors as string[] | undefined) ?? [];
+
+  const toggleColor = (color: string) => {
+    if (selectedColors.includes(color)) {
+      onUpdateFilter('colors', selectedColors.filter((c) => c !== color));
+    } else {
+      onUpdateFilter('colors', [...selectedColors, color]);
+    }
+  };
+
+  return (
+    <div className="min-w-[200px]">
+      <h3 className="text-lg font-bold text-white mb-4">Filters</h3>
+
+      <CheckboxGroup
+        label="Card Type"
+        options={CARD_TYPES}
+        selected={(filters.types as string[] | undefined) ?? []}
+        onChange={(val) => onUpdateFilter('types', val)}
+      />
+
+      <div className="mb-4">
+        <h4 className="text-sm font-semibold text-gray-300 mb-2">Color</h4>
+        <div className="flex gap-2">
+          {COLORS.map((color) => (
+            <button
+              key={color}
+              type="button"
+              onClick={() => toggleColor(color)}
+              className={`w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center ${
+                selectedColors.includes(color)
+                  ? 'ring-2 ring-brand-500 bg-gray-600 text-white'
+                  : 'bg-gray-700 text-gray-400'
+              }`}
+            >
+              {color}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <RangeSlider
+        label="CMC"
+        min={0}
+        max={16}
+        value={[
+          (filters.cmc_min as number | undefined) ?? 0,
+          (filters.cmc_max as number | undefined) ?? 16,
+        ]}
+        onChange={([min, max]) => {
+          onUpdateFilter('cmc_min', min);
+          onUpdateFilter('cmc_max', max);
+        }}
+      />
+
+      <CheckboxGroup
+        label="Rarity"
+        options={RARITIES}
+        selected={(filters.rarity as string[] | undefined) ?? []}
+        onChange={(val) => onUpdateFilter('rarity', val)}
+      />
+
+      <CheckboxGroup
+        label="Roles"
+        options={ROLES}
+        selected={(filters.roles as string[] | undefined) ?? []}
+        onChange={(val) => onUpdateFilter('roles', val)}
+      />
+
+      <Button variant="secondary" onClick={onClear} className="w-full mt-4">
+        Clear All Filters
+      </Button>
+    </div>
+  );
+}
