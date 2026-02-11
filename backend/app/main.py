@@ -1,12 +1,22 @@
 """FastAPI application entry point."""
 
+import logging
+import time
+
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from neo4j.exceptions import ServiceUnavailable, SessionExpired
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from slowapi.util import get_remote_address
 
 from app.config import settings
 from app.dependencies import lifespan
 from app.routers import cards, commanders, decks, graph
+
+logger = logging.getLogger("mtg_api")
 
 # Create FastAPI app with lifespan
 app = FastAPI(
@@ -15,6 +25,35 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:80"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True,
+)
+
+# Rate limiting
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_middleware(SlowAPIMiddleware)
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start = time.time()
+    try:
+        response = await call_next(request)
+    except Exception:
+        duration = time.time() - start
+        logger.info(f"{request.method} {request.url.path} 500 {duration:.3f}s")
+        raise
+    duration = time.time() - start
+    logger.info(f"{request.method} {request.url.path} {response.status_code} {duration:.3f}s")
+    return response
 
 
 @app.exception_handler(ServiceUnavailable)
@@ -25,6 +64,11 @@ async def neo4j_unavailable_handler(request: Request, exc: ServiceUnavailable):
 @app.exception_handler(SessionExpired)
 async def neo4j_session_expired_handler(request: Request, exc: SessionExpired):
     return JSONResponse(status_code=503, content={"detail": "Database session expired"})
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(status_code=500, content={"detail": str(exc)})
 
 
 app.include_router(cards.router, prefix="/api")

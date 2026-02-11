@@ -1,6 +1,6 @@
 import type { Card } from '../../types/card';
 import { Button } from '../ui/Button';
-import { LoadingSpinner } from '../LoadingSpinner';
+import { GridSkeleton } from '../LoadingSkeleton';
 import { CardCard } from './CardCard';
 
 interface CardGridProps {
@@ -20,7 +20,7 @@ export function CardGrid({ cards, total, page, onPageChange, isLoading, onCardCl
   const end = Math.min(page * PAGE_SIZE, total);
 
   if (isLoading) {
-    return <LoadingSpinner size="lg" />;
+    return <GridSkeleton count={8} />;
   }
 
   if (cards.length === 0) {

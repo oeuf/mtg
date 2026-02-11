@@ -133,10 +133,11 @@ describe('CardGrid', () => {
     expect(onPageChange).toHaveBeenCalledWith(2);
   });
 
-  it('shows loading spinner when isLoading is true', () => {
-    render(<CardGrid {...defaultProps} isLoading={true} cards={[]} />);
+  it('shows skeleton grid when isLoading is true', () => {
+    const { container } = render(<CardGrid {...defaultProps} isLoading={true} cards={[]} />);
 
-    expect(screen.getByRole('status')).toBeInTheDocument();
+    const skeletons = container.querySelectorAll('[data-testid="card-skeleton"]');
+    expect(skeletons.length).toBe(8);
   });
 
   it('shows empty state when no cards and not loading', () => {
