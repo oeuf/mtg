@@ -29,7 +29,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:80"],
+    allow_origins=["http://localhost:5173", "http://localhost"],
     allow_methods=["*"],
     allow_headers=["*"],
     allow_credentials=True,
@@ -68,7 +68,8 @@ async def neo4j_session_expired_handler(request: Request, exc: SessionExpired):
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    return JSONResponse(status_code=500, content={"detail": str(exc)})
+    logger.error(f"Unhandled exception: {exc}", exc_info=True)
+    return JSONResponse(status_code=500, content={"detail": "Internal server error"})
 
 
 app.include_router(cards.router, prefix="/api")
