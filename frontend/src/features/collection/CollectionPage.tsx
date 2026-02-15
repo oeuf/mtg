@@ -1,7 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useCollection } from './useCollection';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
+import { SearchAutocomplete } from '../../components/SearchAutocomplete';
+import type { AutocompleteItem } from '../../components/SearchAutocomplete';
 
 export default function CollectionPage() {
   const { cards, removeCard } = useCollection();
@@ -20,6 +22,29 @@ export default function CollectionPage() {
     );
   }, [cards, search]);
 
+  const fetchCollectionSuggestions = useCallback(
+    async (query: string): Promise<AutocompleteItem[]> => {
+      const lower = query.toLowerCase();
+      return Object.values(cards)
+        .filter(
+          (entry) =>
+            entry.card.name.toLowerCase().includes(lower) ||
+            entry.card.type_line.toLowerCase().includes(lower),
+        )
+        .slice(0, 8)
+        .map((entry) => ({
+          name: entry.card.name,
+          type_line: entry.card.type_line,
+          mana_cost: entry.card.mana_cost,
+        }));
+    },
+    [cards],
+  );
+
+  const handleSelect = useCallback((item: AutocompleteItem) => {
+    setSearch(item.name);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
       <h1 className="text-3xl font-bold mb-2">My Collection</h1>
@@ -34,12 +59,13 @@ export default function CollectionPage() {
         <p className="text-gray-500 mt-8">No cards in your collection yet. Search for cards and add them.</p>
       ) : (
         <>
-          <input
-            type="text"
+          <SearchAutocomplete
             placeholder="Search collection..."
+            fetchSuggestions={fetchCollectionSuggestions}
+            onSelect={handleSelect}
+            onChange={setSearch}
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full mb-6 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className="mb-6"
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

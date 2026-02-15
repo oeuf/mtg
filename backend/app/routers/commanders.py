@@ -1,5 +1,7 @@
 """Commander API endpoints."""
 
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from neo4j import Session
 
@@ -10,26 +12,48 @@ router = APIRouter()
 
 @router.get("/commanders")
 def get_commanders(
+    search: Optional[str] = Query(None, description="Search by name"),
+    page: int = Query(default=1, ge=1),
     limit: int = Query(default=50, ge=1, le=200),
-    offset: int = Query(default=0, ge=0),
     session: Session = Depends(get_neo4j_session),
 ):
-    """List all commanders with stats."""
-    count_result = session.run("MATCH (c:Commander) RETURN count(c) AS total")
+    """List commanders with optional search."""
+    conditions = []
+    params: dict = {}
+
+    if search:
+        conditions.append("toLower(c.name) CONTAINS toLower($search)")
+        params["search"] = search
+
+    where_clause = "WHERE " + " AND ".join(conditions) if conditions else ""
+    offset = (page - 1) * limit
+    params["offset"] = offset
+    params["limit"] = limit
+
+    count_query = f"MATCH (c:Commander) {where_clause} RETURN count(c) AS total"
+    count_params = {k: v for k, v in params.items() if k not in ("offset", "limit")}
+    count_result = session.run(count_query, count_params)
     count_record = count_result.single()
     total = count_record["total"] if count_record else 0
 
-    result = session.run(
-        "MATCH (c:Commander) "
-        "RETURN c.name AS name, c.color_identity AS color_identity, "
-        "c.edhrec_rank AS edhrec_rank "
-        "ORDER BY c.edhrec_rank ASC "
-        "SKIP $offset LIMIT $limit",
-        offset=offset,
-        limit=limit,
-    )
-    commanders = result.data()
-    return {"total": total, "commanders": commanders}
+    query = f"""
+        MATCH (c:Commander) {where_clause}
+        RETURN c.name AS name, c.mana_cost AS mana_cost, c.cmc AS cmc,
+               c.type_line AS type_line, c.oracle_text AS oracle_text,
+               c.color_identity AS color_identity, c.colors AS colors,
+               c.power AS power, c.toughness AS toughness,
+               c.edhrec_rank AS edhrec_rank, c.keywords AS keywords,
+               c.is_legendary AS is_legendary,
+               c.functional_categories AS functional_categories,
+               c.mechanics AS mechanics, c.themes AS themes,
+               c.archetype AS archetype, c.popularity_score AS popularity_score
+        ORDER BY c.edhrec_rank ASC
+        SKIP $offset LIMIT $limit
+    """
+    result = session.run(query, params)
+    items = result.data()
+
+    return {"items": items, "total": total}
 
 
 @router.get("/commanders/{name}")

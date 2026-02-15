@@ -14,6 +14,13 @@ vi.mock('../useCardSearch', () => ({
   useCardSearch: vi.fn(),
 }));
 
+// Mock cardsAPI
+vi.mock('../../../services/api', () => ({
+  cardsAPI: {
+    autocomplete: vi.fn(() => Promise.resolve({ data: [] })),
+  },
+}));
+
 // Mock FilterPanel
 vi.mock('../../../components/filters', () => ({
   FilterPanel: ({ onClear }: { onClear: () => void }) => (

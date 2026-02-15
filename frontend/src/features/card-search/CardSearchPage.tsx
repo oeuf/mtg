@@ -1,8 +1,12 @@
+import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCardSearch } from './useCardSearch';
 import { FilterPanel } from '../../components/filters';
 import { CardGrid } from '../../components/cards';
 import { LoadingSpinner } from '../../components/LoadingSpinner';
+import { SearchAutocomplete } from '../../components/SearchAutocomplete';
+import type { AutocompleteItem } from '../../components/SearchAutocomplete';
+import { cardsAPI } from '../../services/api';
 import type { CardSearchFilters } from '../../types';
 
 export default function CardSearchPage() {
@@ -17,16 +21,39 @@ export default function CardSearchPage() {
     setPage,
   } = useCardSearch();
 
+  const fetchCardSuggestions = useCallback(
+    async (query: string): Promise<AutocompleteItem[]> => {
+      const response = await cardsAPI.autocomplete(query);
+      return response.data;
+    },
+    [],
+  );
+
+  const handleSelect = useCallback(
+    (item: AutocompleteItem) => {
+      navigate(`/cards/${encodeURIComponent(item.name)}`);
+    },
+    [navigate],
+  );
+
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      updateFilter('text_search' as keyof CardSearchFilters, value);
+    },
+    [updateFilter],
+  );
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
       <h1 className="text-3xl font-bold mb-4">Card Search</h1>
 
-      <input
-        type="text"
+      <SearchAutocomplete
         placeholder="Search cards by name or text..."
+        fetchSuggestions={fetchCardSuggestions}
+        onSelect={handleSelect}
+        onChange={handleSearchChange}
         value={(filters.text_search as string) ?? ''}
-        onChange={(e) => updateFilter('text_search' as keyof CardSearchFilters, e.target.value)}
-        className="w-full mb-6 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
+        className="mb-6"
       />
 
       {isLoading && !results ? (

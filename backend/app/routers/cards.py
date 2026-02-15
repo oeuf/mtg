@@ -18,6 +18,7 @@ def search_cards(
     types: Optional[str] = Query(None, description="Card type filter"),
     mechanics: Optional[str] = Query(None, description="Mechanic filter"),
     roles: Optional[str] = Query(None, description="Functional role filter"),
+    text_search: Optional[str] = Query(None, description="Search by name or oracle text"),
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(20, ge=1, le=100, description="Results per page"),
     session: Session = Depends(get_neo4j_session),
@@ -25,6 +26,13 @@ def search_cards(
     """Search cards with optional filters."""
     conditions = []
     params: dict = {}
+
+    if text_search:
+        conditions.append(
+            "(toLower(c.name) CONTAINS toLower($text_search) "
+            "OR toLower(c.oracle_text) CONTAINS toLower($text_search))"
+        )
+        params["text_search"] = text_search
 
     if colors:
         color_list = [c.strip() for c in colors.split(",")]
@@ -72,20 +80,48 @@ def search_cards(
     query = f"""
         MATCH (c:Card)
         {where_clause}
-        RETURN c
+        RETURN c.name AS name, c.mana_cost AS mana_cost, c.cmc AS cmc,
+               c.type_line AS type_line, c.oracle_text AS oracle_text,
+               c.color_identity AS color_identity, c.colors AS colors,
+               c.keywords AS keywords, c.is_legendary AS is_legendary,
+               c.edhrec_rank AS edhrec_rank,
+               c.functional_categories AS functional_categories,
+               c.mechanics AS mechanics, c.themes AS themes,
+               c.archetype AS archetype, c.popularity_score AS popularity_score
         ORDER BY c.edhrec_rank ASC
         SKIP $skip LIMIT $limit
     """
 
     result = session.run(query, params)
-    records = result.data()
+    items = result.data()
 
     return {
+        "items": items,
         "total": total,
         "page": page,
         "limit": limit,
-        "results": records,
     }
+
+
+@router.get("/cards/autocomplete")
+def autocomplete_cards(
+    q: str = Query(..., min_length=2, description="Search query"),
+    limit: int = Query(8, ge=1, le=20),
+    commander_only: bool = Query(False),
+    session: Session = Depends(get_neo4j_session),
+):
+    """Fast autocomplete for card names."""
+    label = "Commander" if commander_only else "Card"
+    result = session.run(
+        f"MATCH (c:{label}) "
+        "WHERE toLower(c.name) CONTAINS toLower($q) "
+        "RETURN c.name AS name, c.type_line AS type_line, c.mana_cost AS mana_cost "
+        "ORDER BY CASE WHEN toLower(c.name) STARTS WITH toLower($q) THEN 0 ELSE 1 END, "
+        "c.edhrec_rank ASC "
+        "LIMIT $limit",
+        {"q": q, "limit": limit},
+    )
+    return result.data()
 
 
 @router.get("/cards/{name}")

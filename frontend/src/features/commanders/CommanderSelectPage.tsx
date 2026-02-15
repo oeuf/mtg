@@ -1,9 +1,12 @@
+import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCommanderSearch } from "./useCommanderSearch";
 import { CommanderCard } from "./CommanderCard";
-import { Input } from "../../components/ui/Input";
+import { SearchAutocomplete } from "../../components/SearchAutocomplete";
+import type { AutocompleteItem } from "../../components/SearchAutocomplete";
 import { Badge } from "../../components/ui/Badge";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { cardsAPI } from "../../services/api";
 
 const COLORS = ["W", "U", "B", "R", "G"] as const;
 
@@ -26,6 +29,21 @@ export default function CommanderSelectPage() {
     toggleColor,
   } = useCommanderSearch();
 
+  const fetchCommanderSuggestions = useCallback(
+    async (query: string): Promise<AutocompleteItem[]> => {
+      const response = await cardsAPI.autocomplete(query, true);
+      return response.data;
+    },
+    [],
+  );
+
+  const handleSelect = useCallback(
+    (item: AutocompleteItem) => {
+      navigate(`/deck-builder/${encodeURIComponent(item.name)}`);
+    },
+    [navigate],
+  );
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
       <h1 className="text-4xl font-bold mb-4">Select a Commander</h1>
@@ -33,11 +51,13 @@ export default function CommanderSelectPage() {
         Browse and search for commanders to start building your deck.
       </p>
 
-      <Input
+      <SearchAutocomplete
         label="Search commanders"
         placeholder="Search by name..."
+        fetchSuggestions={fetchCommanderSuggestions}
+        onSelect={handleSelect}
+        onChange={setSearchText}
         value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
       />
 
       <div className="flex gap-2 mt-4 mb-6">

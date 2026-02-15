@@ -14,8 +14,8 @@ class TestCardsSearchEndpoints:
         assert "total" in data
         assert "page" in data
         assert "limit" in data
-        assert "results" in data
-        assert isinstance(data["results"], list)
+        assert "items" in data
+        assert isinstance(data["items"], list)
         assert data["page"] == 1
         assert data["limit"] == 20
 
@@ -25,8 +25,8 @@ class TestCardsSearchEndpoints:
         response = client.get("/api/cards", params=params)
         assert response.status_code == 200
         data = response.json()
-        assert "results" in data
-        assert isinstance(data["results"], list)
+        assert "items" in data
+        assert isinstance(data["items"], list)
 
     def test_search_cards_with_cmc_filter(self, client):
         """GET /api/cards with CMC filter returns cards in range."""
@@ -34,8 +34,8 @@ class TestCardsSearchEndpoints:
         response = client.get("/api/cards", params=params)
         assert response.status_code == 200
         data = response.json()
-        assert "results" in data
-        assert isinstance(data["results"], list)
+        assert "items" in data
+        assert isinstance(data["items"], list)
 
     def test_search_cards_with_type_filter(self, client):
         """GET /api/cards with type filter returns matching cards."""
@@ -43,8 +43,8 @@ class TestCardsSearchEndpoints:
         response = client.get("/api/cards", params=params)
         assert response.status_code == 200
         data = response.json()
-        assert "results" in data
-        assert isinstance(data["results"], list)
+        assert "items" in data
+        assert isinstance(data["items"], list)
 
     def test_search_cards_with_mechanic_filter(self, client):
         """GET /api/cards with mechanic filter returns matching cards."""
@@ -52,8 +52,8 @@ class TestCardsSearchEndpoints:
         response = client.get("/api/cards", params=params)
         assert response.status_code == 200
         data = response.json()
-        assert "results" in data
-        assert isinstance(data["results"], list)
+        assert "items" in data
+        assert isinstance(data["items"], list)
 
     def test_search_cards_with_role_filter(self, client):
         """GET /api/cards with role filter returns matching cards."""
@@ -61,8 +61,8 @@ class TestCardsSearchEndpoints:
         response = client.get("/api/cards", params=params)
         assert response.status_code == 200
         data = response.json()
-        assert "results" in data
-        assert isinstance(data["results"], list)
+        assert "items" in data
+        assert isinstance(data["items"], list)
 
     def test_get_card_by_name(self, client, sample_card):
         """GET /api/cards/{name} returns 404 when card not found."""

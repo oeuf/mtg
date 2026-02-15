@@ -10,6 +10,7 @@ import type {
   DeckShell,
   DeckAnalysis,
 } from "../types";
+import type { AutocompleteItem } from "../components/SearchAutocomplete";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
@@ -75,6 +76,12 @@ export const cardsAPI = {
   getByRole(role: string, colorIdentity?: string[]) {
     return api.get<Card[]>(`/api/cards/by-role/${encodeURIComponent(role)}`, {
       params: colorIdentity ? { color_identity: colorIdentity } : undefined,
+    });
+  },
+
+  autocomplete(query: string, commanderOnly = false) {
+    return api.get<AutocompleteItem[]>("/api/cards/autocomplete", {
+      params: { q: query, commander_only: commanderOnly },
     });
   },
 };

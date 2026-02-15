@@ -9,6 +9,12 @@ vi.mock("react-router-dom", async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
+vi.mock("../../../services/api", () => ({
+  cardsAPI: {
+    autocomplete: vi.fn(() => Promise.resolve({ data: [] })),
+  },
+}));
+
 const mockSetSearchText = vi.fn();
 const mockToggleColor = vi.fn();
 const mockSetColorFilter = vi.fn();

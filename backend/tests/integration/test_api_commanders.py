@@ -12,8 +12,8 @@ class TestCommandersEndpoints:
         assert response.status_code == 200
         data = response.json()
         assert "total" in data
-        assert "commanders" in data
-        assert isinstance(data["commanders"], list)
+        assert "items" in data
+        assert isinstance(data["items"], list)
 
     def test_get_commander_by_name(self, client, muldrotha_commander_name):
         """GET /api/commanders/{name} returns 404 when commander not found."""
