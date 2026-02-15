@@ -131,7 +131,15 @@ def get_card_by_name(
 ):
     """Get a card by name."""
     result = session.run(
-        "MATCH (c:Card {name: $name}) RETURN c",
+        "MATCH (c:Card {name: $name}) "
+        "RETURN c.name AS name, c.mana_cost AS mana_cost, c.cmc AS cmc, "
+        "c.type_line AS type_line, c.oracle_text AS oracle_text, "
+        "c.color_identity AS color_identity, c.colors AS colors, "
+        "c.keywords AS keywords, c.is_legendary AS is_legendary, "
+        "c.edhrec_rank AS edhrec_rank, c.power AS power, c.toughness AS toughness, "
+        "c.functional_categories AS functional_categories, "
+        "c.mechanics AS mechanics, c.themes AS themes, "
+        "c.archetype AS archetype, c.popularity_score AS popularity_score",
         {"name": name},
     )
     record = result.single()
