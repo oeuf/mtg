@@ -2,11 +2,10 @@ import { CheckboxGroup } from './CheckboxGroup';
 import { RangeSlider } from './RangeSlider';
 import { Button } from '../ui/Button';
 import type { CardSearchFilters } from '../../types';
+import { MANA_COLORS, ROLES } from '../../constants/mtg';
 
 const CARD_TYPES = ['Creature', 'Instant', 'Sorcery', 'Artifact', 'Enchantment', 'Planeswalker', 'Land'];
 const RARITIES = ['Common', 'Uncommon', 'Rare', 'Mythic'];
-const ROLES = ['Ramp', 'Draw', 'Removal', 'Counterspell', 'Board Wipe', 'Tutor', 'Protection'];
-const COLORS = ['W', 'U', 'B', 'R', 'G'] as const;
 
 interface FilterPanelProps {
   filters: CardSearchFilters;
@@ -39,7 +38,7 @@ export function FilterPanel({ filters, onUpdateFilter, onClear }: FilterPanelPro
       <div className="mb-4">
         <h4 className="text-sm font-semibold text-gray-300 mb-2">Color</h4>
         <div className="flex gap-2">
-          {COLORS.map((color) => (
+          {MANA_COLORS.map((color) => (
             <button
               key={color}
               type="button"

@@ -89,7 +89,7 @@ def get_commander_synergies(
 ):
     """Get synergistic cards for a commander."""
     exists = session.run(
-        "MATCH (c:Commander {name: $name}) RETURN c", name=name
+        "MATCH (c:Commander {name: $name}) RETURN c", {"name": name}
     )
     if exists.single() is None:
         raise HTTPException(status_code=404, detail=f"Commander '{name}' not found")
@@ -100,8 +100,7 @@ def get_commander_synergies(
         "RETURN card.name AS card_name, s.synergy_score AS synergy_score "
         "ORDER BY s.synergy_score DESC "
         "LIMIT $limit",
-        name=name,
-        limit=limit,
+        {"name": name, "limit": limit},
     )
     synergies = result.data()
     return {"commander": name, "synergies": synergies}

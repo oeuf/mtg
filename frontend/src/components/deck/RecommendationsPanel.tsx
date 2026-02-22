@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { commandersAPI, cardsAPI } from "../../services/api";
 import { LoadingSpinner } from "../LoadingSpinner";
+import { RECOMMENDATION_ROLES } from "../../constants/mtg";
 
 type Tab = "synergies" | "by-role" | "similar";
 
@@ -10,8 +11,6 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "by-role", label: "By Role" },
   { key: "similar", label: "Similar" },
 ];
-
-const ROLES = ["Ramp", "Draw", "Removal", "Counterspell", "Board Wipe"];
 
 interface RecommendationsPanelProps {
   commanderName: string;
@@ -80,7 +79,7 @@ export function RecommendationsPanel({
       {activeTab === "by-role" && (
         <>
           <div className="flex flex-wrap gap-2 mb-3">
-            {ROLES.map((role) => (
+            {RECOMMENDATION_ROLES.map((role) => (
               <button
                 key={role}
                 type="button"

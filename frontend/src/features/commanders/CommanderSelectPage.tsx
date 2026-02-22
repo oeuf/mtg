@@ -7,16 +7,7 @@ import type { AutocompleteItem } from "../../components/SearchAutocomplete";
 import { Badge } from "../../components/ui/Badge";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
 import { cardsAPI } from "../../services/api";
-
-const COLORS = ["W", "U", "B", "R", "G"] as const;
-
-const colorVariantMap: Record<string, "mana-W" | "mana-U" | "mana-B" | "mana-R" | "mana-G"> = {
-  W: "mana-W",
-  U: "mana-U",
-  B: "mana-B",
-  R: "mana-R",
-  G: "mana-G",
-};
+import { MANA_COLORS, colorVariantMap } from "../../constants/mtg";
 
 export default function CommanderSelectPage() {
   const navigate = useNavigate();
@@ -61,7 +52,7 @@ export default function CommanderSelectPage() {
       />
 
       <div className="flex gap-2 mt-4 mb-6">
-        {COLORS.map((color) => {
+        {MANA_COLORS.map((color) => {
           const active = colorFilter.includes(color);
           return (
             <button

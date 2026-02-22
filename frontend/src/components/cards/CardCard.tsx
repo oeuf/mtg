@@ -1,5 +1,6 @@
 import type { Card } from '../../types/card';
 import { Badge } from '../ui/Badge';
+import { colorVariantMap } from '../../constants/mtg';
 
 type BadgeVariant = 'default' | 'mana-W' | 'mana-U' | 'mana-B' | 'mana-R' | 'mana-G';
 
@@ -9,14 +10,7 @@ interface CardCardProps {
 }
 
 function colorToVariant(color: string): BadgeVariant {
-  const map: Record<string, BadgeVariant> = {
-    W: 'mana-W',
-    U: 'mana-U',
-    B: 'mana-B',
-    R: 'mana-R',
-    G: 'mana-G',
-  };
-  return map[color] ?? 'default';
+  return (colorVariantMap[color as keyof typeof colorVariantMap] as BadgeVariant | undefined) ?? 'default';
 }
 
 function truncateText(text: string, maxLength: number): string {

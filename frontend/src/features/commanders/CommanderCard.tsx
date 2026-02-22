@@ -1,13 +1,6 @@
 import type { Commander } from "../../types";
 import { Badge } from "../../components/ui/Badge";
-
-const colorVariantMap: Record<string, "mana-W" | "mana-U" | "mana-B" | "mana-R" | "mana-G"> = {
-  W: "mana-W",
-  U: "mana-U",
-  B: "mana-B",
-  R: "mana-R",
-  G: "mana-G",
-};
+import { colorVariantMap } from "../../constants/mtg";
 
 interface CommanderCardProps {
   commander: Commander;
@@ -30,7 +23,7 @@ export function CommanderCard({ commander, onClick }: CommanderCardProps) {
       <p className="text-gray-300 text-sm mt-1">{commander.type_line}</p>
       <div className="flex gap-1 mt-2">
         {commander.color_identity.map((color) => (
-          <Badge key={color} variant={colorVariantMap[color] ?? "default"}>
+          <Badge key={color} variant={colorVariantMap[color as keyof typeof colorVariantMap] ?? "default"}>
             {color}
           </Badge>
         ))}
