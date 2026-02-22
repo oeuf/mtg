@@ -9,13 +9,6 @@ from unittest.mock import MagicMock
 from app.models.card import Card
 
 
-@pytest.fixture
-def mock_connection():
-    """Mock Neo4j connection that returns predefined query results."""
-    conn = MagicMock()
-    return conn
-
-
 class TestQueryService:
     """QueryService method tests."""
 

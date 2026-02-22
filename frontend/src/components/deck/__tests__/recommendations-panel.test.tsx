@@ -133,4 +133,70 @@ describe("RecommendationsPanel", () => {
     expect(screen.getByText("Added")).toBeInTheDocument();
     expect(screen.getAllByText("Add")).toHaveLength(1);
   });
+
+  // --- Tab switching tests ---
+
+  it("clicking By Role tab shows role filter buttons", async () => {
+    render(
+      <RecommendationsPanel commanderName="Atraxa" onAddCard={vi.fn()} deckCardNames={[]} />,
+      { wrapper: createWrapper() },
+    );
+
+    fireEvent.click(screen.getByText("By Role"));
+
+    // RECOMMENDATION_ROLES are the first 5 from ROLES: Ramp, Draw, Removal, Counterspell, Board Wipe
+    expect(screen.getByText("Ramp")).toBeInTheDocument();
+    expect(screen.getByText("Draw")).toBeInTheDocument();
+    expect(screen.getByText("Removal")).toBeInTheDocument();
+    expect(screen.getByText("Counterspell")).toBeInTheDocument();
+    expect(screen.getByText("Board Wipe")).toBeInTheDocument();
+  });
+
+  it("clicking a role button triggers the API call for that role", async () => {
+    render(
+      <RecommendationsPanel commanderName="Atraxa" onAddCard={vi.fn()} deckCardNames={[]} />,
+      { wrapper: createWrapper() },
+    );
+
+    fireEvent.click(screen.getByText("By Role"));
+    fireEvent.click(screen.getByText("Ramp"));
+
+    await waitFor(() => {
+      expect(cardsAPI.getByRole).toHaveBeenCalledWith("Ramp");
+    });
+
+    // The card returned by getByRole mock should appear
+    expect(await screen.findByText("Cultivate")).toBeInTheDocument();
+  });
+
+  it("clicking Similar tab shows similar card recommendations", async () => {
+    render(
+      <RecommendationsPanel commanderName="Atraxa" onAddCard={vi.fn()} deckCardNames={[]} />,
+      { wrapper: createWrapper() },
+    );
+
+    fireEvent.click(screen.getByText("Similar"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Rhystic Study")).toBeInTheDocument();
+      expect(screen.getByText("Cyclonic Rift")).toBeInTheDocument();
+    });
+  });
+
+  it("cards already in the deck show Added on the Similar tab", async () => {
+    render(
+      <RecommendationsPanel commanderName="Atraxa" onAddCard={vi.fn()} deckCardNames={["Rhystic Study"]} />,
+      { wrapper: createWrapper() },
+    );
+
+    fireEvent.click(screen.getByText("Similar"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Rhystic Study")).toBeInTheDocument();
+    });
+
+    // Rhystic Study is in deck → shows "Added"; Cyclonic Rift is not → shows "Add"
+    expect(screen.getByText("Added")).toBeInTheDocument();
+    expect(screen.getAllByText("Add")).toHaveLength(1);
+  });
 });

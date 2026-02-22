@@ -1,6 +1,11 @@
 """Integration tests for Graph API endpoints - TDD GREEN phase."""
 
 import pytest
+from unittest.mock import MagicMock
+from fastapi.testclient import TestClient
+
+from app.main import app
+from app.dependencies import get_neo4j_session
 
 
 class TestGraphEndpoints:
@@ -48,3 +53,22 @@ class TestGraphEndpoints:
         data = response.json()
         assert "status" in data
         assert "message" in data
+
+    def test_get_graph_health_returns_503_when_db_fails(self):
+        """GET /api/graph/health returns 503 unhealthy when Neo4j query raises."""
+        failing_session = MagicMock()
+        failing_session.run.side_effect = Exception("Connection refused")
+
+        def override_get_session():
+            yield failing_session
+
+        app.dependency_overrides[get_neo4j_session] = override_get_session
+        try:
+            test_client = TestClient(app)
+            response = test_client.get("/api/graph/health")
+            assert response.status_code == 503
+            data = response.json()
+            assert data["status"] == "unhealthy"
+            assert data["message"] == "Unable to connect to database"
+        finally:
+            app.dependency_overrides.clear()
