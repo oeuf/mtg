@@ -19,7 +19,7 @@ export function useCommanderSearch(): {
   const { data, isLoading, error } = useQuery({
     queryKey: ["commanders"],
     queryFn: async () => {
-      const response = await commandersAPI.list(1, 1000);
+      const response = await commandersAPI.list(1, 5000);
       return response.data.items;
     },
   });

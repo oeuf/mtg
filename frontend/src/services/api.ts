@@ -3,12 +3,14 @@ import type {
   Card,
   CardSearchFilters,
   Commander,
-  SynergyResponse,
-  SimilarCardResponse,
   ComboResponse,
-  RecommendationResponse,
   DeckShell,
   DeckAnalysis,
+  SimilarCardsResponse,
+  CardSynergiesResponse,
+  CommanderSynergiesResponse,
+  CommanderRecommendationsResponse,
+  GraphListResponse,
 } from "../types";
 import type { AutocompleteItem } from "../components/SearchAutocomplete";
 
@@ -29,14 +31,14 @@ export const commandersAPI = {
   },
 
   getSynergies(name: string, params?: { limit?: number }) {
-    return api.get<SynergyResponse[]>(
+    return api.get<CommanderSynergiesResponse>(
       `/api/commanders/${encodeURIComponent(name)}/synergies`,
       { params },
     );
   },
 
   getRecommendations(name: string, params?: { top_k?: number }) {
-    return api.get<RecommendationResponse[]>(
+    return api.get<CommanderRecommendationsResponse>(
       `/api/commanders/${encodeURIComponent(name)}/recommendations`,
       { params },
     );
@@ -55,14 +57,14 @@ export const cardsAPI = {
   },
 
   getSimilar(name: string, params?: { limit?: number }) {
-    return api.get<SimilarCardResponse[]>(
+    return api.get<SimilarCardsResponse>(
       `/api/cards/${encodeURIComponent(name)}/similar`,
       { params },
     );
   },
 
   getSynergies(name: string) {
-    return api.get<SynergyResponse[]>(
+    return api.get<CardSynergiesResponse>(
       `/api/cards/${encodeURIComponent(name)}/synergies`,
     );
   },
@@ -104,15 +106,15 @@ export const graphAPI = {
   },
 
   mechanics() {
-    return api.get<string[]>("/api/mechanics");
+    return api.get<GraphListResponse>("/api/mechanics");
   },
 
   themes() {
-    return api.get<string[]>("/api/themes");
+    return api.get<GraphListResponse>("/api/themes");
   },
 
   roles() {
-    return api.get<string[]>("/api/roles");
+    return api.get<GraphListResponse>("/api/roles");
   },
 };
 

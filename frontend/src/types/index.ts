@@ -6,6 +6,11 @@ export type {
   SimilarCardResponse,
   ComboResponse,
   RecommendationResponse,
+  SimilarCardsResponse,
+  CardSynergiesResponse,
+  CommanderSynergiesResponse,
+  CommanderRecommendationsResponse,
+  GraphListResponse,
 } from "./synergy";
 export type {
   DeckShell,

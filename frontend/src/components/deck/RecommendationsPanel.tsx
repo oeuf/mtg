@@ -31,13 +31,13 @@ export function RecommendationsPanel({
 
   const synergiesQuery = useQuery({
     queryKey: ["synergies", commanderName],
-    queryFn: () => commandersAPI.getSynergies(commanderName).then((r) => r.data),
+    queryFn: () => commandersAPI.getSynergies(commanderName).then((r) => r.data.synergies),
     enabled: activeTab === "synergies",
   });
 
   const recommendationsQuery = useQuery({
     queryKey: ["recommendations", commanderName],
-    queryFn: () => commandersAPI.getRecommendations(commanderName).then((r) => r.data),
+    queryFn: () => commandersAPI.getRecommendations(commanderName).then((r) => r.data.recommendations),
     enabled: activeTab === "similar",
   });
 
@@ -69,7 +69,7 @@ export function RecommendationsPanel({
             <CardRecommendationRow
               key={s.card_name}
               cardName={s.card_name}
-              detail={`Score: ${s.synergy_score.toFixed(2)}`}
+              detail={`Score: ${(s.synergy_score ?? 0).toFixed(2)}`}
               inDeck={deckSet.has(s.card_name)}
               onAdd={onAddCard}
             />
@@ -111,7 +111,7 @@ export function RecommendationsPanel({
             <CardRecommendationRow
               key={r.card_name}
               cardName={r.card_name}
-              detail={r.category}
+              detail={`Score: ${(r.score ?? 0).toFixed(2)}`}
               inDeck={deckSet.has(r.card_name)}
               onAdd={onAddCard}
             />

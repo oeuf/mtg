@@ -4,7 +4,6 @@ import {
   screen,
   fireEvent,
   act,
-  waitFor,
 } from '@testing-library/react';
 import { SearchAutocomplete } from '../SearchAutocomplete';
 import type { AutocompleteItem } from '../SearchAutocomplete';

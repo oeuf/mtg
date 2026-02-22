@@ -124,6 +124,35 @@ def autocomplete_cards(
     return result.data()
 
 
+@router.get("/cards/by-role/{role}")
+def get_cards_by_role(
+    role: str,
+    color_identity: Optional[str] = Query(None, description="Comma-separated colors (e.g. U,B)"),
+    limit: int = Query(20, ge=1, le=100),
+    session: Session = Depends(get_neo4j_session),
+):
+    """Get cards that fill a functional role, optionally filtered by color identity."""
+    params: dict = {"role": role, "limit": limit}
+    color_clause = ""
+    if color_identity:
+        color_list = [c.strip() for c in color_identity.split(",")]
+        color_clause = "AND ALL(color IN card.color_identity WHERE color IN $colors) "
+        params["colors"] = color_list
+
+    result = session.run(
+        "MATCH (card:Card)-[r:FILLS_ROLE]->(role_node:Functional_Role {name: $role}) "
+        "WHERE NOT card:Commander "
+        f"{color_clause}"
+        "RETURN card.name AS name, card.mana_cost AS mana_cost, card.cmc AS cmc, "
+        "card.type_line AS type_line, card.oracle_text AS oracle_text, "
+        "card.color_identity AS color_identity "
+        "ORDER BY card.edhrec_rank ASC "
+        "LIMIT $limit",
+        params,
+    )
+    return result.data()
+
+
 @router.get("/cards/{name}")
 def get_card_by_name(
     name: str,

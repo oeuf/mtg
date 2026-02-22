@@ -17,13 +17,13 @@ vi.mock("../../../services/api", () => ({
 import { commandersAPI, cardsAPI } from "../../../services/api";
 
 const mockSynergies = [
-  { card_name: "Sol Ring", synergy_score: 0.95, dimensions: {}, explanation: null },
-  { card_name: "Mana Crypt", synergy_score: 0.90, dimensions: {}, explanation: null },
+  { card_name: "Sol Ring", synergy_score: 0.95 },
+  { card_name: "Mana Crypt", synergy_score: 0.90 },
 ];
 
 const mockRecommendations = [
-  { card_name: "Rhystic Study", synergy_score: 0.88, category: "Draw", mechanic_overlap_count: 3, has_color_match: true, edhrec_rank: 5 },
-  { card_name: "Cyclonic Rift", synergy_score: 0.85, category: "Removal", mechanic_overlap_count: 2, has_color_match: true, edhrec_rank: 10 },
+  { card_name: "Rhystic Study", score: 0.88 },
+  { card_name: "Cyclonic Rift", score: 0.85 },
 ];
 
 const mockRoleCards = [
@@ -42,8 +42,12 @@ function createWrapper() {
 describe("RecommendationsPanel", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (commandersAPI.getSynergies as ReturnType<typeof vi.fn>).mockResolvedValue({ data: mockSynergies });
-    (commandersAPI.getRecommendations as ReturnType<typeof vi.fn>).mockResolvedValue({ data: mockRecommendations });
+    (commandersAPI.getSynergies as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: { commander: "Atraxa", synergies: mockSynergies },
+    });
+    (commandersAPI.getRecommendations as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: { commander: "Atraxa", recommendations: mockRecommendations },
+    });
     (cardsAPI.getByRole as ReturnType<typeof vi.fn>).mockResolvedValue({ data: mockRoleCards });
   });
 
@@ -77,7 +81,6 @@ describe("RecommendationsPanel", () => {
   });
 
   it("shows loading state while fetching", () => {
-    // Make API hang
     (commandersAPI.getSynergies as ReturnType<typeof vi.fn>).mockReturnValue(new Promise(() => {}));
 
     render(

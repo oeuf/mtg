@@ -53,8 +53,8 @@ export default function CardDetailPage() {
     );
   }
 
-  const similarCards = (similarData as { similar_cards?: { name: string; score: number }[] })?.similar_cards ?? [];
-  const synergies = (synergiesData as { synergies?: { name: string; score: number }[] })?.synergies ?? [];
+  const similarCards = similarData?.similar_cards ?? [];
+  const synergies = synergiesData?.synergies ?? [];
   const combos = combosData?.combos ?? [];
 
   return (
@@ -74,9 +74,9 @@ export default function CardDetailPage() {
         {card.oracle_text && (
           <p className="text-gray-200 whitespace-pre-line mb-4">{card.oracle_text}</p>
         )}
-        {card.color_identity.length > 0 && (
+        {(card.color_identity ?? []).length > 0 && (
           <div className="flex gap-1 mb-4">
-            {card.color_identity.map((color) => (
+            {(card.color_identity ?? []).map((color) => (
               <Badge key={color} variant={`mana-${color}` as 'default'}>
                 {color}
               </Badge>

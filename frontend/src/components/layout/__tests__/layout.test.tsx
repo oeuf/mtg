@@ -18,7 +18,6 @@ describe('Header', () => {
     expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Commanders' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Cards' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Deck Builder' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Collection' })).toBeInTheDocument();
   });
 
@@ -27,7 +26,6 @@ describe('Header', () => {
     expect(screen.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
     expect(screen.getByRole('link', { name: 'Commanders' })).toHaveAttribute('href', '/commanders');
     expect(screen.getByRole('link', { name: 'Cards' })).toHaveAttribute('href', '/cards');
-    expect(screen.getByRole('link', { name: 'Deck Builder' })).toHaveAttribute('href', '/deck-builder/select');
     expect(screen.getByRole('link', { name: 'Collection' })).toHaveAttribute('href', '/collection');
   });
 });

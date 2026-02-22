@@ -14,7 +14,7 @@ router = APIRouter()
 def get_commanders(
     search: Optional[str] = Query(None, description="Search by name"),
     page: int = Query(default=1, ge=1),
-    limit: int = Query(default=50, ge=1, le=200),
+    limit: int = Query(default=50, ge=1, le=5000),
     session: Session = Depends(get_neo4j_session),
 ):
     """List commanders with optional search."""
@@ -68,8 +68,12 @@ def get_commander_by_name(
         "c.type_line AS type_line, c.oracle_text AS oracle_text, "
         "c.color_identity AS color_identity, c.colors AS colors, "
         "c.power AS power, c.toughness AS toughness, "
-        "c.edhrec_rank AS edhrec_rank",
-        name=name,
+        "c.edhrec_rank AS edhrec_rank, c.keywords AS keywords, "
+        "c.is_legendary AS is_legendary, "
+        "c.functional_categories AS functional_categories, "
+        "c.mechanics AS mechanics, c.themes AS themes, "
+        "c.archetype AS archetype, c.popularity_score AS popularity_score",
+        {"name": name},
     )
     record = result.single()
     if record is None:
@@ -106,12 +110,12 @@ def get_commander_synergies(
 @router.get("/commanders/{name}/recommendations")
 def get_commander_recommendations(
     name: str,
-    limit: int = Query(default=20, ge=1, le=100),
+    top_k: int = Query(default=20, ge=1, le=100),
     session: Session = Depends(get_neo4j_session),
 ):
     """Get card recommendations for a commander deck."""
     exists = session.run(
-        "MATCH (c:Commander {name: $name}) RETURN c", name=name
+        "MATCH (c:Commander {name: $name}) RETURN c", {"name": name}
     )
     if exists.single() is None:
         raise HTTPException(status_code=404, detail=f"Commander '{name}' not found")
@@ -121,9 +125,8 @@ def get_commander_recommendations(
         "WHERE NOT card:Commander "
         "RETURN card.name AS card_name, s.score AS score "
         "ORDER BY s.score DESC "
-        "LIMIT $limit",
-        name=name,
-        limit=limit,
+        "LIMIT $top_k",
+        {"name": name, "top_k": top_k},
     )
     recommendations = result.data()
     return {"commander": name, "recommendations": recommendations}

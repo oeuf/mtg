@@ -1,10 +1,8 @@
-import type { Card } from "./card";
-import type { Commander } from "./commander";
-
-/** A deck shell with commander and cards. */
+/** A deck shell with commander and cards grouped by role. */
 export interface DeckShell {
-  commander: Commander;
-  cards: Card[];
+  commander: string;
+  cards_by_role: Record<string, string[]>;
+  total_cards: number;
 }
 
 /** Analysis of a deck's composition. */
