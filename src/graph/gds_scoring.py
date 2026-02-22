@@ -1,6 +1,8 @@
 """Neo4j Graph Data Science scoring operations."""
 
+import logging
 from typing import Dict
+
 from src.graph.connection import Neo4jConnection
 
 
@@ -22,9 +24,9 @@ class GDSScoring:
         """
         try:
             self.conn.execute_query(query)
-            print(f"✓ Dropped existing projection '{name}'")
-        except Exception:
-            pass
+            logging.info("Dropped existing projection '%s'", name)
+        except Exception as e:
+            logging.warning("Could not drop projection '%s' (may not exist): %s", name, e)
 
     def create_projection(self) -> Dict:
         """Create in-memory graph projection for GDS algorithms."""

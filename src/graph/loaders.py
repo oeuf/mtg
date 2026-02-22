@@ -1,5 +1,7 @@
 """Load cards and relationships into Neo4j graph."""
 
+import logging
+
 from .connection import Neo4jConnection
 
 
@@ -229,9 +231,8 @@ def create_related_card_relationships(conn: Neo4jConnection,
                 "card_name": card_name,
                 "related_card": related_card
             })
-        except Exception:
-            # Related card might not be Commander-legal
-            pass
+        except Exception as e:
+            logging.warning("Could not create COMBOS_WITH for %s -> %s (card may not be Commander-legal): %s", card_name, related_card, e)
 
     # 2. TOKENS: Token generation
     tokens = related_data.get("tokens", [])
@@ -272,8 +273,8 @@ def create_related_card_relationships(conn: Neo4jConnection,
                 "card_name": card_name,
                 "related_card": related_card
             })
-        except Exception:
-            pass
+        except Exception as e:
+            logging.warning("Could not create COMMONLY_PAIRED_WITH for %s -> %s: %s", card_name, related_card, e)
 
 
 def integrate_related_cards(conn: Neo4jConnection,

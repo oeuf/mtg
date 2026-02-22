@@ -102,8 +102,8 @@ def get_graph_health(session: Session = Depends(get_neo4j_session)):
     try:
         session.run("RETURN 1")
         return {"status": "healthy", "message": "Connected to Neo4j"}
-    except Exception as e:
+    except Exception:
         return JSONResponse(
             status_code=503,
-            content={"status": "unhealthy", "message": str(e)},
+            content={"status": "unhealthy", "message": "Unable to connect to database"},
         )

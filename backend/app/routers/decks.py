@@ -1,19 +1,40 @@
 """Deck building and analysis endpoints."""
 
 from collections import Counter
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from neo4j import Session
+from pydantic import BaseModel
 
 from app.dependencies import get_neo4j_session
 
 router = APIRouter()
 
 
+class BuildShellRequest(BaseModel):
+    commander: str
+
+
+class CardEntry(BaseModel):
+    name: str | None = None
+    cmc: float = 0
+    colors: list[str] = []
+    type_line: str = "Unknown"
+    functional_categories: list[str] = []
+
+    model_config = {"extra": "allow"}
+
+
+class AnalyzeDeckRequest(BaseModel):
+    commander: dict[str, Any] = {}
+    cards: list[CardEntry] = []
+
+
 @router.post("/decks/build-shell")
-def build_deck_shell(request: dict, session: Session = Depends(get_neo4j_session)):
+def build_deck_shell(request: BuildShellRequest, session: Session = Depends(get_neo4j_session)):
     """Build an initial deck shell for a given commander."""
-    commander_name = request.get("commander")
+    commander_name = request.commander
     if not commander_name:
         raise HTTPException(status_code=400, detail="Commander name is required")
 
@@ -58,29 +79,27 @@ def build_deck_shell(request: dict, session: Session = Depends(get_neo4j_session
 
 
 @router.post("/decks/analyze")
-def analyze_deck(request: dict):
+def analyze_deck(request: AnalyzeDeckRequest):
     """Analyze deck composition. Pure computation, no DB needed."""
-    commander = request.get("commander", {})
-    cards = request.get("cards", [])
+    cards = request.cards
 
     total_cards = len(cards) + 1  # +1 for commander
 
     # Average CMC
-    cmc_values = [card.get("cmc", 0) for card in cards]
+    cmc_values = [card.cmc for card in cards]
     avg_cmc = sum(cmc_values) / len(cmc_values) if cmc_values else 0.0
 
     # Color distribution
     color_counter: Counter = Counter()
     for card in cards:
-        for color in card.get("colors", []):
+        for color in card.colors:
             color_counter[color] += 1
     color_distribution = dict(color_counter)
 
     # Type distribution
     type_counter: Counter = Counter()
     for card in cards:
-        type_line = card.get("type_line", "Unknown")
-        type_counter[type_line] += 1
+        type_counter[card.type_line] += 1
     type_distribution = dict(type_counter)
 
     # Role distribution (cards don't carry roles in the payload)
@@ -89,8 +108,7 @@ def analyze_deck(request: dict):
     # Mana curve: count cards per CMC value
     mana_counter: Counter = Counter()
     for card in cards:
-        cmc = card.get("cmc", 0)
-        mana_counter[str(int(cmc))] += 1
+        mana_counter[str(int(card.cmc))] += 1
     mana_curve = dict(mana_counter)
 
     return {
