@@ -9,3 +9,4 @@ pytest-asyncio==0.21.1
 httpx==0.25.2
 coverage==7.3.2
 slowapi==0.1.9
+rapidfuzz==3.14.3

@@ -1,5 +1,6 @@
 """Commander API endpoints."""
 
+import logging
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -7,6 +8,7 @@ from neo4j import Session
 
 from app.dependencies import get_neo4j_session
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -88,6 +90,7 @@ def get_commander_synergies(
     session: Session = Depends(get_neo4j_session),
 ):
     """Get synergistic cards for a commander."""
+    logger.info("[commanders] get_commander_synergies: name=%r", name)
     exists = session.run(
         "MATCH (c:Commander {name: $name}) RETURN c", {"name": name}
     )
@@ -103,6 +106,7 @@ def get_commander_synergies(
         {"name": name, "limit": limit},
     )
     synergies = result.data()
+    logger.info("[commanders] get_commander_synergies: name=%r count=%d", name, len(synergies))
     return {"commander": name, "synergies": synergies}
 
 
@@ -113,6 +117,7 @@ def get_commander_recommendations(
     session: Session = Depends(get_neo4j_session),
 ):
     """Get card recommendations for a commander deck."""
+    logger.info("[commanders] get_commander_recommendations: name=%r", name)
     exists = session.run(
         "MATCH (c:Commander {name: $name}) RETURN c", {"name": name}
     )
@@ -128,4 +133,5 @@ def get_commander_recommendations(
         {"name": name, "top_k": top_k},
     )
     recommendations = result.data()
+    logger.info("[commanders] get_commander_recommendations: name=%r count=%d", name, len(recommendations))
     return {"commander": name, "recommendations": recommendations}
