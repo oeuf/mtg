@@ -7,7 +7,6 @@ import { LoadingSpinner } from '../../components/LoadingSpinner';
 import { SearchAutocomplete } from '../../components/SearchAutocomplete';
 import type { AutocompleteItem } from '../../components/SearchAutocomplete';
 import { cardsAPI } from '../../services/api';
-import type { CardSearchFilters } from '../../types';
 
 export default function CardSearchPage() {
   const navigate = useNavigate();
@@ -38,7 +37,7 @@ export default function CardSearchPage() {
 
   const handleSearchChange = useCallback(
     (value: string) => {
-      updateFilter('text_search' as keyof CardSearchFilters, value);
+      updateFilter('text_search', value);
     },
     [updateFilter],
   );
@@ -52,7 +51,7 @@ export default function CardSearchPage() {
         fetchSuggestions={fetchCardSuggestions}
         onSelect={handleSelect}
         onChange={handleSearchChange}
-        value={(filters.text_search as string) ?? ''}
+        value={filters.text_search ?? ''}
         className="mb-6"
       />
 
@@ -62,8 +61,8 @@ export default function CardSearchPage() {
         <div className="flex gap-8">
           <aside>
             <FilterPanel
-              filters={filters as unknown as Record<string, unknown>}
-              onUpdateFilter={updateFilter as unknown as (key: string, value: unknown) => void}
+              filters={filters}
+              onUpdateFilter={updateFilter}
               onClear={clearFilters}
             />
           </aside>

@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { CheckboxGroup } from '../CheckboxGroup';
 import { RangeSlider } from '../RangeSlider';
 import { FilterPanel } from '../FilterPanel';
+import type { CardSearchFilters } from '../../../types';
 
 describe('CheckboxGroup', () => {
   const defaultProps = {
@@ -78,7 +79,7 @@ describe('RangeSlider', () => {
 
 describe('FilterPanel', () => {
   const defaultProps = {
-    filters: {} as Record<string, unknown>,
+    filters: { page: 1, limit: 20 } as CardSearchFilters,
     onUpdateFilter: vi.fn(),
     onClear: vi.fn(),
   };
@@ -118,7 +119,7 @@ describe('FilterPanel', () => {
     render(
       <FilterPanel
         {...defaultProps}
-        filters={{ colors: ['W', 'G'] }}
+        filters={{ colors: ['W', 'G'], page: 1, limit: 20 }}
       />,
     );
     const wButton = screen.getByRole('button', { name: 'W' });

@@ -1,6 +1,7 @@
 import { CheckboxGroup } from './CheckboxGroup';
 import { RangeSlider } from './RangeSlider';
 import { Button } from '../ui/Button';
+import type { CardSearchFilters } from '../../types';
 
 const CARD_TYPES = ['Creature', 'Instant', 'Sorcery', 'Artifact', 'Enchantment', 'Planeswalker', 'Land'];
 const RARITIES = ['Common', 'Uncommon', 'Rare', 'Mythic'];
@@ -8,13 +9,13 @@ const ROLES = ['Ramp', 'Draw', 'Removal', 'Counterspell', 'Board Wipe', 'Tutor',
 const COLORS = ['W', 'U', 'B', 'R', 'G'] as const;
 
 interface FilterPanelProps {
-  filters: Record<string, unknown>;
-  onUpdateFilter: (key: string, value: unknown) => void;
+  filters: CardSearchFilters;
+  onUpdateFilter: (key: keyof CardSearchFilters, value: unknown) => void;
   onClear: () => void;
 }
 
 export function FilterPanel({ filters, onUpdateFilter, onClear }: FilterPanelProps) {
-  const selectedColors = (filters.colors as string[] | undefined) ?? [];
+  const selectedColors = filters.colors ?? [];
 
   const toggleColor = (color: string) => {
     if (selectedColors.includes(color)) {
@@ -31,7 +32,7 @@ export function FilterPanel({ filters, onUpdateFilter, onClear }: FilterPanelPro
       <CheckboxGroup
         label="Card Type"
         options={CARD_TYPES}
-        selected={(filters.types as string[] | undefined) ?? []}
+        selected={filters.types ?? []}
         onChange={(val) => onUpdateFilter('types', val)}
       />
 
@@ -59,10 +60,7 @@ export function FilterPanel({ filters, onUpdateFilter, onClear }: FilterPanelPro
         label="CMC"
         min={0}
         max={16}
-        value={[
-          (filters.cmc_min as number | undefined) ?? 0,
-          (filters.cmc_max as number | undefined) ?? 16,
-        ]}
+        value={[filters.cmc_min ?? 0, filters.cmc_max ?? 16]}
         onChange={([min, max]) => {
           onUpdateFilter('cmc_min', min);
           onUpdateFilter('cmc_max', max);
@@ -72,14 +70,14 @@ export function FilterPanel({ filters, onUpdateFilter, onClear }: FilterPanelPro
       <CheckboxGroup
         label="Rarity"
         options={RARITIES}
-        selected={(filters.rarity as string[] | undefined) ?? []}
+        selected={filters.rarity ?? []}
         onChange={(val) => onUpdateFilter('rarity', val)}
       />
 
       <CheckboxGroup
         label="Roles"
         options={ROLES}
-        selected={(filters.roles as string[] | undefined) ?? []}
+        selected={filters.roles ?? []}
         onChange={(val) => onUpdateFilter('roles', val)}
       />
 

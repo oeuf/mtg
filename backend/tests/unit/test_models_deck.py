@@ -19,8 +19,8 @@ def _make_commander():
         colors=["B", "G", "U"],
         keywords=[],
         is_legendary=True,
-        power=6,
-        toughness=6,
+        power="6",
+        toughness="6",
     )
 
 
