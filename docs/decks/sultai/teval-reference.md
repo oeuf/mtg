@@ -9,6 +9,7 @@
 - `/Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-teval-max-degen.md`
 - `/Users/ng/cc-projects/mtg/docs/decks/sultai/more-sultai-.md`
 - `/Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked.md`
+- `/Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md`
 - Consolidation preserves full deck builds and actionable package notes while trimming duplicated conversational residue.
 
 ## Build Index
@@ -21,6 +22,7 @@
 | TEV-D | Max Degeneracy Alternate-GC | `teval-max-degen.md` | Yes | Rhystic / Rift / Fierce | max-degeneracy |
 | TEV-E | Max Degeneracy Lands-Lock | `muldrotha-teval-max-degen.md` | Yes | Crop / Field / Glacial Chasm | max-degeneracy |
 | TEV-F | Maximum Degeneracy Bracket 3 (Locked) | `teval-max-degeneracy-bracket3-locked.md` | Yes | Crop / Field / Glacial Chasm | max-degeneracy (locked) |
+| TEV-G | Maximum Degeneracy Bracket 3 (Locked G Shell) | `teval-max-degeneracy-bracket3-locked-g.md` | Yes | Field / Crop / Mox Diamond | max-degeneracy (locked, genuine-new-shell) |
 
 ## Build Flavors
 
@@ -779,6 +781,163 @@ Status: max-degeneracy (full-99; locked bracket-3)
 - Win-condition requirement satisfied (4 documented lines, including a `Field/Scute -> Craterhoof` line and a `Glacial Chasm` survival-axis line).
 - Dedicated locked-build validation report: `/Users/ng/cc-projects/mtg/docs/decks/sultai/max-degen-bracket3-build-validation-report.txt` (task-specific validator includes GC snapshot, pool-only, banned-card, and required-package checks).
 
+### TEV-G — Maximum Degeneracy Bracket 3 (Locked Field / Crop / Mox Diamond)
+
+Source(s): `/Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md`
+Status: max-degeneracy (full-99; locked bracket-3; genuine new shell)
+
+#### Commander
+
+- Teval, the Balanced Scale
+
+#### Game Changers
+
+- Field of the Dead (GC)
+- Crop Rotation (GC)
+- Mox Diamond (GC)
+
+#### 99-card decklist
+
+##### Creatures (27)
+
+- Birds of Paradise
+- Sakura-Tribe Elder
+- Wight of the Reliquary
+- Tireless Tracker
+- Wayward Swordtooth
+- Aesi, Tyrant of Gyre Strait
+- Kodama of the East Tree
+- Endurance
+- Gravebreaker Lamia
+- Vile Entomber
+- Ramunap Excavator
+- World Shaper
+- Aftermath Analyst
+- Icetill Explorer
+- Lotus Cobra
+- Azusa, Lost but Seeking
+- Tireless Provisioner
+- Tatyova, Benthic Druid
+- The Gitrog Monster
+- Scute Swarm
+- Craterhoof Behemoth
+- Hedron Crab
+- Stitcher's Supplier
+- Underrealm Lich
+- Syr Konrad, the Grim
+- Jarad, Golgari Lich Lord
+- Lord of Extinction
+
+##### Artifacts (10)
+
+- Sol Ring
+- Mox Diamond (GC)
+- Lotus Petal
+- Skullclamp
+- Sensei's Divining Top
+- Mesmeric Orb
+- Crucible of Worlds
+- Conduit of Worlds
+- Zuran Orb
+- Perpetual Timepiece
+
+##### Enchantments (7)
+
+- Exploration
+- Rites of Flourishing
+- Animate Dead
+- Necromancy
+- Phyrexian Reclamation
+- Insidious Roots
+- Path of Discovery
+
+##### Instants (9)
+
+- Crop Rotation (GC)
+- Entomb
+- An Offer You Can't Refuse
+- Swan Song
+- Force of Negation
+- Pact of Negation
+- Veil of Summer
+- Heroic Intervention
+- Krosan Grip
+
+##### Sorceries (10)
+
+- Life from the Loam
+- Buried Alive
+- Reanimate
+- Victimize
+- Living Death (finisher)
+- Explore
+- Nature's Lore
+- Farseek
+- Cultivate
+- Tempt with Discovery
+
+##### Lands (36)
+
+- Command Tower
+- Tropical Island
+- Bayou
+- Underground Sea
+- Breeding Pool
+- Overgrown Tomb
+- Watery Grave
+- Zagoth Triome
+- Underground River
+- Yavimaya Coast
+- Llanowar Wastes
+- Sunken Hollow
+- Polluted Delta
+- Verdant Catacombs
+- Misty Rainforest
+- Marsh Flats
+- Flooded Strand
+- Fetid Pools
+- Wooded Foothills
+- Scalding Tarn
+- Prismatic Vista
+- Fabled Passage
+- Evolving Wilds
+- Terramorphic Expanse
+- Dakmor Salvage
+- Field of the Dead (GC)
+- Boseiju, Who Endures
+- Otawara, Soaring City
+- Takenuma, Abandoned Mire
+- Bojuka Bog
+- Shifting Woodland
+- Undiscovered Paradise
+- Lotus Vale
+- Strip Mine
+- Forest
+- Island
+
+#### Summary / How it wins
+
+- Primary line: `Field of the Dead` + recursive land drops (`Life from the Loam`, `Crucible`, `Conduit`, Teval attack recursion) + `Scute Swarm` -> `Craterhoof Behemoth` for immediate lethal rather than slow inevitability.
+- `Mox Diamond` + extra land-drop engines (`Exploration`, `Wayward Swordtooth`, `Azusa`) enables earlier Teval/Field turns and compresses the window opponents have to interact before the swarm starts snowballing.
+- Backup graveyard cash-out: `Living Death` after self-mill/churn (`Mesmeric Orb`, `Hedron Crab`, `Stitcher's Supplier`, `Entomb`, `Buried Alive`) with `Syr Konrad`, `Jarad`, and `Lord of Extinction` as damage converters.
+- Value-overwhelm line: `Kodama of the East Tree` plus token-heavy landfall turns (`Field`, `Scute`, `Tireless Provisioner`) chains permanent drops and lets the deck pivot from setup to lethal in one turn cycle.
+- `Field of the Dead`: default proactive target when you already have (or can immediately reach) seven distinct land names and need to start converting land drops into board presence.
+- `Bojuka Bog`: target when an opposing graveyard deck is about to cash out and you can trade one land for a massive tempo swing while still advancing your own recursion shell.
+- Full shell-specific subplans (pile templates / Crop target matrix), anti-hate plan, and social-risk notes are documented in the standalone G-shell doc `/Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md`.
+
+#### Swaps / Variants / Package options
+
+- None intentionally; this is a locked genuinely-new max-degeneracy Bracket 3 shell.
+- Novelty metrics and baseline diffs are documented in `/Users/ng/cc-projects/mtg/docs/decks/sultai/max-degen-bracket3-shell-g-build-notes.md`.
+
+#### Validation notes
+
+- Locked GC package is `Field of the Dead`, `Crop Rotation`, `Mox Diamond` (exactly 3).
+- `Glacial Chasm` is intentionally excluded and enforced as a hard fail in the G-shell validator for `TEV-G`.
+- Utility land denial is capped to one slot (`Strip Mine`) to keep this shell off the old `TEV-E/F` lock identity.
+- Standalone validation for this G-shell is performed by `scripts/deck_docs/validate_locked_b3_shell_g_decks.py`, including overlap/novelty thresholds vs `TEV-A/B/D/E/F`.
+- Dedicated G-shell validation report: `/Users/ng/cc-projects/mtg/docs/decks/sultai/max-degen-bracket3-shell-g-validation-report.txt` (includes novelty overlap thresholds vs prior builds, shell-identity checks, and pool/GC/banned-card validation).
+
 ## Cross-Build Comparisons
 
 ### TEV-C — Package Comparison (from `teval-1-and-2-compared.md`)
@@ -815,16 +974,18 @@ Status: comparison-derived (non-full-99)
 ## Validation Summary
 
 - Generated UTC: 2026-02-22T21:18:53+00:00
-- Full builds validated in this file: `TEV-A`, `TEV-B`, `TEV-D`, `TEV-E`, `TEV-F`.
+- Full builds validated in this file: `TEV-A`, `TEV-B`, `TEV-D`, `TEV-E`, `TEV-F`, `TEV-G`.
 - Structural validation status (generator pre-check): 0 hard errors, 0 warnings.
 - `TEV-A`: 99-card total = 99, GC count = 3.
 - `TEV-B`: 99-card total = 99, GC count = 3.
 - `TEV-D`: 99-card total = 99, GC count = 3.
 - `TEV-E`: 99-card total = 99, GC count = 3.
 - `TEV-F`: 99-card total = 99, GC count = 3 (integrated from the locked standalone max-degen B3 build).
+- `TEV-G`: 99-card total = 99, GC count = 3 (integrated from the locked standalone max-degen B3 G-shell build).
 - TEV-B applies the source-specified one-land cut to resolve `teval-2.md` into a locked 99.
 - TEV-E applies explicit overflow trimming to match the shared source's declared 99-card category totals; repairs are documented in `TEV-E` validation notes.
 - Optional card-pool membership validation is supported by `scripts/deck_docs/validate_commander_refs.py --pool-file <file>`.
-- Pool validation was run against `docs/decks/sultai/user-card-pool-2026-02-22.txt`; this file contributed 5 warnings in this reference (including `TEV-F`), all due to the pool typo `Underream Lich` vs the normalized deck card `Underrealm Lich`.
+- Pool validation was run against `docs/decks/sultai/user-card-pool-2026-02-22.txt`; this file contributed 6 warnings in this reference (including `TEV-F` and `TEV-G`), all due to the pool typo `Underream Lich` vs the normalized deck card `Underrealm Lich`.
 - Pool validation report with warnings is saved at `docs/decks/sultai/commander-reference-validation-report-with-pool.txt` (pool file also contains duplicate entries, reported as informational).
 - Locked max-degen integration addendum: `TEV-F` is sourced from `docs/decks/sultai/teval-max-degeneracy-bracket3-locked.md` and validated by `docs/decks/sultai/max-degen-bracket3-build-validation-report.txt`.
+- G-shell integration addendum: `TEV-G` is sourced from `docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md` and validated by `docs/decks/sultai/max-degen-bracket3-shell-g-validation-report.txt`.

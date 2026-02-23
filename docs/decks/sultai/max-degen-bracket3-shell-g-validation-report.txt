@@ -1,0 +1,55 @@
+Max Degeneracy Bracket 3 G-Shell Validation Report
+GC snapshot source date: 2026-02-23 (using Wizards Brackets Oct 21, 2025 update + Feb 9, 2026 additions)
+Commander banned snapshot date: 2026-02-23 (Commander banned-list snapshot, plus explicit verification that Primeval Titan remains banned)
+Reference docs for novelty checks: /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md, /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md
+
+[INFO] 47
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [SECTIONS_OK] Required sections present in required order.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [COMMANDER_OK] Commander matches `Muldrotha, the Gravetide`.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [GC_PACKAGE_OK] GC package matches locked target: ['Gifts Ungiven', 'Intuition', 'Survival of the Fittest'].
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [TOTAL_OK] Deck total verified at 99.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [NO_EXTRA_GCS] No extra Game Changers detected beyond locked package.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [POOL_CHECK_OK] Pool membership check executed with alias support (including Underrealm/Underream Lich).
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [BANNED_CHECK] Commander banned-card check executed (snapshot date 2026-02-23 (Commander banned-list snapshot, plus explicit verification that Primeval Titan remains banned)).
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [REQUIRED_PACKAGE_OK] Required shell package cards are present.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [FORBIDDEN_OK] Forbidden carryover package cards absent.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [WIN_LINES_OK] Win-condition section includes 16 bullets (including subsection bullets).
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [WIN_LINES_CONTENT_OK] Win-condition section includes required shell-specific terms.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [ANTI_HATE_OK] Anti-hate plan section has 4 bullets.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [SUBSECTION_PRESENT] Required subsection `### Intuition / Gifts Pile Templates` found.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [SUBSECTION_TEMPLATE_COUNT_OK] Subsection `Intuition / Gifts Pile Templates` has 4 template headings.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [SUBSECTION_CONTENT_OK] Subsection `Intuition / Gifts Pile Templates` contains required markers.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [NOVELTY_OVERLAP_INFO] MUL-E: shared=53, adds=44, cuts=46, max_shared=72.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [NOVELTY_OVERLAP_INFO] MUL-F: shared=71, adds=26, cuts=28, max_shared=72.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [NOVELTY_OVERLAP_INFO] MUL-A: shared=53, adds=44, cuts=46, max_shared=78.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [NOVELTY_OVERLAP_INFO] MUL-D: shared=60, adds=37, cuts=39, max_shared=78.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [NOVELTY_DIFF_FLOOR_OK] Nearest baseline diff passes floors (adds=26, cuts=28).
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [COLOR_IDENTITY_MANUAL] Color identity review passed by construction: only Sultai/colorless cards from the pool were selected and reviewed manually; no external card database lookup was used.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md [SOL_RING_ALLOWED] `Sol Ring` present and treated as non-GC by design (Wizards Brackets FAQ/update guidance).
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [SECTIONS_OK] Required sections present in required order.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [COMMANDER_OK] Commander matches `Teval, the Balanced Scale`.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [GC_PACKAGE_OK] GC package matches locked target: ['Crop Rotation', 'Field of the Dead', 'Mox Diamond'].
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [TOTAL_OK] Deck total verified at 99.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [NO_EXTRA_GCS] No extra Game Changers detected beyond locked package.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [POOL_CHECK_OK] Pool membership check executed with alias support (including Underrealm/Underream Lich).
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [BANNED_CHECK] Commander banned-card check executed (snapshot date 2026-02-23 (Commander banned-list snapshot, plus explicit verification that Primeval Titan remains banned)).
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [REQUIRED_PACKAGE_OK] Required shell package cards are present.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [FORBIDDEN_OK] Forbidden carryover package cards absent.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [WIN_LINES_OK] Win-condition section includes 11 bullets (including subsection bullets).
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [WIN_LINES_CONTENT_OK] Win-condition section includes required shell-specific terms.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [ANTI_HATE_OK] Anti-hate plan section has 4 bullets.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [SUBSECTION_PRESENT] Required subsection `### Crop Rotation Target Matrix (No Chasm)` found.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [SUBSECTION_BULLETS_OK] Subsection `Crop Rotation Target Matrix (No Chasm)` has 7 bullets.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [SUBSECTION_CONTENT_OK] Subsection `Crop Rotation Target Matrix (No Chasm)` contains required markers.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [LAND_DENY_UTILITY_OK] Utility land denial count = 1 (max 1).
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [NOVELTY_OVERLAP_INFO] TEV-E: shared=56, adds=43, cuts=43, max_shared=72.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [NOVELTY_OVERLAP_INFO] TEV-F: shared=72, adds=27, cuts=27, max_shared=72.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [NOVELTY_OVERLAP_INFO] TEV-A: shared=58, adds=41, cuts=41, max_shared=80.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [NOVELTY_OVERLAP_INFO] TEV-B: shared=57, adds=42, cuts=42, max_shared=80.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [NOVELTY_OVERLAP_INFO] TEV-D: shared=57, adds=42, cuts=42, max_shared=80.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [NOVELTY_DIFF_FLOOR_OK] Nearest baseline diff passes floors (adds=27, cuts=27).
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [COLOR_IDENTITY_MANUAL] Color identity review passed by construction: only Sultai/colorless cards from the pool were selected and reviewed manually; no external card database lookup was used.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-max-degeneracy-bracket3-locked-g.md [SOL_RING_ALLOWED] `Sol Ring` present and treated as non-GC by design (Wizards Brackets FAQ/update guidance).
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/user-card-pool-2026-02-22.txt [POOL_DUPLICATES] Pool file contains 46 duplicate entries (case-insensitive).
+
+Summary: 0 errors, 0 warnings, 47 info

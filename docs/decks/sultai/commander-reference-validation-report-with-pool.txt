@@ -1,34 +1,40 @@
-[WARNING] 9
-- docs/decks/sultai/muldrotha-reference.md::MUL-A [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
-- docs/decks/sultai/muldrotha-reference.md::MUL-D [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
-- docs/decks/sultai/muldrotha-reference.md::MUL-E [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
-- docs/decks/sultai/muldrotha-reference.md::MUL-F [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
-- docs/decks/sultai/teval-reference.md::TEV-A [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
-- docs/decks/sultai/teval-reference.md::TEV-B [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
-- docs/decks/sultai/teval-reference.md::TEV-D [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
-- docs/decks/sultai/teval-reference.md::TEV-E [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
-- docs/decks/sultai/teval-reference.md::TEV-F [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
+[WARNING] 11
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-A [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-D [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-E [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-F [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-G [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-A [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-B [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-D [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-E [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-F [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-G [POOL_MISSING] Card `Underrealm Lich` not found in provided pool. Closest match: `underream lich`.
 
-[INFO] 20
-- docs/decks/sultai/muldrotha-reference.md::MUL-A [TOTAL_OK] Deck total verified at 99.
-- docs/decks/sultai/muldrotha-reference.md::MUL-A [GC_OK] GC count verified at 3.
-- docs/decks/sultai/muldrotha-reference.md::MUL-D [TOTAL_OK] Deck total verified at 99.
-- docs/decks/sultai/muldrotha-reference.md::MUL-D [GC_OK] GC count verified at 3.
-- docs/decks/sultai/muldrotha-reference.md::MUL-E [TOTAL_OK] Deck total verified at 99.
-- docs/decks/sultai/muldrotha-reference.md::MUL-E [GC_OK] GC count verified at 3.
-- docs/decks/sultai/muldrotha-reference.md::MUL-F [TOTAL_OK] Deck total verified at 99.
-- docs/decks/sultai/muldrotha-reference.md::MUL-F [GC_OK] GC count verified at 3.
-- docs/decks/sultai/teval-reference.md::TEV-A [TOTAL_OK] Deck total verified at 99.
-- docs/decks/sultai/teval-reference.md::TEV-A [GC_OK] GC count verified at 3.
-- docs/decks/sultai/teval-reference.md::TEV-B [TOTAL_OK] Deck total verified at 99.
-- docs/decks/sultai/teval-reference.md::TEV-B [GC_OK] GC count verified at 3.
-- docs/decks/sultai/teval-reference.md::TEV-D [TOTAL_OK] Deck total verified at 99.
-- docs/decks/sultai/teval-reference.md::TEV-D [GC_OK] GC count verified at 3.
-- docs/decks/sultai/teval-reference.md::TEV-E [TOTAL_OK] Deck total verified at 99.
-- docs/decks/sultai/teval-reference.md::TEV-E [GC_OK] GC count verified at 3.
-- docs/decks/sultai/teval-reference.md::TEV-F [TOTAL_OK] Deck total verified at 99.
-- docs/decks/sultai/teval-reference.md::TEV-F [GC_OK] GC count verified at 3.
-- docs/decks/sultai/teval-reference.md::TEV-C [SKIP_NON_FULL] Skipped 99-card checks (no decklist sections in this build block).
-- docs/decks/sultai/user-card-pool-2026-02-22.txt [POOL_DUPLICATES] Pool file contains 46 duplicate entries (case-insensitive).
+[INFO] 24
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-A [TOTAL_OK] Deck total verified at 99.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-A [GC_OK] GC count verified at 3.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-D [TOTAL_OK] Deck total verified at 99.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-D [GC_OK] GC count verified at 3.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-E [TOTAL_OK] Deck total verified at 99.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-E [GC_OK] GC count verified at 3.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-F [TOTAL_OK] Deck total verified at 99.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-F [GC_OK] GC count verified at 3.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-G [TOTAL_OK] Deck total verified at 99.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md::MUL-G [GC_OK] GC count verified at 3.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-A [TOTAL_OK] Deck total verified at 99.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-A [GC_OK] GC count verified at 3.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-B [TOTAL_OK] Deck total verified at 99.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-B [GC_OK] GC count verified at 3.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-D [TOTAL_OK] Deck total verified at 99.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-D [GC_OK] GC count verified at 3.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-E [TOTAL_OK] Deck total verified at 99.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-E [GC_OK] GC count verified at 3.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-F [TOTAL_OK] Deck total verified at 99.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-F [GC_OK] GC count verified at 3.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-G [TOTAL_OK] Deck total verified at 99.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-G [GC_OK] GC count verified at 3.
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/teval-reference.md::TEV-C [SKIP_NON_FULL] Skipped 99-card checks (no decklist sections in this build block).
+- /Users/ng/cc-projects/mtg/docs/decks/sultai/user-card-pool-2026-02-22.txt [POOL_DUPLICATES] Pool file contains 46 duplicate entries (case-insensitive).
 
-Summary: 0 errors, 9 warnings, 20 info
+Summary: 0 errors, 11 warnings, 24 info

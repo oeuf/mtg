@@ -8,6 +8,7 @@
 - `/Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-teval-max-degen.md`
 - `/Users/ng/cc-projects/mtg/docs/decks/sultai/more-sultai-.md`
 - `/Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked.md`
+- `/Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md`
 - Consolidation excludes `.xlsx` files and trims duplicate conversational residue while preserving actionable swaps and deck content.
 
 ## Build Index
@@ -19,6 +20,7 @@
 | MUL-D | Max Degeneracy (Ring/Survival/Fierce) | `muldrotha-max-degen.md` | Yes | The One Ring / Survival / Fierce | max-degeneracy |
 | MUL-E | Max Degeneracy Turbo | `muldrotha-teval-max-degen.md` | Yes | Ancient Tomb / Mana Vault / Chrome Mox | max-degeneracy |
 | MUL-F | Maximum Degeneracy Bracket 3 (Locked) | `muldrotha-max-degeneracy-bracket3-locked.md` | Yes | Ancient Tomb / Mana Vault / Chrome Mox | max-degeneracy (locked) |
+| MUL-G | Maximum Degeneracy Bracket 3 (Locked G Shell) | `muldrotha-max-degeneracy-bracket3-locked-g.md` | Yes | Intuition / Gifts Ungiven / Survival | max-degeneracy (locked, genuine-new-shell) |
 
 ## Build Flavors
 
@@ -645,6 +647,163 @@ Status: max-degeneracy (full-99; locked bracket-3)
 - Win-condition requirement satisfied (4 documented lines, with multiple lines directly benefiting from Muldrotha recursion sequencing).
 - Dedicated locked-build validation report: `/Users/ng/cc-projects/mtg/docs/decks/sultai/max-degen-bracket3-build-validation-report.txt` (task-specific validator includes GC snapshot, pool-only, banned-card, and required-package checks).
 
+### MUL-G — Maximum Degeneracy Bracket 3 (Locked Intuition / Gifts / Survival)
+
+Source(s): `/Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md`
+Status: max-degeneracy (full-99; locked bracket-3; genuine new shell)
+
+#### Commander
+
+- Muldrotha, the Gravetide
+
+#### Game Changers
+
+- Intuition (GC)
+- Gifts Ungiven (GC)
+- Survival of the Fittest (GC)
+
+#### 99-card decklist
+
+##### Creatures (26)
+
+- Deathrite Shaman
+- Lotus Cobra
+- Stitcher's Supplier
+- Hedron Crab
+- Satyr Wayfinder
+- Ramunap Excavator
+- World Shaper
+- Underrealm Lich
+- Endurance
+- Meren of Clan Nel Toth
+- Sidisi, Brood Tyrant
+- Emry, Lurker of the Loch
+- Araumi of the Dead Tide
+- Spore Frog
+- Glen Elendra Archmage
+- Caustic Caterpillar
+- Haywire Mite
+- Syr Konrad, the Grim
+- Lord of Extinction
+- Jarad, Golgari Lich Lord
+- Gravecrawler
+- Pitiless Plunderer
+- Craterhoof Behemoth
+- Gravebreaker Lamia
+- Vile Entomber
+- Eternal Witness
+
+##### Artifacts (12)
+
+- Sol Ring
+- Lotus Petal
+- Skullclamp
+- Mesmeric Orb
+- Perpetual Timepiece
+- Crucible of Worlds
+- Conduit of Worlds
+- Birthing Pod
+- Altar of Dementia
+- Phyrexian Altar
+- Ashnod's Altar
+- Panharmonicon
+
+##### Enchantments (11)
+
+- Survival of the Fittest (GC)
+- Exploration
+- Animate Dead
+- Necromancy
+- Phyrexian Reclamation
+- Tortured Existence
+- Seal of Primordium
+- Seal of Removal
+- Seal of Doom
+- Kaya's Ghostform
+- Secrets of the Dead
+
+##### Instants (8)
+
+- Intuition (GC)
+- Gifts Ungiven (GC)
+- Entomb
+- An Offer You Can't Refuse
+- Swan Song
+- Force of Negation
+- Pact of Negation
+- Krosan Grip
+
+##### Sorceries (8)
+
+- Life from the Loam
+- Buried Alive
+- Reanimate
+- Victimize
+- Living Death (finisher)
+- Regrowth
+- Nature's Lore
+- Dread Return
+
+##### Lands (34)
+
+- Command Tower
+- Tropical Island
+- Bayou
+- Underground Sea
+- Breeding Pool
+- Overgrown Tomb
+- Watery Grave
+- Zagoth Triome
+- Polluted Delta
+- Verdant Catacombs
+- Misty Rainforest
+- Flooded Strand
+- Prismatic Vista
+- Fabled Passage
+- Evolving Wilds
+- Terramorphic Expanse
+- Boseiju, Who Endures
+- Otawara, Soaring City
+- Takenuma, Abandoned Mire
+- Bojuka Bog
+- Phyrexian Tower
+- Volrath's Stronghold
+- Mortuary Mire
+- High Market
+- Shifting Woodland
+- Dryad Arbor
+- Forest
+- Forest
+- Island
+- Swamp
+- Swamp
+- Underground River
+- Yavimaya Coast
+- Llanowar Wastes
+
+#### Summary / How it wins
+
+- `Living Death` + `Syr Konrad, the Grim`: self-mill and pile assembly stock the graveyard, then a protected `Living Death` converts graveyard volume into direct damage and a lethal swing board.
+- `Lord of Extinction` + `Jarad, Golgari Lich Lord`: use `Intuition` / `Gifts Ungiven`, dredge, and self-mill to supercharge `Lord`, then sacrifice it to `Jarad` for table-wide chunks or lethal.
+- `Gravecrawler` + (`Phyrexian Altar` or `Ashnod's Altar`) + `Pitiless Plunderer`: convert recursive creature loops into infinite-ish death triggers (`Syr Konrad`) or full-library mill via `Altar of Dementia`.
+- `Craterhoof Behemoth` closes stalled boards after recursive value turns (`Sidisi`, reanimation bursts, token bodies from `Insidious Roots`) instead of letting the deck spin wheels forever.
+- Cards: `Life from the Loam`, `World Shaper`, `Ramunap Excavator`.
+- Outcome: whichever goes to hand, the other two feed Muldrotha recursion or reanimation lines; this pile guarantees you start converting lands/yard into inevitability.
+- Full shell-specific subplans (pile templates / Crop target matrix), anti-hate plan, and social-risk notes are documented in the standalone G-shell doc `/Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md`.
+
+#### Swaps / Variants / Package options
+
+- None intentionally; this is a locked genuinely-new max-degeneracy Bracket 3 shell.
+- Novelty metrics and baseline diffs are documented in `/Users/ng/cc-projects/mtg/docs/decks/sultai/max-degen-bracket3-shell-g-build-notes.md`.
+
+#### Validation notes
+
+- Locked GC package is `Intuition`, `Gifts Ungiven`, `Survival of the Fittest` (exactly 3).
+- Hard-excludes prior-shell gravity cards (`Ancient Tomb`, `Mana Vault`, `Chrome Mox`, `The One Ring`, `Force of Will`, `Fierce Guardianship`, `Mox Diamond`, `Seedborn Muse`).
+- Standalone validation for this G-shell is performed by `scripts/deck_docs/validate_locked_b3_shell_g_decks.py`, including overlap/novelty thresholds vs `MUL-A/D/E/F`.
+- Pool alias handling accepts `Underrealm Lich` vs pool typo `Underream Lich`.
+- Dedicated G-shell validation report: `/Users/ng/cc-projects/mtg/docs/decks/sultai/max-degen-bracket3-shell-g-validation-report.txt` (includes novelty overlap thresholds vs prior builds, shell-identity checks, and pool/GC/banned-card validation).
+
 ## Additional Actionable Notes / Swaps
 
 - `Bloom Tender` -> `Satyr Wayfinder` is suggested as a power upgrade when acceleration matters more than extra self-mill setup.
@@ -656,14 +815,16 @@ Status: max-degeneracy (full-99; locked bracket-3)
 ## Validation Summary
 
 - Generated UTC: 2026-02-22T21:18:53+00:00
-- Full builds validated in this file: `MUL-A`, `MUL-D`, `MUL-E`, `MUL-F`.
+- Full builds validated in this file: `MUL-A`, `MUL-D`, `MUL-E`, `MUL-F`, `MUL-G`.
 - Structural validation status (generator pre-check): 0 hard errors, 0 warnings.
 - `MUL-A`: 99-card total = 99, GC count = 3.
 - `MUL-D`: 99-card total = 99, GC count = 3.
 - `MUL-E`: 99-card total = 99, GC count = 3.
 - `MUL-F`: 99-card total = 99, GC count = 3 (integrated from the locked standalone max-degen B3 build).
+- `MUL-G`: 99-card total = 99, GC count = 3 (integrated from the locked standalone max-degen B3 G-shell build).
 - Shared-source overflow repairs were documented per build where the source listed more cards than the declared category counts.
 - Optional card-pool membership validation is supported by `scripts/deck_docs/validate_commander_refs.py --pool-file <file>`.
-- Pool validation was run against `docs/decks/sultai/user-card-pool-2026-02-22.txt`; this file contributed 4 warnings in this reference (including `MUL-F`), all due to the pool typo `Underream Lich` vs the normalized deck card `Underrealm Lich`.
+- Pool validation was run against `docs/decks/sultai/user-card-pool-2026-02-22.txt`; this file contributed 5 warnings in this reference (including `MUL-F` and `MUL-G`), all due to the pool typo `Underream Lich` vs the normalized deck card `Underrealm Lich`.
 - Pool validation report with warnings is saved at `docs/decks/sultai/commander-reference-validation-report-with-pool.txt` (pool file also contains duplicate entries, reported as informational).
 - Locked max-degen integration addendum: `MUL-F` is sourced from `docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked.md` and validated by `docs/decks/sultai/max-degen-bracket3-build-validation-report.txt`.
+- G-shell integration addendum: `MUL-G` is sourced from `docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md` and validated by `docs/decks/sultai/max-degen-bracket3-shell-g-validation-report.txt`.
