@@ -29,6 +29,10 @@ class AtomicCardsParser:
             if legalities.get("commander") != "Legal":
                 continue
 
+            # Normalize double-faced card names: "X // Y" → "X", "X // X" → "X"
+            if " // " in card_name:
+                card_name = card_name.split(" // ")[0].strip()
+
             # Extract card data
             card = {
                 "name": card_name,
@@ -46,6 +50,13 @@ class AtomicCardsParser:
             }
 
             commander_cards.append(card)
+
+        # Deduplicate: after // normalization, front-face name may appear multiple times
+        seen: dict[str, dict] = {}
+        for card in commander_cards:
+            if card["name"] not in seen:
+                seen[card["name"]] = card
+        commander_cards = list(seen.values())
 
         print(f"✓ Parsed {len(commander_cards)} Commander-legal cards")
         return commander_cards

@@ -66,22 +66,23 @@ def search_cards(
         )
         params["roles"] = roles
 
-    where_clause = " AND ".join(conditions)
-    if where_clause:
-        where_clause = "WHERE " + where_clause
+    # Always include label filter; append other conditions if present
+    label_condition = "(c:Card OR c:Commander)"
+    all_conditions = [label_condition] + conditions
+    where_clause = "WHERE " + " AND ".join(all_conditions)
 
     skip = (page - 1) * limit
     params["skip"] = skip
     params["limit"] = limit
 
-    count_query = f"MATCH (c:Card) {where_clause} RETURN count(c) AS total"
+    count_query = f"MATCH (c) {where_clause} RETURN count(c) AS total"
     count_params = {k: v for k, v in params.items() if k not in ("skip", "limit")}
     count_result = session.run(count_query, count_params)
     count_record = count_result.single()
     total = count_record["total"] if count_record else 0
 
     query = f"""
-        MATCH (c:Card)
+        MATCH (c)
         {where_clause}
         RETURN c.name AS name, c.mana_cost AS mana_cost, c.cmc AS cmc,
                c.type_line AS type_line, c.oracle_text AS oracle_text,
@@ -114,10 +115,11 @@ def autocomplete_cards(
     session: Session = Depends(get_neo4j_session),
 ):
     """Fast autocomplete for card names with fuzzy re-ranking."""
-    label = "Commander" if commander_only else "Card"
+    base_match = "MATCH (c) WHERE (c:Card OR c:Commander)"
+    if commander_only:
+        base_match += " AND c:Commander"
     result = session.run(
-        f"MATCH (c:{label}) "
-        "WHERE toLower(c.name) CONTAINS toLower($q) "
+        base_match + " AND toLower(c.name) CONTAINS toLower($q) "
         "RETURN c.name AS name, c.type_line AS type_line, c.mana_cost AS mana_cost "
         "ORDER BY CASE WHEN toLower(c.name) STARTS WITH toLower($q) THEN 0 ELSE 1 END, "
         "c.edhrec_rank ASC "
@@ -163,32 +165,6 @@ def get_cards_by_role(
     return result.data()
 
 
-@router.get("/cards/{name:path}")
-def get_card_by_name(
-    name: str,
-    session: Session = Depends(get_neo4j_session),
-):
-    """Get a card by name."""
-    logger.info("[cards] get_card_by_name: name=%r", name)
-    result = session.run(
-        "MATCH (c:Card {name: $name}) "
-        "RETURN c.name AS name, c.mana_cost AS mana_cost, c.cmc AS cmc, "
-        "c.type_line AS type_line, c.oracle_text AS oracle_text, "
-        "c.color_identity AS color_identity, c.colors AS colors, "
-        "c.keywords AS keywords, c.is_legendary AS is_legendary, "
-        "c.edhrec_rank AS edhrec_rank, c.power AS power, c.toughness AS toughness, "
-        "c.functional_categories AS functional_categories, "
-        "c.mechanics AS mechanics, c.themes AS themes, "
-        "c.archetype AS archetype, c.popularity_score AS popularity_score",
-        {"name": name},
-    )
-    record = result.single()
-    logger.info("[cards] get_card_by_name: found=%s", record is not None)
-    if record is None:
-        raise HTTPException(status_code=404, detail=f"Card '{name}' not found")
-    return record.data()
-
-
 @router.get("/cards/{name:path}/similar")
 def get_similar_cards(
     name: str,
@@ -197,15 +173,18 @@ def get_similar_cards(
 ):
     """Get cards similar to the given card via embedding similarity."""
     logger.info("[cards] get_similar_cards: name=%r", name)
-    exists = session.run("MATCH (c:Card {name: $name}) RETURN c", {"name": name})
+    exists = session.run(
+        "MATCH (c {name: $name}) WHERE (c:Card OR c:Commander) RETURN c", {"name": name}
+    )
     if exists.single() is None:
         raise HTTPException(status_code=404, detail=f"Card '{name}' not found")
 
     result = session.run(
         """
-        MATCH (c:Card {name: $name})-[s:EMBEDDING_SIMILAR]-(other:Card)
-        RETURN other.name AS name, s.score AS score
-        ORDER BY s.score DESC
+        MATCH (c {name: $name})-[s:EMBEDDING_SIMILAR]-(other)
+        WHERE (c:Card OR c:Commander) AND (other:Card OR other:Commander)
+        RETURN other.name AS name, max(s.score) AS score
+        ORDER BY score DESC
         LIMIT $limit
         """,
         {"name": name, "limit": limit},
@@ -227,15 +206,18 @@ def get_card_synergies(
 ):
     """Get cards with synergy to the given card."""
     logger.info("[cards] get_card_synergies: name=%r", name)
-    exists = session.run("MATCH (c:Card {name: $name}) RETURN c", {"name": name})
+    exists = session.run(
+        "MATCH (c {name: $name}) WHERE (c:Card OR c:Commander) RETURN c", {"name": name}
+    )
     if exists.single() is None:
         raise HTTPException(status_code=404, detail=f"Card '{name}' not found")
 
     result = session.run(
         """
-        MATCH (c:Card {name: $name})-[s:SYNERGIZES_WITH]-(other:Card)
-        RETURN other.name AS name, s.synergy_score AS score
-        ORDER BY s.synergy_score DESC
+        MATCH (c {name: $name})-[s:SYNERGIZES_WITH]-(other)
+        WHERE (c:Card OR c:Commander) AND (other:Card OR other:Commander)
+        RETURN other.name AS name, max(s.synergy_score) AS score
+        ORDER BY score DESC
         LIMIT $limit
         """,
         {"name": name, "limit": limit},
@@ -257,13 +239,16 @@ def get_card_combos(
 ):
     """Get known combos involving the given card."""
     logger.info("[cards] get_card_combos: name=%r", name)
-    exists = session.run("MATCH (c:Card {name: $name}) RETURN c", {"name": name})
+    exists = session.run(
+        "MATCH (c {name: $name}) WHERE (c:Card OR c:Commander) RETURN c", {"name": name}
+    )
     if exists.single() is None:
         raise HTTPException(status_code=404, detail=f"Card '{name}' not found")
 
     result = session.run(
         """
-        MATCH (c:Card {name: $name})-[cb:COMBOS_WITH]-(other:Card)
+        MATCH (c {name: $name})-[cb:COMBOS_WITH]-(other)
+        WHERE (c:Card OR c:Commander) AND (other:Card OR other:Commander)
         RETURN other.name AS name, cb.combo_name AS combo_name,
                cb.description AS description
         ORDER BY cb.combo_name
@@ -278,3 +263,29 @@ def get_card_combos(
         "card": name,
         "combos": records,
     }
+
+
+@router.get("/cards/{name:path}")
+def get_card_by_name(
+    name: str,
+    session: Session = Depends(get_neo4j_session),
+):
+    """Get a card by name."""
+    logger.info("[cards] get_card_by_name: name=%r", name)
+    result = session.run(
+        "MATCH (c {name: $name}) WHERE (c:Card OR c:Commander) "
+        "RETURN c.name AS name, c.mana_cost AS mana_cost, c.cmc AS cmc, "
+        "c.type_line AS type_line, c.oracle_text AS oracle_text, "
+        "c.color_identity AS color_identity, c.colors AS colors, "
+        "c.keywords AS keywords, c.is_legendary AS is_legendary, "
+        "c.edhrec_rank AS edhrec_rank, c.power AS power, c.toughness AS toughness, "
+        "c.functional_categories AS functional_categories, "
+        "c.mechanics AS mechanics, c.themes AS themes, "
+        "c.archetype AS archetype, c.popularity_score AS popularity_score",
+        {"name": name},
+    )
+    record = result.single()
+    logger.info("[cards] get_card_by_name: found=%s", record is not None)
+    if record is None:
+        raise HTTPException(status_code=404, detail=f"Card '{name}' not found")
+    return record.data()

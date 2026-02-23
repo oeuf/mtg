@@ -89,7 +89,21 @@ class GDSScoring:
         query = """
         CALL gds.graph.project(
             'card-feature-graph',
-            ['Card', 'Mechanic', 'Functional_Role', 'Theme', 'Subtype', 'Zone', 'Phase'],
+            {
+                Card: {
+                    properties: [
+                        'cmc_normalized', 'mana_efficiency', 'is_colorless',
+                        'color_count', 'is_creature', 'is_instant_sorcery',
+                        'is_artifact', 'is_land', 'is_fast_mana_int'
+                    ]
+                },
+                Mechanic: {},
+                Functional_Role: {},
+                Theme: {},
+                Subtype: {},
+                Zone: {},
+                Phase: {}
+            },
             {
                 HAS_MECHANIC: {
                     type: 'HAS_MECHANIC',
@@ -252,9 +266,18 @@ class GDSScoring:
 
         return result[0] if result else {}
 
+    def clear_embedding_similar(self) -> int:
+        """Delete all EMBEDDING_SIMILAR relationships."""
+        print("Deleting stale EMBEDDING_SIMILAR relationships...")
+        query = "MATCH ()-[r:EMBEDDING_SIMILAR]->() DELETE r RETURN count(r) AS deleted"
+        result = self.conn.execute_query(query)
+        deleted = result[0]["deleted"] if result else 0
+        print(f"✓ Deleted {deleted} EMBEDDING_SIMILAR relationships")
+        return deleted
+
     def compute_fastrp_embeddings(self, projection_name: str = "card-feature-graph",
                                   embedding_dim: int = 128) -> Dict:
-        """Compute FastRP embeddings for cards."""
+        """Compute FastRP embeddings for cards using numeric node features."""
         print(f"Computing {embedding_dim}-dim FastRP embeddings on '{projection_name}'...")
 
         query = """
@@ -263,7 +286,21 @@ class GDSScoring:
             {
                 embeddingDimension: $dim,
                 writeProperty: 'embedding',
-                iterationWeights: [0.0, 1.0, 1.0]
+                iterationWeights: [0.0, 1.0, 1.0],
+                nodeSelfInfluence: 0.3,
+                nodeLabels: ['Card'],
+                featureProperties: [
+                    'cmc_normalized',
+                    'mana_efficiency',
+                    'is_colorless',
+                    'color_count',
+                    'is_creature',
+                    'is_instant_sorcery',
+                    'is_artifact',
+                    'is_land',
+                    'is_fast_mana_int'
+                ],
+                propertyRatio: 0.3
             }
         )
         YIELD nodePropertiesWritten, computeMillis

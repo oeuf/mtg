@@ -92,6 +92,41 @@ class TestCardsSearchEndpoints:
         response = client.get(f"/api/cards/{sample_card.name}/combos")
         assert response.status_code == 404
 
+    def test_similar_route_not_swallowed_by_generic(self, client_with_card):
+        """GET /cards/{name}/similar must resolve to the sub-resource route, not generic."""
+        response = client_with_card.get("/api/cards/Test Card/similar")
+        assert response.status_code == 200
+        data = response.json()
+        assert "similar_cards" in data
+        assert data["card"] == "Test Card"
+
+
+@pytest.fixture
+def client_with_card():
+    """Test client where 'Test Card' exists but has no relationships."""
+    from app.dependencies import get_neo4j_session
+
+    mock_session = MagicMock()
+    exists_result = MagicMock()
+    exists_result.single.return_value = MagicMock()  # card exists
+    empty_result = MagicMock()
+    empty_result.data.return_value = []
+
+    def run_side_effect(query, params=None, **kwargs):
+        name = (params or {}).get("name", "")
+        if name == "Test Card" and "RETURN c" in query and "EMBEDDING_SIMILAR" not in query and "SYNERGIZES_WITH" not in query:
+            return exists_result
+        return empty_result
+
+    mock_session.run.side_effect = run_side_effect
+
+    def override():
+        yield mock_session
+
+    app.dependency_overrides[get_neo4j_session] = override
+    yield TestClient(app)
+    app.dependency_overrides.clear()
+
 
 def _make_autocomplete_client(mock_records):
     """Create a test client with mock Neo4j returning given autocomplete records."""
@@ -193,11 +228,12 @@ class TestAutocompleteEndpoint:
                 params={"q": "atraxa", "commander_only": "true"},
             )
             assert response.status_code == 200
-            # Verify the Cypher query used Commander label
+            # Verify the Cypher query filters by Commander label
             call_args = mock_session.run.call_args
             cypher_query = call_args[0][0]
             assert "Commander" in cypher_query
-            assert "Card" not in cypher_query.split("Commander")[0].split("MATCH")[1]
+            # When commander_only=true, query must include AND c:Commander filter
+            assert "AND c:Commander" in cypher_query
         finally:
             app.dependency_overrides.clear()
 
