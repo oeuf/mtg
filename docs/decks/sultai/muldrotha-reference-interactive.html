@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Muldrotha, the Gravetide Deck Companion</title>
+  <style>
+    :root {
+      --bg: #f6f8f6;
+      --bg-2: #eef2ee;
+      --panel: #ffffff;
+      --ink: #122019;
+      --muted: #4d5b53;
+      --line: #d6dfd8;
+      --accent: #0f7a63;
+      --accent-2: #d8f2ea;
+      --max: #8b1e3f;
+      --max-soft: #f6dbe3;
+      --tuned: #2e5c8a;
+      --tuned-soft: #dbe9f7;
+      --mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+      --sans: "Space Grotesk", "Avenir Next", "Segoe UI", sans-serif;
+      --radius: 14px;
+      --shadow: 0 12px 28px rgba(18, 32, 25, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 700px at 10% -10%, #d9efe6 0%, transparent 55%),
+        radial-gradient(900px 520px at 92% -15%, #e8efdd 0%, transparent 45%),
+        linear-gradient(170deg, var(--bg) 0%, var(--bg-2) 100%);
+      min-height: 100vh;
+    }
+
+    .shell {
+      width: min(1380px, 96vw);
+      margin: 22px auto 34px;
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 340px 1fr;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .left {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 12px;
+      align-self: start;
+      position: sticky;
+      top: 14px;
+    }
+
+    .hero {
+      padding: 16px 16px 14px;
+      background:
+        linear-gradient(150deg, #f8fbf8 0%, #ebf6f1 60%, #f7fcf9 100%);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.3rem;
+      letter-spacing: 0.01em;
+    }
+
+    .meta {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+
+    .controls {
+      padding: 14px 14px 8px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .control-row {
+      display: grid;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    select, input[type="search"] {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fcfffc;
+      padding: 9px 10px;
+      font: inherit;
+      color: var(--ink);
+    }
+
+    .gc-chip-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 136px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px;
+      background: #fcfffc;
+    }
+
+    .gc-chip {
+      border: 1px solid #bfd4ca;
+      background: #f4faf7;
+      color: #164234;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      cursor: pointer;
+      user-select: none;
+      transition: 110ms ease;
+    }
+
+    .gc-chip[aria-pressed="true"] {
+      background: #0f7a63;
+      border-color: #0f7a63;
+      color: #fff;
+    }
+
+    .build-list {
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      max-height: 56vh;
+      overflow: auto;
+    }
+
+    .build-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      text-align: left;
+      border-radius: 12px;
+      padding: 10px;
+      cursor: pointer;
+      display: grid;
+      gap: 6px;
+      transition: 110ms ease;
+    }
+
+    .build-btn:hover {
+      border-color: #8eb7a7;
+    }
+
+    .build-btn.active {
+      border-color: var(--accent);
+      box-shadow: inset 0 0 0 1px var(--accent);
+      background: #f4fbf8;
+    }
+
+    .build-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .build-id {
+      font-family: var(--mono);
+      font-size: 0.84rem;
+      color: #1a3a30;
+      font-weight: 700;
+    }
+
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+    }
+
+    .badge.max {
+      background: var(--max-soft);
+      border-color: #e7afc1;
+      color: #6b1731;
+    }
+
+    .badge.tuned {
+      background: var(--tuned-soft);
+      border-color: #abc8e5;
+      color: #214b76;
+    }
+
+    .build-title {
+      font-size: 0.88rem;
+      line-height: 1.3;
+      color: #233a31;
+    }
+
+    .build-sub {
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+
+    .main {
+      padding: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .matrix {
+      padding: 14px;
+    }
+
+    .matrix h2 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+    }
+
+    .matrix-table th, .matrix-table td {
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      padding: 8px 6px;
+      vertical-align: top;
+    }
+
+    .matrix-table th {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .detail {
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .detail h2 {
+      margin: 0;
+      font-size: 1.26rem;
+      line-height: 1.2;
+    }
+
+    .detail-top {
+      display: grid;
+      gap: 8px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pill {
+      background: var(--accent-2);
+      border: 1px solid #a6dcca;
+      color: #174837;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 0.74rem;
+      font-weight: 600;
+    }
+
+    .sources {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .deck-search-wrap {
+      display: grid;
+      gap: 6px;
+    }
+
+    .deck-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .section-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fcfffd;
+      padding: 10px;
+      min-height: 150px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: baseline;
+      border-bottom: 1px solid #edf3ef;
+      padding-bottom: 6px;
+    }
+
+    .section-name {
+      font-weight: 700;
+      font-size: 0.84rem;
+    }
+
+    .section-count {
+      font-size: 0.74rem;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    .cards {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 3px;
+      font-size: 0.8rem;
+      line-height: 1.35;
+    }
+
+    .cards li {
+      border-radius: 6px;
+      padding: 1px 4px;
+    }
+
+    .cards li.hit {
+      background: #fff4bf;
+    }
+
+    .two-col {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .note-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px;
+      background: #fcfffd;
+      min-height: 120px;
+    }
+
+    .note-card h3 {
+      margin: 0 0 7px;
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+
+    .note-card ul {
+      margin: 0;
+      padding-left: 16px;
+      display: grid;
+      gap: 4px;
+      font-size: 0.83rem;
+      line-height: 1.35;
+    }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 18px;
+      color: var(--muted);
+      text-align: center;
+      background: #fbfdfb;
+    }
+
+    @media (max-width: 1040px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+      .left {
+        position: static;
+      }
+      .build-list {
+        max-height: 340px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="left">
+      <section class="panel hero">
+        <h1>Muldrotha, the Gravetide Deck Companion</h1>
+        <div class="meta" id="meta"></div>
+      </section>
+
+      <section class="panel controls" aria-label="Filters">
+        <div class="control-row">
+          <label for="commanderFilter">Commander</label>
+          <select id="commanderFilter"></select>
+        </div>
+        <div class="control-row">
+          <label for="levelFilter">Degeneracy Level</label>
+          <select id="levelFilter"></select>
+        </div>
+        <div class="control-row">
+          <label for="textFilter">Build/Card Search</label>
+          <input id="textFilter" type="search" placeholder="type card or build id">
+        </div>
+        <div class="control-row">
+          <label>Game Changer Filter (must include all selected)</label>
+          <div id="gcFilterWrap" class="gc-chip-wrap"></div>
+        </div>
+      </section>
+
+      <section class="panel build-list" id="buildList" aria-label="Build list"></section>
+    </aside>
+
+    <main class="main">
+      <section class="panel matrix">
+        <h2>Game Changer Package Matrix</h2>
+        <table class="matrix-table" id="matrixTable">
+          <thead>
+            <tr><th>Commander</th><th>GC Package</th><th>Builds</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <section class="panel detail" id="detail"></section>
+    </main>
+  </div>
+
+  <script>
+    const DATA = {"meta": {"generatedAtUtc": "2026-03-01 15:57:56 UTC", "buildCount": 5, "commanderCount": 1, "pageTitle": "Muldrotha, the Gravetide Deck Companion"}, "filters": {"commanders": ["Muldrotha, the Gravetide"], "levels": ["Maximum", "Maximum (New Shell)", "Tuned"], "gcCards": ["Ancient Tomb", "Chrome Mox", "Fierce Guardianship", "Force of Will", "Gifts Ungiven", "Intuition", "Mana Vault", "Survival of the Fittest", "The One Ring"]}, "packageMatrix": {"Muldrotha, the Gravetide": {"Survival of the Fittest / The One Ring / Force of Will": ["MUL-A"], "The One Ring / Survival of the Fittest / Fierce Guardianship": ["MUL-D"], "Ancient Tomb / Mana Vault / Chrome Mox": ["MUL-E", "MUL-F"], "Intuition / Gifts Ungiven / Survival of the Fittest": ["MUL-G"]}}, "builds": [{"id": "MUL-A", "title": "Authoritative Bracket 3 (Default)", "commander": "Muldrotha, the Gravetide", "status": "authoritative (full-99)", "degeneracyLevel": "Tuned", "gameChangers": ["Survival of the Fittest", "The One Ring", "Force of Will"], "totalCards": 99, "sources": ["/Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-3.md", "/Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-2.md"], "summary": ["Primary cash-out is Living Death, backed by Syr Konrad drain and Lord of Extinction + Jarad conversion lines.", "The list is tuned for durability: Perpetual Timepiece, Soul-Guide Lantern, and dense interaction keep it functional through graveyard hate.", "Package A prioritizes consistency and rebuild speed over the Cyclonic Rift-style 'reset and kill' line."], "swaps": ["Package B (Control + Closer): swap The One Ring, Survival of the Fittest, Force of Will, and Seal of Primordium for Rhystic Study, Cyclonic Rift, Fierce Guardianship, and Pernicious Deed (from muldrotha-2.md).", "Package C (Turbo): swap in Ancient Tomb, Mana Vault, and Chrome Mox for Exotic Orchard, Arcane Signet, and Talisman of Resilience (from muldrotha-2.md).", "Creature swap knobs (from muldrotha-2.md): Ledger Shredder -> Glen Elendra Archmage, Accursed Marauder -> Meren of Clan Nel Toth, Massacre Wurm -> Toxrill, the Corrosive, Satyr Wayfinder -> Emry, Lurker of the Loch."], "validation": ["No source-specific repairs were required during consolidation."], "deckSections": [{"name": "Creatures", "declared": 21, "cards": ["Birds of Paradise", "Deathrite Shaman", "Stitcher\u2019s Supplier", "Hedron Crab", "Satyr Wayfinder", "Nyx Weaver", "Ramunap Excavator", "Eternal Witness", "World Shaper", "Underrealm Lich", "Baleful Strix", "Ledger Shredder", "Plaguecrafter", "Accursed Marauder", "Mulldrifter", "River Kelpie", "Massacre Wurm (FINISHER)", "Dauthi Voidwalker", "Syr Konrad, the Grim (FINISHER)", "Lord of Extinction (FINISHER piece)", "Jarad, Golgari Lich Lord (FINISHER piece)"]}, {"name": "Artifacts", "declared": 12, "cards": ["Sol Ring", "Arcane Signet", "Talisman of Curiosity", "Talisman of Resilience", "Skullclamp", "Lightning Greaves", "Mesmeric Orb", "Soul-Guide Lantern (graveyard-hate / anti-hate tool)", "Perpetual Timepiece (anti-exile / yard insurance)", "Crucible of Worlds", "Conduit of Worlds", "The One Ring (GC)"]}, {"name": "Enchantments", "declared": 7, "cards": ["Exploration", "Phyrexian Reclamation", "Animate Dead", "Necromancy", "Sylvan Library", "Seal of Primordium (remove hate pieces)", "Survival of the Fittest (GC)"]}, {"name": "Instants", "declared": 15, "cards": ["Entomb", "Noxious Revival", "An Offer You Can\u2019t Refuse", "Swan Song", "Counterspell", "Mana Drain", "Force of Negation", "Assassin\u2019s Trophy", "Beast Within", "Krosan Grip", "Nature\u2019s Claim", "Heroic Intervention", "Lim-Dul\u2019s Vault", "Fact or Fiction", "Force of Will (GC)"]}, {"name": "Sorceries", "declared": 8, "cards": ["Life from the Loam", "Buried Alive", "Reanimate", "Victimize", "Living Death (FINISHER / primary cash-out)", "Regrowth", "Nature\u2019s Lore", "Three Visits"]}, {"name": "Lands", "declared": 36, "cards": ["Command Tower", "Tropical Island", "Bayou", "Underground Sea", "Breeding Pool", "Overgrown Tomb", "Watery Grave", "Zagoth Triome", "Morphic Pool", "Rejuvenating Springs", "Undergrowth Stadium", "Reflecting Pool", "Mana Confluence", "City of Brass", "Exotic Orchard", "Polluted Delta", "Verdant Catacombs", "Misty Rainforest", "Marsh Flats", "Flooded Strand", "Windswept Heath", "Wooded Foothills", "Scalding Tarn", "Prismatic Vista", "Bloodstained Mire", "Fabled Passage", "Darkslick Shores", "Botanical Sanctum", "Blooming Marsh", "Deathcap Glade", "Dreamroot Cascade", "Shipwreck Marsh", "Bojuka Bog (hate back / tactical nuke)", "Takenuma, Abandoned Mire", "Otawara, Soaring City", "Boseiju, Who Endures"]}]}, {"id": "MUL-D", "title": "Max Degeneracy (The One Ring / Survival / Fierce)", "commander": "Muldrotha, the Gravetide", "status": "max-degeneracy (full-99)", "degeneracyLevel": "Maximum", "gameChangers": ["The One Ring", "Survival of the Fittest", "Fierce Guardianship"], "totalCards": 99, "sources": ["/Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degen.md"], "summary": ["Uses Survival of the Fittest plus Muldrotha recursion to turn the graveyard into a second hand every turn.", "Supports multiple lethal cash-outs: Living Death, Syr Konrad, Jarad + Lord of Extinction, and Craterhoof Behemoth.", "Built to fight graveyard hate with removal density plus Perpetual Timepiece, Soul-Guide Lantern, Bojuka Bog, and channel lands."], "swaps": ["None explicitly provided in source; this source is a locked degen list with a short rationale section."], "validation": ["No source-specific repairs were required during consolidation."], "deckSections": [{"name": "Creatures", "declared": 23, "cards": ["Birds of Paradise", "Deathrite Shaman", "Bloom Tender", "Stitcher\u2019s Supplier", "Hedron Crab", "Satyr Wayfinder", "Nyx Weaver", "Underrealm Lich", "Baleful Strix", "Eternal Witness", "Ramunap Excavator", "World Shaper", "Dauthi Voidwalker", "Caustic Caterpillar", "Haywire Mite", "Plaguecrafter", "Accursed Marauder", "Pitiless Plunderer", "Gravecrawler", "Syr Konrad, the Grim", "Jarad, Golgari Lich Lord", "Lord of Extinction", "Craterhoof Behemoth"]}, {"name": "Artifacts", "declared": 12, "cards": ["Sol Ring", "Arcane Signet", "Talisman of Curiosity", "Talisman of Dominance", "Skullclamp", "Lightning Greaves", "Mesmeric Orb", "Soul-Guide Lantern", "Perpetual Timepiece", "Crucible of Worlds", "Phyrexian Altar", "The One Ring (GC)"]}, {"name": "Enchantments", "declared": 6, "cards": ["Exploration", "Phyrexian Reclamation", "Animate Dead", "Necromancy", "Seal of Primordium", "Survival of the Fittest (GC)"]}, {"name": "Instants", "declared": 14, "cards": ["Entomb", "Noxious Revival", "An Offer You Can\u2019t Refuse", "Swan Song", "Arcane Denial", "Counterspell", "Force of Negation", "Pact of Negation", "Fierce Guardianship (GC)", "Assassin\u2019s Trophy", "Beast Within", "Krosan Grip", "Nature\u2019s Claim", "Heroic Intervention"]}, {"name": "Sorceries", "declared": 8, "cards": ["Life from the Loam", "Buried Alive", "Reanimate", "Victimize", "Living Death", "Regrowth", "Nature\u2019s Lore", "Three Visits"]}, {"name": "Lands", "declared": 36, "cards": ["Command Tower", "Tropical Island", "Bayou", "Underground Sea", "Breeding Pool", "Overgrown Tomb", "Watery Grave", "Zagoth Triome", "Morphic Pool", "Rejuvenating Springs", "Undergrowth Stadium", "Reflecting Pool", "Mana Confluence", "City of Brass", "Polluted Delta", "Verdant Catacombs", "Misty Rainforest", "Marsh Flats", "Flooded Strand", "Windswept Heath", "Wooded Foothills", "Scalding Tarn", "Prismatic Vista", "Bloodstained Mire", "Fabled Passage", "Darkslick Shores", "Botanical Sanctum", "Blooming Marsh", "Deathcap Glade", "Dreamroot Cascade", "Shipwreck Marsh", "Bojuka Bog", "Volrath\u2019s Stronghold", "Boseiju, Who Endures", "Otawara, Soaring City", "Takenuma, Abandoned Mire"]}]}, {"id": "MUL-E", "title": "Max Degeneracy Turbo (Ancient Tomb / Mana Vault / Chrome Mox)", "commander": "Muldrotha, the Gravetide", "status": "max-degeneracy (full-99)", "degeneracyLevel": "Maximum", "gameChangers": ["Ancient Tomb", "Mana Vault", "Chrome Mox"], "totalCards": 99, "sources": ["/Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-teval-max-degen.md"], "summary": ["Turbo-Muldrotha plan: deploy Muldrotha early with fast mana, then loop self-mill and recursion engines for inevitability.", "Wincon snapshot from source: Living Death, Syr Konrad, and Jarad/Lord of Extinction finishers after engine setup.", "Graveyard-hate plan in source emphasizes removal, Perpetual Timepiece, and graveyard disruption (Dauthi, Bog, Lantern)."], "swaps": ["None explicitly provided in source; this source is a locked turbo-degen variant."], "validation": ["Source declared Instants (13) but listed 15; trimmed overflow to match declared 99: Lim-Dul\u2019s Vault, Fact or Fiction."], "deckSections": [{"name": "Creatures", "declared": 22, "cards": ["Birds of Paradise", "Deathrite Shaman", "Bloom Tender", "Stitcher\u2019s Supplier", "Hedron Crab", "Nyx Weaver", "Ramunap Excavator", "Eternal Witness", "World Shaper", "Underrealm Lich", "Baleful Strix", "Ledger Shredder", "Dauthi Voidwalker", "Endurance", "Plaguecrafter", "Accursed Marauder", "Mulldrifter", "River Kelpie", "Syr Konrad, the Grim (finisher)", "Lord of Extinction (finisher piece)", "Jarad, Golgari Lich Lord (finisher piece)", "Massacre Wurm (finisher)"]}, {"name": "Artifacts", "declared": 15, "cards": ["Sol Ring", "Arcane Signet", "Talisman of Curiosity", "Talisman of Dominance", "Talisman of Resilience", "Skullclamp", "Lightning Greaves", "Swiftfoot Boots", "Mesmeric Orb", "Soul-Guide Lantern", "Perpetual Timepiece", "Crucible of Worlds", "Conduit of Worlds", "Mana Vault (GC)", "Chrome Mox (GC)"]}, {"name": "Enchantments", "declared": 5, "cards": ["Exploration", "Phyrexian Reclamation", "Animate Dead", "Necromancy", "Seal of Primordium"]}, {"name": "Instants", "declared": 13, "cards": ["Entomb", "Noxious Revival", "An Offer You Can\u2019t Refuse", "Swan Song", "Counterspell", "Mana Drain", "Force of Negation", "Pact of Negation", "Assassin\u2019s Trophy", "Beast Within", "Krosan Grip", "Nature\u2019s Claim", "Heroic Intervention"]}, {"name": "Sorceries", "declared": 8, "cards": ["Life from the Loam", "Buried Alive", "Reanimate", "Victimize", "Living Death (finisher)", "Regrowth", "Nature\u2019s Lore", "Three Visits"]}, {"name": "Lands", "declared": 36, "cards": ["Command Tower", "Tropical Island", "Bayou", "Underground Sea", "Breeding Pool", "Overgrown Tomb", "Watery Grave", "Zagoth Triome", "Morphic Pool", "Rejuvenating Springs", "Undergrowth Stadium", "Reflecting Pool", "Mana Confluence", "City of Brass", "Polluted Delta", "Verdant Catacombs", "Misty Rainforest", "Marsh Flats", "Windswept Heath", "Wooded Foothills", "Scalding Tarn", "Prismatic Vista", "Bloodstained Mire", "Fabled Passage", "Evolving Wilds", "Darkslick Shores", "Botanical Sanctum", "Blooming Marsh", "Deathcap Glade", "Dreamroot Cascade", "Shipwreck Marsh", "Bojuka Bog", "Takenuma, Abandoned Mire", "Otawara, Soaring City", "Boseiju, Who Endures", "Ancient Tomb (GC)"]}]}, {"id": "MUL-F", "title": "Maximum Degeneracy Bracket 3 (Locked Turbo-Recursion)", "commander": "Muldrotha, the Gravetide", "status": "max-degeneracy (full-99; locked bracket-3)", "degeneracyLevel": "Maximum", "gameChangers": ["Ancient Tomb", "Mana Vault", "Chrome Mox"], "totalCards": 99, "sources": ["/Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked.md"], "summary": ["Living Death + Syr Konrad, the Grim: self-mill with Mesmeric Orb, Stitcher's Supplier, Hedron Crab, and tutor bodies (Buried Alive, Vile Entomber, Gravebreaker Lamia), then cash out with a protected Living Death for stacked Konrad triggers and immediate swing pressure.", "Lord of Extinction + Jarad, Golgari Lich Lord: fill both graveyards aggressively, land Lord, then fling with Jarad; Muldrotha recursion lets you replay missing permanent pieces and re-establish the kill after interaction.", "Craterhoof Behemoth conversion: build a wide board via recursive cheap permanents, Sidisi, Brood Tyrant zombie generation, reanimation bursts, and sac-loop rebuilds, then end the game with Hoof instead of durdling.", "Loop kill: Gravecrawler + Phyrexian Altar + Pitiless Plunderer (with a Zombie in play, often Stitcher's Supplier or a Sidisi token) generates effectively infinite death/ETB churn; convert with Syr Konrad or mill tables with Altar of Dementia.", "Full anti-hate plan, degeneracy rationale, and social-risk notes are documented in the standalone locked build doc /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked.md."], "swaps": ["None intentionally; this is a locked maximum-degeneracy Bracket 3 build.", "For cut/add rationale and rejected candidates, see /Users/ng/cc-projects/mtg/docs/decks/sultai/max-degen-bracket3-build-notes.md."], "validation": ["Built from MUL-E in /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-reference.md with documented cuts/adds in max-degen-bracket3-build-notes.md.", "Target GC package locked to Ancient Tomb, Mana Vault, Chrome Mox (exactly 3).", "Sol Ring is included and does not count against the GC cap; Wizards explicitly excluded it from the Game Changers list in the Brackets beta FAQ and reiterated that position in later updates.", "Commander legality and pool membership are validated by validate_locked_b3_decks.py; Primeval Titan is explicitly disallowed even though present in the pool.", "Win-condition requirement satisfied (4 documented lines, with multiple lines directly benefiting from Muldrotha recursion sequencing).", "Dedicated locked-build validation report: /Users/ng/cc-projects/mtg/docs/decks/sultai/max-degen-bracket3-build-validation-report.txt (task-specific validator includes GC snapshot, pool-only, banned-card, and required-package checks)."], "deckSections": [{"name": "Creatures", "declared": 25, "cards": ["Birds of Paradise", "Deathrite Shaman", "Bloom Tender", "Stitcher\u2019s Supplier", "Hedron Crab", "Ramunap Excavator", "Eternal Witness", "World Shaper", "Underrealm Lich", "Dauthi Voidwalker", "Endurance", "Syr Konrad, the Grim (finisher)", "Lord of Extinction (finisher piece)", "Jarad, Golgari Lich Lord (finisher piece)", "Satyr Wayfinder", "Caustic Caterpillar", "Haywire Mite", "Spore Frog", "Glen Elendra Archmage", "Pitiless Plunderer", "Gravecrawler", "Gravebreaker Lamia", "Vile Entomber", "Craterhoof Behemoth", "Sidisi, Brood Tyrant"]}, {"name": "Artifacts", "declared": 14, "cards": ["Sol Ring", "Talisman of Curiosity", "Talisman of Dominance", "Skullclamp", "Lightning Greaves", "Mesmeric Orb", "Perpetual Timepiece", "Crucible of Worlds", "Conduit of Worlds", "Mana Vault (GC)", "Chrome Mox (GC)", "Phyrexian Altar", "Altar of Dementia", "Birthing Pod"]}, {"name": "Enchantments", "declared": 7, "cards": ["Exploration", "Phyrexian Reclamation", "Animate Dead", "Necromancy", "Seal of Primordium", "Tortured Existence", "Kaya's Ghostform"]}, {"name": "Instants", "declared": 10, "cards": ["Entomb", "An Offer You Can\u2019t Refuse", "Swan Song", "Mana Drain", "Force of Negation", "Pact of Negation", "Assassin\u2019s Trophy", "Krosan Grip", "Nature\u2019s Claim", "Heroic Intervention"]}, {"name": "Sorceries", "declared": 7, "cards": ["Life from the Loam", "Buried Alive", "Reanimate", "Victimize", "Living Death (finisher)", "Regrowth", "Nature\u2019s Lore"]}, {"name": "Lands", "declared": 36, "cards": ["Command Tower", "Tropical Island", "Bayou", "Underground Sea", "Breeding Pool", "Overgrown Tomb", "Watery Grave", "Zagoth Triome", "Morphic Pool", "Rejuvenating Springs", "Undergrowth Stadium", "Reflecting Pool", "Mana Confluence", "City of Brass", "Polluted Delta", "Verdant Catacombs", "Misty Rainforest", "Marsh Flats", "Windswept Heath", "Wooded Foothills", "Scalding Tarn", "Prismatic Vista", "Bloodstained Mire", "Fabled Passage", "Evolving Wilds", "Darkslick Shores", "Botanical Sanctum", "Blooming Marsh", "Deathcap Glade", "Bojuka Bog", "Takenuma, Abandoned Mire", "Otawara, Soaring City", "Boseiju, Who Endures", "Ancient Tomb (GC)", "Phyrexian Tower", "Volrath's Stronghold"]}]}, {"id": "MUL-G", "title": "Maximum Degeneracy Bracket 3 (Locked Intuition / Gifts / Survival)", "commander": "Muldrotha, the Gravetide", "status": "max-degeneracy (full-99; locked bracket-3; genuine new shell)", "degeneracyLevel": "Maximum (New Shell)", "gameChangers": ["Intuition", "Gifts Ungiven", "Survival of the Fittest"], "totalCards": 99, "sources": ["/Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md"], "summary": ["Living Death + Syr Konrad, the Grim: self-mill and pile assembly stock the graveyard, then a protected Living Death converts graveyard volume into direct damage and a lethal swing board.", "Lord of Extinction + Jarad, Golgari Lich Lord: use Intuition / Gifts Ungiven, dredge, and self-mill to supercharge Lord, then sacrifice it to Jarad for table-wide chunks or lethal.", "Gravecrawler + (Phyrexian Altar or Ashnod's Altar) + Pitiless Plunderer: convert recursive creature loops into infinite-ish death triggers (Syr Konrad) or full-library mill via Altar of Dementia.", "Craterhoof Behemoth closes stalled boards after recursive value turns (Sidisi, reanimation bursts, token bodies from Insidious Roots) instead of letting the deck spin wheels forever.", "Cards: Life from the Loam, World Shaper, Ramunap Excavator.", "Outcome: whichever goes to hand, the other two feed Muldrotha recursion or reanimation lines; this pile guarantees you start converting lands/yard into inevitability.", "Full shell-specific subplans (pile templates / Crop target matrix), anti-hate plan, and social-risk notes are documented in the standalone G-shell doc /Users/ng/cc-projects/mtg/docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md."], "swaps": ["None intentionally; this is a locked genuinely-new max-degeneracy Bracket 3 shell.", "Novelty metrics and baseline diffs are documented in /Users/ng/cc-projects/mtg/docs/decks/sultai/max-degen-bracket3-shell-g-build-notes.md."], "validation": ["Locked GC package is Intuition, Gifts Ungiven, Survival of the Fittest (exactly 3).", "Hard-excludes prior-shell gravity cards (Ancient Tomb, Mana Vault, Chrome Mox, The One Ring, Force of Will, Fierce Guardianship, Mox Diamond, Seedborn Muse).", "Standalone validation for this G-shell is performed by scripts/deck_docs/validate_locked_b3_shell_g_decks.py, including overlap/novelty thresholds vs MUL-A/D/E/F.", "Pool alias handling accepts Underrealm Lich vs pool typo Underream Lich.", "Dedicated G-shell validation report: /Users/ng/cc-projects/mtg/docs/decks/sultai/max-degen-bracket3-shell-g-validation-report.txt (includes novelty overlap thresholds vs prior builds, shell-identity checks, and pool/GC/banned-card validation).", "Bloom Tender -> Satyr Wayfinder is suggested as a power upgrade when acceleration matters more than extra self-mill setup.", "Sheoldred, the Apocalypse -> Mulldrifter is suggested for a higher-impact threat / life-total stabilizer line.", "Volrath\u2019s Stronghold (land) -> Exotic Orchard is suggested to improve graveyard-independent recursion versus exile hate.", "These swaps originated in more-sultai-.md; duplicate blocks were deduplicated during consolidation.", "Raw-note provenance retained: more-sultai-.md contains repeated versions of the same Muldrotha swap block; only one copy is included here.", "Generated UTC: 2026-02-22T21:18:53+00:00", "Full builds validated in this file: MUL-A, MUL-D, MUL-E, MUL-F, MUL-G.", "Structural validation status (generator pre-check): 0 hard errors, 0 warnings.", "MUL-A: 99-card total = 99, GC count = 3.", "MUL-D: 99-card total = 99, GC count = 3.", "MUL-E: 99-card total = 99, GC count = 3.", "MUL-F: 99-card total = 99, GC count = 3 (integrated from the locked standalone max-degen B3 build).", "MUL-G: 99-card total = 99, GC count = 3 (integrated from the locked standalone max-degen B3 G-shell build).", "Shared-source overflow repairs were documented per build where the source listed more cards than the declared category counts.", "Optional card-pool membership validation is supported by scripts/deck_docs/validate_commander_refs.py --pool-file <file>.", "Pool validation was run against docs/decks/sultai/user-card-pool-2026-02-22.txt; this file contributed 5 warnings in this reference (including MUL-F and MUL-G), all due to the pool typo Underream Lich vs the normalized deck card Underrealm Lich.", "Pool validation report with warnings is saved at docs/decks/sultai/commander-reference-validation-report-with-pool.txt (pool file also contains duplicate entries, reported as informational).", "Locked max-degen integration addendum: MUL-F is sourced from docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked.md and validated by docs/decks/sultai/max-degen-bracket3-build-validation-report.txt.", "G-shell integration addendum: MUL-G is sourced from docs/decks/sultai/muldrotha-max-degeneracy-bracket3-locked-g.md and validated by docs/decks/sultai/max-degen-bracket3-shell-g-validation-report.txt."], "deckSections": [{"name": "Creatures", "declared": 26, "cards": ["Deathrite Shaman", "Lotus Cobra", "Stitcher's Supplier", "Hedron Crab", "Satyr Wayfinder", "Ramunap Excavator", "World Shaper", "Underrealm Lich", "Endurance", "Meren of Clan Nel Toth", "Sidisi, Brood Tyrant", "Emry, Lurker of the Loch", "Araumi of the Dead Tide", "Spore Frog", "Glen Elendra Archmage", "Caustic Caterpillar", "Haywire Mite", "Syr Konrad, the Grim", "Lord of Extinction", "Jarad, Golgari Lich Lord", "Gravecrawler", "Pitiless Plunderer", "Craterhoof Behemoth", "Gravebreaker Lamia", "Vile Entomber", "Eternal Witness"]}, {"name": "Artifacts", "declared": 12, "cards": ["Sol Ring", "Lotus Petal", "Skullclamp", "Mesmeric Orb", "Perpetual Timepiece", "Crucible of Worlds", "Conduit of Worlds", "Birthing Pod", "Altar of Dementia", "Phyrexian Altar", "Ashnod's Altar", "Panharmonicon"]}, {"name": "Enchantments", "declared": 11, "cards": ["Survival of the Fittest (GC)", "Exploration", "Animate Dead", "Necromancy", "Phyrexian Reclamation", "Tortured Existence", "Seal of Primordium", "Seal of Removal", "Seal of Doom", "Kaya's Ghostform", "Secrets of the Dead"]}, {"name": "Instants", "declared": 8, "cards": ["Intuition (GC)", "Gifts Ungiven (GC)", "Entomb", "An Offer You Can't Refuse", "Swan Song", "Force of Negation", "Pact of Negation", "Krosan Grip"]}, {"name": "Sorceries", "declared": 8, "cards": ["Life from the Loam", "Buried Alive", "Reanimate", "Victimize", "Living Death (finisher)", "Regrowth", "Nature's Lore", "Dread Return"]}, {"name": "Lands", "declared": 34, "cards": ["Command Tower", "Tropical Island", "Bayou", "Underground Sea", "Breeding Pool", "Overgrown Tomb", "Watery Grave", "Zagoth Triome", "Polluted Delta", "Verdant Catacombs", "Misty Rainforest", "Flooded Strand", "Prismatic Vista", "Fabled Passage", "Evolving Wilds", "Terramorphic Expanse", "Boseiju, Who Endures", "Otawara, Soaring City", "Takenuma, Abandoned Mire", "Bojuka Bog", "Phyrexian Tower", "Volrath's Stronghold", "Mortuary Mire", "High Market", "Shifting Woodland", "Dryad Arbor", "Forest", "Forest", "Island", "Swamp", "Swamp", "Underground River", "Yavimaya Coast", "Llanowar Wastes"]}]}]};
+
+    const state = {
+      commander: "All",
+      level: "All",
+      query: "",
+      selectedGCs: new Set(),
+      selectedBuildId: null,
+      deckSearch: "",
+    };
+
+    const commanderFilter = document.getElementById("commanderFilter");
+    const levelFilter = document.getElementById("levelFilter");
+    const textFilter = document.getElementById("textFilter");
+    const gcFilterWrap = document.getElementById("gcFilterWrap");
+    const buildList = document.getElementById("buildList");
+    const detail = document.getElementById("detail");
+    const matrixBody = document.querySelector("#matrixTable tbody");
+    const meta = document.getElementById("meta");
+
+    function badgeClass(level) {
+      return level.startsWith("Maximum") ? "max" : "tuned";
+    }
+
+    function setMeta() {
+      meta.innerHTML = `
+        <div><strong>${DATA.meta.buildCount}</strong> full 99 builds across <strong>${DATA.meta.commanderCount}</strong> commanders.</div>
+        <div>Snapshot: ${DATA.meta.generatedAtUtc}</div>
+      `;
+    }
+
+    function fillFilters() {
+      commanderFilter.innerHTML = `<option>All</option>` + DATA.filters.commanders.map(c => `<option>${c}</option>`).join("");
+      levelFilter.innerHTML = `<option>All</option>` + DATA.filters.levels.map(l => `<option>${l}</option>`).join("");
+      gcFilterWrap.innerHTML = DATA.filters.gcCards.map(gc => `<button class="gc-chip" data-gc="${gc}" aria-pressed="false">${gc}</button>`).join("");
+    }
+
+    function renderMatrix() {
+      const rows = [];
+      Object.keys(DATA.packageMatrix).sort().forEach(commander => {
+        const packages = DATA.packageMatrix[commander];
+        Object.keys(packages).sort().forEach(pkg => {
+          rows.push(
+            `<tr>
+              <td>${commander}</td>
+              <td>${pkg}</td>
+              <td>${packages[pkg].join(", ")}</td>
+            </tr>`
+          );
+        });
+      });
+      matrixBody.innerHTML = rows.join("");
+    }
+
+    function buildMatches(build) {
+      if (state.commander !== "All" && build.commander !== state.commander) return false;
+      if (state.level !== "All" && build.degeneracyLevel !== state.level) return false;
+
+      if (state.selectedGCs.size) {
+        const gcSet = new Set(build.gameChangers);
+        for (const gc of state.selectedGCs) {
+          if (!gcSet.has(gc)) return false;
+        }
+      }
+
+      if (state.query) {
+        const q = state.query.toLowerCase();
+        const haystack = [
+          build.id,
+          build.title,
+          build.commander,
+          build.status,
+          ...build.gameChangers,
+          ...build.deckSections.flatMap(s => s.cards),
+        ].join(" ").toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+      return true;
+    }
+
+    function filteredBuilds() {
+      return DATA.builds.filter(buildMatches);
+    }
+
+    function renderBuildList() {
+      const builds = filteredBuilds();
+      if (!builds.length) {
+        buildList.innerHTML = `<div class="empty">No builds match current filters.</div>`;
+        detail.innerHTML = `<div class="empty">Adjust filters to select a build.</div>`;
+        return;
+      }
+
+      if (!state.selectedBuildId || !builds.some(b => b.id === state.selectedBuildId)) {
+        state.selectedBuildId = builds[0].id;
+      }
+
+      buildList.innerHTML = builds.map(b => `
+        <button class="build-btn ${b.id === state.selectedBuildId ? "active" : ""}" data-build="${b.id}">
+          <div class="build-head">
+            <span class="build-id">${b.id}</span>
+            <span class="badge ${badgeClass(b.degeneracyLevel)}">${b.degeneracyLevel}</span>
+          </div>
+          <div class="build-title">${b.title}</div>
+          <div class="build-sub">${b.commander} | ${b.totalCards} cards</div>
+        </button>
+      `).join("");
+      renderDetail();
+    }
+
+    function escapeHtml(s) {
+      return s
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    function renderDeckSectionCards(cards, query) {
+      const q = query.trim().toLowerCase();
+      return cards.map(card => {
+        const hit = q && card.toLowerCase().includes(q);
+        return `<li class="${hit ? "hit" : ""}">${escapeHtml(card)}</li>`;
+      }).join("");
+    }
+
+    function renderDetail() {
+      const build = DATA.builds.find(b => b.id === state.selectedBuildId);
+      if (!build) {
+        detail.innerHTML = `<div class="empty">No build selected.</div>`;
+        return;
+      }
+
+      const deckSectionsHtml = build.deckSections.map(section => `
+        <article class="section-card">
+          <div class="section-head">
+            <div class="section-name">${section.name}</div>
+            <div class="section-count">${section.cards.length} / declared ${section.declared}</div>
+          </div>
+          <ul class="cards">${renderDeckSectionCards(section.cards, state.deckSearch)}</ul>
+        </article>
+      `).join("");
+
+      detail.innerHTML = `
+        <div class="detail-top">
+          <h2>${build.id} — ${escapeHtml(build.title)}</h2>
+          <div class="pill-row">
+            <span class="badge ${badgeClass(build.degeneracyLevel)}">${build.degeneracyLevel}</span>
+            <span class="pill">${escapeHtml(build.commander)}</span>
+            <span class="pill">${build.totalCards} cards</span>
+            <span class="pill">${escapeHtml(build.status || "status not listed")}</span>
+          </div>
+          <div class="pill-row">
+            ${build.gameChangers.map(gc => `<span class="pill">${escapeHtml(gc)}</span>`).join("")}
+          </div>
+          <div class="sources"><strong>Sources:</strong> ${build.sources.length ? build.sources.map(escapeHtml).join(", ") : "not listed"}</div>
+        </div>
+
+        <div class="deck-search-wrap">
+          <label for="deckSearch">Highlight cards in decklist</label>
+          <input id="deckSearch" type="search" placeholder="search inside selected deck" value="${escapeHtml(state.deckSearch)}">
+        </div>
+
+        <div class="deck-grid">${deckSectionsHtml}</div>
+
+        <div class="two-col">
+          <section class="note-card">
+            <h3>Summary / Win Plan</h3>
+            <ul>${(build.summary.length ? build.summary : ["No summary bullets listed."]).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
+          </section>
+          <section class="note-card">
+            <h3>Swaps / Variants</h3>
+            <ul>${(build.swaps.length ? build.swaps : ["No swaps listed."]).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
+          </section>
+        </div>
+
+        <section class="note-card">
+          <h3>Validation Notes</h3>
+          <ul>${(build.validation.length ? build.validation : ["No validation notes listed."]).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul>
+        </section>
+      `;
+    }
+
+    function wireEvents() {
+      commanderFilter.addEventListener("change", e => {
+        state.commander = e.target.value;
+        renderBuildList();
+      });
+      levelFilter.addEventListener("change", e => {
+        state.level = e.target.value;
+        renderBuildList();
+      });
+      textFilter.addEventListener("input", e => {
+        state.query = e.target.value.trim();
+        renderBuildList();
+      });
+      gcFilterWrap.addEventListener("click", e => {
+        const chip = e.target.closest(".gc-chip");
+        if (!chip) return;
+        const gc = chip.getAttribute("data-gc");
+        if (state.selectedGCs.has(gc)) {
+          state.selectedGCs.delete(gc);
+          chip.setAttribute("aria-pressed", "false");
+        } else {
+          state.selectedGCs.add(gc);
+          chip.setAttribute("aria-pressed", "true");
+        }
+        renderBuildList();
+      });
+      buildList.addEventListener("click", e => {
+        const btn = e.target.closest(".build-btn");
+        if (!btn) return;
+        state.selectedBuildId = btn.getAttribute("data-build");
+        renderBuildList();
+      });
+      detail.addEventListener("input", e => {
+        if (e.target && e.target.id === "deckSearch") {
+          state.deckSearch = e.target.value;
+          renderDetail();
+        }
+      });
+    }
+
+    function init() {
+      setMeta();
+      fillFilters();
+      renderMatrix();
+      wireEvents();
+      renderBuildList();
+    }
+
+    init();
+  </script>
+</body>
+</html>
