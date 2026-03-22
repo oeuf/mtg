@@ -141,18 +141,18 @@ describe("CommanderSelectPage", () => {
 
   it("renders color filter buttons for all 5 colors", () => {
     renderPage();
-    expect(screen.getByRole("button", { name: /W/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /U/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /B/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /R/i })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /G/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Filter by White/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Filter by Blue/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Filter by Black/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Filter by Red/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Filter by Green/i })).toBeInTheDocument();
   });
 
   it("color filter button calls toggleColor on click", () => {
     renderPage();
-    fireEvent.click(screen.getByRole("button", { name: /^W$/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Filter by White/i }));
     expect(mockToggleColor).toHaveBeenCalledWith("W");
-    fireEvent.click(screen.getByRole("button", { name: /^U$/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Filter by Blue/i }));
     expect(mockToggleColor).toHaveBeenCalledWith("U");
   });
 
@@ -162,8 +162,8 @@ describe("CommanderSelectPage", () => {
       colorFilter: ["W", "B"],
     });
     renderPage();
-    const wButton = screen.getByRole("button", { name: /^W$/i });
-    const uButton = screen.getByRole("button", { name: /^U$/i });
+    const wButton = screen.getByRole("button", { name: /Filter by White/i });
+    const uButton = screen.getByRole("button", { name: /Filter by Blue/i });
     expect(wButton.className).toContain("ring");
     expect(uButton.className).not.toContain("ring");
   });
