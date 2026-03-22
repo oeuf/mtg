@@ -77,6 +77,7 @@ export default function DeckBuilderPage() {
         <div>
           <RecommendationsPanel
             commanderName={commanderData.name}
+            commander={commanderData}
             onAddCard={handleAddCard}
             deckCardNames={deckCardNames}
           />

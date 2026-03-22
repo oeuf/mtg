@@ -162,7 +162,7 @@ describe("RecommendationsPanel", () => {
     fireEvent.click(screen.getByText("Ramp"));
 
     await waitFor(() => {
-      expect(cardsAPI.getByRole).toHaveBeenCalledWith("Ramp");
+      expect(cardsAPI.getByRole).toHaveBeenCalledWith("Ramp", undefined);
     });
 
     // The card returned by getByRole mock should appear

@@ -14,12 +14,14 @@ const TABS: { key: Tab; label: string }[] = [
 
 interface RecommendationsPanelProps {
   commanderName: string;
+  commander?: { color_identity?: string[] };
   onAddCard: (cardName: string) => void;
   deckCardNames: string[];
 }
 
 export function RecommendationsPanel({
   commanderName,
+  commander,
   onAddCard,
   deckCardNames,
 }: RecommendationsPanelProps) {
@@ -41,8 +43,8 @@ export function RecommendationsPanel({
   });
 
   const roleQuery = useQuery({
-    queryKey: ["role-cards", selectedRole],
-    queryFn: () => cardsAPI.getByRole(selectedRole!).then((r) => r.data),
+    queryKey: ["role-cards", selectedRole, commander?.color_identity],
+    queryFn: () => cardsAPI.getByRole(selectedRole!, commander?.color_identity).then((r) => r.data),
     enabled: activeTab === "by-role" && selectedRole !== null,
   });
 
