@@ -3,18 +3,21 @@
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from neo4j import Session
 from rapidfuzz import fuzz, process
 
 from app.dependencies import get_neo4j_session
+from app.limiter import limiter
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
 @router.get("/cards")
+@limiter.limit("30/minute")
 def search_cards(
+    request: Request,
     colors: Optional[str] = Query(None, description="Comma-separated color identity (e.g. U,B)"),
     cmc_min: Optional[int] = Query(None, ge=0, description="Minimum CMC"),
     cmc_max: Optional[int] = Query(None, ge=0, description="Maximum CMC"),

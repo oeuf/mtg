@@ -3,11 +3,12 @@
 from collections import Counter
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from neo4j import Session
 from pydantic import BaseModel
 
 from app.dependencies import get_neo4j_session
+from app.limiter import limiter
 
 router = APIRouter()
 
@@ -32,9 +33,10 @@ class AnalyzeDeckRequest(BaseModel):
 
 
 @router.post("/decks/build-shell")
-def build_deck_shell(request: BuildShellRequest, session: Session = Depends(get_neo4j_session)):
+@limiter.limit("10/minute")
+def build_deck_shell(request: Request, body: BuildShellRequest, session: Session = Depends(get_neo4j_session)):
     """Build an initial deck shell for a given commander."""
-    commander_name = request.commander
+    commander_name = body.commander
     if not commander_name:
         raise HTTPException(status_code=400, detail="Commander name is required")
 
@@ -79,9 +81,10 @@ def build_deck_shell(request: BuildShellRequest, session: Session = Depends(get_
 
 
 @router.post("/decks/analyze")
-def analyze_deck(request: AnalyzeDeckRequest):
+@limiter.limit("20/minute")
+def analyze_deck(request: Request, body: AnalyzeDeckRequest):
     """Analyze deck composition. Pure computation, no DB needed."""
-    cards = request.cards
+    cards = body.cards
 
     total_cards = len(cards) + 1  # +1 for commander
 

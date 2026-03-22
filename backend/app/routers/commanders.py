@@ -3,17 +3,20 @@
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from neo4j import Session
 
 from app.dependencies import get_neo4j_session
+from app.limiter import limiter
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
 @router.get("/commanders")
+@limiter.limit("30/minute")
 def get_commanders(
+    request: Request,
     search: Optional[str] = Query(None, description="Search by name"),
     page: int = Query(default=1, ge=1),
     limit: int = Query(default=50, ge=1, le=5000),
