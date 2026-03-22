@@ -20,7 +20,8 @@ export default function DeckBuilderPage() {
       try {
         const { data: card } = await cardsAPI.get(cardName);
         addCard(card);
-      } catch {
+      } catch (err) {
+        console.error('Failed to add card:', err);
         addToast(`Card "${cardName}" not found.`, 'error');
       }
     },
