@@ -69,23 +69,20 @@ def search_cards(
         )
         params["roles"] = roles
 
-    # Always include label filter; append other conditions if present
-    label_condition = "(c:Card OR c:Commander)"
-    all_conditions = [label_condition] + conditions
-    where_clause = "WHERE " + " AND ".join(all_conditions)
+    where_clause = ("WHERE " + " AND ".join(conditions)) if conditions else ""
 
     skip = (page - 1) * limit
     params["skip"] = skip
     params["limit"] = limit
 
-    count_query = f"MATCH (c) {where_clause} RETURN count(c) AS total"
+    count_query = f"MATCH (c:Card) {where_clause} RETURN count(c) AS total"
     count_params = {k: v for k, v in params.items() if k not in ("skip", "limit")}
     count_result = session.run(count_query, count_params)
     count_record = count_result.single()
     total = count_record["total"] if count_record else 0
 
     query = f"""
-        MATCH (c)
+        MATCH (c:Card)
         {where_clause}
         RETURN c.name AS name, c.mana_cost AS mana_cost, c.cmc AS cmc,
                c.type_line AS type_line, c.oracle_text AS oracle_text,
