@@ -52,7 +52,8 @@ class RecommendationService:
         self, commander_name: str, top_k: int = 20
     ) -> List[RecommendationResponse]:
         records = self._query(
-            "MATCH (c:Card {name: $name})-[s:SYNERGIZES_WITH]->(r:Card) "
+            "MATCH (c {name: $name})-[s:SYNERGIZES_WITH]-(r:Card) "
+            "WHERE (c:Card OR c:Commander) "
             "RETURN r.name AS card_name, s.synergy_score AS score, "
             "coalesce(s.mechanic_overlap_count, 0) AS mechanic_overlap_count, "
             "coalesce(s.has_color_match, false) AS has_color_match, "
