@@ -7,7 +7,7 @@ services:
       - "7474:7474"  # HTTP
       - "7687:7687"  # Bolt
     environment:
-      - NEO4J_AUTH=neo4j/password
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-password}
       - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
       - NEO4J_PLUGINS=["graph-data-science"]
     volumes:
@@ -27,7 +27,7 @@ services:
       - "8000:8000"
     environment:
       - NEO4J_URI=bolt://neo4j:7687
-      - NEO4J_PASSWORD=password
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD:-password}
     depends_on:
       neo4j:
         condition: service_healthy
