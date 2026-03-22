@@ -4,7 +4,7 @@ services:
     image: neo4j:5.15.0-enterprise
     container_name: mtg-neo4j
     ports:
-      - "7474:7474"  # HTTP
+      # - "7474:7474"  # Neo4j Browser — removed, internal only in production
       - "7687:7687"  # Bolt
     environment:
       - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-password}
