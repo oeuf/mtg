@@ -128,7 +128,7 @@ def get_commander_recommendations(
         raise HTTPException(status_code=404, detail=f"Commander '{name}' not found")
 
     result = session.run(
-        "MATCH (cmd:Commander {name: $name})-[s:EMBEDDING_SIMILAR]->(card:Card) "
+        "MATCH (cmd:Commander {name: $name})-[s:EMBEDDING_SIMILAR]-(card:Card) "
         "WHERE NOT card:Commander "
         "RETURN card.name AS card_name, s.score AS score "
         "ORDER BY s.score DESC "
