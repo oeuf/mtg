@@ -1,29 +1,15 @@
 """Deck-related models."""
 
-from typing import List, Optional, Dict
-from pydantic import BaseModel, Field, field_validator
-
-from app.models.card import Card
-from app.models.commander import Commander
+from typing import List, Dict
+from pydantic import BaseModel, Field
 
 
 class DeckShell(BaseModel):
-    """A deck shell with commander and cards."""
+    """A deck shell with commander and cards grouped by role."""
 
-    commander: Commander
-    cards: List[Card] = Field(max_length=99, description="Non-commander cards (max 99)")
-
-    @field_validator("cards")
-    @classmethod
-    def validate_card_count(cls, v: List[Card]) -> List[Card]:
-        """Validate deck has at most 99 non-commander cards."""
-        if len(v) > 99:
-            raise ValueError("Deck can have at most 99 non-commander cards (100 total)")
-        return v
-
-    def total_card_count(self) -> int:
-        """Get total card count including commander."""
-        return len(self.cards) + 1
+    commander: str
+    cards_by_role: Dict[str, List[str]]
+    total_cards: int
 
 
 class DeckAnalysis(BaseModel):

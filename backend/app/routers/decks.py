@@ -9,6 +9,7 @@ from pydantic import BaseModel
 
 from app.dependencies import get_neo4j_session
 from app.limiter import limiter
+from app.models.deck import DeckShell
 
 router = APIRouter()
 
@@ -32,7 +33,7 @@ class AnalyzeDeckRequest(BaseModel):
     cards: list[CardEntry] = []
 
 
-@router.post("/decks/build-shell")
+@router.post("/decks/build-shell", response_model=DeckShell)
 @limiter.limit("10/minute")
 def build_deck_shell(request: Request, body: BuildShellRequest, session: Session = Depends(get_neo4j_session)):
     """Build an initial deck shell for a given commander."""
