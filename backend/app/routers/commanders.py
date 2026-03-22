@@ -6,8 +6,9 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from neo4j import Session
 
-from app.dependencies import get_neo4j_session
+from app.dependencies import get_neo4j_session, get_recommendation_service
 from app.limiter import limiter
+from app.services.recommendation_service import RecommendationService
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -118,6 +119,7 @@ def get_commander_recommendations(
     name: str,
     top_k: int = Query(default=20, ge=1, le=100),
     session: Session = Depends(get_neo4j_session),
+    rec_service: RecommendationService = Depends(get_recommendation_service),
 ):
     """Get card recommendations for a commander deck."""
     logger.info("[commanders] get_commander_recommendations: name=%r", name)
@@ -127,14 +129,12 @@ def get_commander_recommendations(
     if exists.single() is None:
         raise HTTPException(status_code=404, detail=f"Commander '{name}' not found")
 
-    result = session.run(
-        "MATCH (cmd:Commander {name: $name})-[s:EMBEDDING_SIMILAR]-(card:Card) "
-        "WHERE NOT card:Commander "
-        "RETURN card.name AS card_name, s.score AS score "
-        "ORDER BY s.score DESC "
-        "LIMIT $top_k",
-        {"name": name, "top_k": top_k},
-    )
-    recommendations = result.data()
+    recommendations = rec_service.ensemble_recommendations(name, top_k=top_k)
     logger.info("[commanders] get_commander_recommendations: name=%r count=%d", name, len(recommendations))
-    return {"commander": name, "recommendations": recommendations}
+    return {
+        "commander": name,
+        "recommendations": [
+            {"card_name": r.card_name, "score": r.synergy_score, "category": r.category}
+            for r in recommendations
+        ],
+    }

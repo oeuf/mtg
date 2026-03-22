@@ -55,3 +55,12 @@ async def lifespan(app):
     yield
     # Shutdown
     Neo4jDriver.close()
+
+
+from app.services.recommendation_service import RecommendationService
+
+
+def get_recommendation_service() -> RecommendationService:
+    """FastAPI dependency that provides a RecommendationService instance."""
+    driver = Neo4jDriver.get_driver()
+    return RecommendationService(driver)
