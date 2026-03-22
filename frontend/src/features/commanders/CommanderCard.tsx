@@ -9,14 +9,10 @@ interface CommanderCardProps {
 
 export function CommanderCard({ commander, onClick }: CommanderCardProps) {
   return (
-    <div
-      className="bg-gray-800 rounded-lg shadow-lg p-4 cursor-pointer transition-all hover:ring-2 hover:ring-brand-500"
+    <button
+      type="button"
+      className="bg-gray-800 rounded-lg shadow-lg p-4 cursor-pointer transition-all hover:ring-2 hover:ring-brand-500 w-full text-left"
       onClick={() => onClick(commander.name)}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") onClick(commander.name);
-      }}
-      role="button"
-      tabIndex={0}
     >
       <h3 className="text-lg font-bold text-white">{commander.name}</h3>
       <p className="text-gray-400 text-sm">{commander.mana_cost}</p>
@@ -28,6 +24,6 @@ export function CommanderCard({ commander, onClick }: CommanderCardProps) {
           </Badge>
         ))}
       </div>
-    </div>
+    </button>
   );
 }
