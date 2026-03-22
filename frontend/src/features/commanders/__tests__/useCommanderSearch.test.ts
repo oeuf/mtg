@@ -109,7 +109,8 @@ describe("useCommanderSearch", () => {
     );
   });
 
-  it("filters commanders by search text (case-insensitive)", async () => {
+  it("passes search text to the API (server-side search)", async () => {
+    // Initial load returns all commanders
     vi.mocked(commandersAPI.list).mockResolvedValue({
       data: { items: mockCommanders, total: mockCommanders.length },
     } as never);
@@ -122,14 +123,21 @@ describe("useCommanderSearch", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
+    // Simulate the API returning only Muldrotha for a "muldrotha" search
+    vi.mocked(commandersAPI.list).mockResolvedValue({
+      data: { items: [mockCommanders[0]], total: 1 },
+    } as never);
+
     act(() => {
       result.current.setSearchText("muldrotha");
     });
 
-    expect(result.current.commanders).toHaveLength(1);
-    expect(result.current.commanders[0].name).toBe(
-      "Muldrotha, the Gravetide",
-    );
+    // After debounce resolves and query re-fetches, only 1 commander is returned
+    await waitFor(() => {
+      expect(result.current.commanders).toHaveLength(1);
+    });
+
+    expect(result.current.commanders[0].name).toBe("Muldrotha, the Gravetide");
   });
 
   it("filters commanders by color identity", async () => {
@@ -156,7 +164,7 @@ describe("useCommanderSearch", () => {
     );
   });
 
-  it("applies combined text and color filters", async () => {
+  it("applies color filter client-side on server results, then re-fetches on search change", async () => {
     vi.mocked(commandersAPI.list).mockResolvedValue({
       data: { items: mockCommanders, total: mockCommanders.length },
     } as never);
@@ -169,19 +177,26 @@ describe("useCommanderSearch", () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    // Both Muldrotha and Atraxa have B and U
+    // Both Muldrotha and Atraxa have B and U — color filtering is still client-side
     act(() => {
       result.current.setColorFilter(["B", "U"]);
     });
 
     expect(result.current.commanders).toHaveLength(2);
 
-    // Adding search text narrows to just Muldrotha
+    // Adding search text triggers a server re-fetch; mock returns only Muldrotha
+    vi.mocked(commandersAPI.list).mockResolvedValue({
+      data: { items: [mockCommanders[0]], total: 1 },
+    } as never);
+
     act(() => {
       result.current.setSearchText("gravetide");
     });
 
-    expect(result.current.commanders).toHaveLength(1);
+    await waitFor(() => {
+      expect(result.current.commanders).toHaveLength(1);
+    });
+
     expect(result.current.commanders[0].name).toBe(
       "Muldrotha, the Gravetide",
     );

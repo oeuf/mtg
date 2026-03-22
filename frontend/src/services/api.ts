@@ -20,9 +20,9 @@ const api = axios.create({
 });
 
 export const commandersAPI = {
-  list(page = 1, limit = 20) {
+  list(page = 1, limit = 20, search?: string) {
     return api.get<{ items: Commander[]; total: number }>("/api/commanders", {
-      params: { page, limit },
+      params: { page, limit, ...(search ? { search } : {}) },
     });
   },
 

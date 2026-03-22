@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { commandersAPI } from "../../services/api";
 import type { Commander } from "../../types";
+import { useDebounce } from "../../hooks/useDebounce";
 
 export function useCommanderSearch(): {
   commanders: Commander[];
@@ -15,33 +16,25 @@ export function useCommanderSearch(): {
 } {
   const [searchText, setSearchText] = useState("");
   const [colorFilter, setColorFilter] = useState<string[]>([]);
+  const debouncedSearch = useDebounce(searchText, 300);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["commanders"],
+    queryKey: ["commanders", debouncedSearch],
     queryFn: async () => {
-      const response = await commandersAPI.list(1, 5000);
+      const response = await commandersAPI.list(1, 50, debouncedSearch || undefined);
       return response.data.items;
     },
   });
 
   const allCommanders = data ?? [];
 
+  // Color filtering remains client-side (small result set after server-side search)
   const commanders = useMemo(() => {
-    let filtered = allCommanders;
-
-    if (searchText) {
-      const lower = searchText.toLowerCase();
-      filtered = filtered.filter((c) => c.name.toLowerCase().includes(lower));
-    }
-
-    if (colorFilter.length > 0) {
-      filtered = filtered.filter((c) =>
-        colorFilter.every((color) => c.color_identity.includes(color)),
-      );
-    }
-
-    return filtered;
-  }, [allCommanders, searchText, colorFilter]);
+    if (colorFilter.length === 0) return allCommanders;
+    return allCommanders.filter((c) =>
+      colorFilter.every((color) => c.color_identity.includes(color)),
+    );
+  }, [allCommanders, colorFilter]);
 
   const toggleColor = (color: string) => {
     setColorFilter((prev) =>

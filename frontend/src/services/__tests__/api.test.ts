@@ -51,6 +51,28 @@ describe("commandersAPI", () => {
     });
   });
 
+  it("list passes search param when provided", async () => {
+    const mock = getMockApi();
+    mock.get.mockResolvedValueOnce({ data: { items: [], total: 0 } });
+
+    await commandersAPI.list(1, 50, "muldrotha");
+
+    expect(mock.get).toHaveBeenCalledWith("/api/commanders", {
+      params: { page: 1, limit: 50, search: "muldrotha" },
+    });
+  });
+
+  it("list omits search param when not provided", async () => {
+    const mock = getMockApi();
+    mock.get.mockResolvedValueOnce({ data: { items: [], total: 0 } });
+
+    await commandersAPI.list(1, 50);
+
+    expect(mock.get).toHaveBeenCalledWith("/api/commanders", {
+      params: { page: 1, limit: 50 },
+    });
+  });
+
   it("get calls /api/commanders/{name} with encoded name", async () => {
     const mock = getMockApi();
     mock.get.mockResolvedValueOnce({ data: {} });
