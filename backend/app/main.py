@@ -47,10 +47,10 @@ async def log_requests(request: Request, call_next):
         response = await call_next(request)
     except Exception:
         duration = time.time() - start
-        logger.info(f"{request.method} {request.url.path} 500 {duration:.3f}s")
+        logger.info("%s %s 500 %.3fs", request.method, request.url.path, duration)
         raise
     duration = time.time() - start
-    logger.info(f"{request.method} {request.url.path} {response.status_code} {duration:.3f}s")
+    logger.info("%s %s %s %.3fs", request.method, request.url.path, response.status_code, duration)
     return response
 
 
