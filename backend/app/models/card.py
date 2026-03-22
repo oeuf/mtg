@@ -9,7 +9,7 @@ class Card(BaseModel):
 
     name: str = Field(..., description="Card name")
     mana_cost: str = Field(default="", description="Mana cost string (e.g., {2}{B}{G}{U})")
-    cmc: int = Field(ge=0, description="Converted mana cost")
+    cmc: float = Field(ge=0.0, description="Converted mana cost")
     type_line: str = Field(..., description="Card type line (e.g., 'Creature — Elemental')")
     oracle_text: str = Field(default="", description="Official card rules text")
     color_identity: List[str] = Field(default_factory=list, description="Color identity letters")
