@@ -54,11 +54,15 @@ export default function CommanderSelectPage() {
       <div className="flex gap-2 mt-4 mb-6">
         {MANA_COLORS.map((color) => {
           const active = colorFilter.includes(color);
+          const COLOR_NAMES: Record<string, string> = {
+            W: "White", U: "Blue", B: "Black", R: "Red", G: "Green",
+          };
           return (
             <button
               key={color}
               type="button"
               onClick={() => toggleColor(color)}
+              aria-label={`Filter by ${COLOR_NAMES[color] ?? color}`}
               className={`rounded-full transition-all ${active ? "ring-2 ring-white" : "opacity-60"}`}
             >
               <Badge variant={colorVariantMap[color]}>{color}</Badge>
