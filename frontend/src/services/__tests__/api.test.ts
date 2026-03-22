@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import axios from "axios";
-import { commandersAPI, cardsAPI, decksAPI, graphAPI } from "../api";
+import { commandersAPI, cardsAPI, graphAPI } from "../api";
 
 vi.mock("axios", () => {
   const mockAxiosInstance = {
@@ -183,28 +183,6 @@ describe("cardsAPI", () => {
   });
 });
 
-describe("decksAPI", () => {
-  it("buildShell posts commander name", async () => {
-    const mock = getMockApi();
-    mock.post.mockResolvedValueOnce({ data: {} });
-
-    await decksAPI.buildShell("Muldrotha, the Gravetide");
-
-    expect(mock.post).toHaveBeenCalledWith("/api/decks/build-shell", {
-      commander: "Muldrotha, the Gravetide",
-    });
-  });
-
-  it("analyze posts deck data", async () => {
-    const mock = getMockApi();
-    mock.post.mockResolvedValueOnce({ data: {} });
-
-    const deck = { commander: "Muldrotha", cards: ["Sol Ring", "Forest"] };
-    await decksAPI.analyze(deck);
-
-    expect(mock.post).toHaveBeenCalledWith("/api/decks/analyze", deck);
-  });
-});
 
 describe("graphAPI", () => {
   it("stats calls /api/graph/stats", async () => {

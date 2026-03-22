@@ -4,8 +4,6 @@ import type {
   CardSearchFilters,
   Commander,
   ComboResponse,
-  DeckShell,
-  DeckAnalysis,
   SimilarCardsResponse,
   CardSynergiesResponse,
   CommanderSynergiesResponse,
@@ -85,18 +83,6 @@ export const cardsAPI = {
     return api.get<AutocompleteItem[]>("/api/cards/autocomplete", {
       params: { q: query, commander_only: commanderOnly },
     });
-  },
-};
-
-export const decksAPI = {
-  buildShell(commanderName: string) {
-    return api.post<DeckShell>("/api/decks/build-shell", {
-      commander: commanderName,
-    });
-  },
-
-  analyze(deck: { commander: string; cards: string[] }) {
-    return api.post<DeckAnalysis>("/api/decks/analyze", deck);
   },
 };
 
