@@ -1,5 +1,5 @@
 import type { Card } from "../../types";
-import { extractPrimaryType } from "../../features/deck-builder/useDeckBuilder";
+import { extractPrimaryType } from "../../utils/cardUtils";
 import { CardRow } from "./CardRow";
 
 interface DeckListProps {
