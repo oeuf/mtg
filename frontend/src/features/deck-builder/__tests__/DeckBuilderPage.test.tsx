@@ -104,6 +104,10 @@ vi.mock("../../../components/deck/ManaCurve", () => ({
   ManaCurve: () => <div data-testid="mana-curve" />,
 }));
 
+vi.mock("../../../components/ToastContext", () => ({
+  useToast: () => ({ addToast: vi.fn(), removeToast: vi.fn() }),
+}));
+
 vi.mock("../../../components/deck/RecommendationsPanel", () => ({
   RecommendationsPanel: ({ onAddCard }: { onAddCard: (name: string) => void }) => (
     <div data-testid="recommendations-panel">

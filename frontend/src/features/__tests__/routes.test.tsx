@@ -1,7 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+vi.mock('../../components/ToastContext', () => ({
+  useToast: () => ({ addToast: vi.fn(), removeToast: vi.fn() }),
+}));
 import HomePage from '../home/HomePage';
 import CommanderSelectPage from '../commanders/CommanderSelectPage';
 import DeckBuilderPage from '../deck-builder/DeckBuilderPage';

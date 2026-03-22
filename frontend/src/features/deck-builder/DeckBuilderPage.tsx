@@ -8,17 +8,23 @@ import { DeckList } from '../../components/deck/DeckList';
 import { DeckStats } from '../../components/deck/DeckStats';
 import { ManaCurve } from '../../components/deck/ManaCurve';
 import { RecommendationsPanel } from '../../components/deck/RecommendationsPanel';
+import { useToast } from '../../components/ToastContext';
 
 export default function DeckBuilderPage() {
   const { commander: commanderParam } = useParams<{ commander: string }>();
   const { commander, deck, setCommander, addCard, removeCard } = useDeckBuilder();
+  const { addToast } = useToast();
 
   const handleAddCard = useCallback(
     async (cardName: string) => {
-      const { data: card } = await cardsAPI.get(cardName);
-      addCard(card);
+      try {
+        const { data: card } = await cardsAPI.get(cardName);
+        addCard(card);
+      } catch {
+        addToast(`Card "${cardName}" not found.`, 'error');
+      }
     },
-    [addCard],
+    [addCard, addToast],
   );
 
   const { data: commanderData, isLoading, isError } = useQuery({
