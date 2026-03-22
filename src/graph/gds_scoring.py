@@ -280,6 +280,14 @@ class GDSScoring:
         """Compute FastRP embeddings for cards using numeric node features."""
         print(f"Computing {embedding_dim}-dim FastRP embeddings on '{projection_name}'...")
 
+        # Pre-flight: verify feature properties exist before FastRP
+        preflight = self.conn.execute_query(
+            "MATCH (c:Card) WHERE c.cmc_normalized IS NOT NULL RETURN count(c) AS cnt"
+        )
+        cards_with_features = preflight[0]["cnt"] if preflight else 0
+        if cards_with_features == 0:
+            print("WARNING: No Card nodes have cmc_normalized property — FastRP will use topology-only embeddings")
+
         query = """
         CALL gds.fastRP.write(
             $projection,
