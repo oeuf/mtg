@@ -1,6 +1,6 @@
 # Muldrotha, the Gravetide
 
-**Bracket:** 3 | **Game Changers:** Gifts Ungiven, Intuition, Survival of the Fittest
+**Bracket:** 3 | **Game Changers:** Cyclonic Rift, Intuition, Survival of the Fittest
 
 ---
 
@@ -64,10 +64,10 @@
 - Arcane Denial
 - Assassin's Trophy
 - Counterspell
+- Cyclonic Rift (GC)
 - Deadly Rollick
 - Entomb
 - Force of Negation
-- Gifts Ungiven (GC)
 - Intuition (GC)
 - Mana Drain
 - Noxious Revival
@@ -124,7 +124,7 @@
 
 ## Win Conditions
 
-The goal is to use Muldrotha as a resource engine: treat the graveyard as a second hand. Self-mill aggressively to load it up, then replay one permanent of each type per turn to grind opponents out of resources. The GC pile engine (Intuition, Gifts Ungiven, Survival of the Fittest) accelerates setup by dumping or fetching key pieces at instant speed or at sorcery speed for a single mana.
+The goal is to use Muldrotha as a resource engine: treat the graveyard as a second hand. Self-mill aggressively to load it up, then replay one permanent of each type per turn to grind opponents out of resources. Survival of the Fittest pitches creatures directly into the graveyard while fetching whatever the board demands; Intuition assembles instant-speed piles to load payoffs or set up a kill line. Cyclonic Rift is held as a one-shot table reset — overloaded, it clears all opponents' boards and creates an uncontested window to resolve the kill.
 
 Once the engine is running, the deck has three kill lines — all naturally enabled by the same self-mill gameplan:
 
@@ -142,11 +142,11 @@ Prioritize mana and self-mill setup. Play mana dorks and rocks first (Birds of P
 
 ### Mid game (turns 4–6)
 
-Land Muldrotha. Protect her immediately — Lightning Greaves grants haste and shroud on the same turn; Kaya's Ghostform eats the first hard removal. From here, replay one permanent of each type every turn. Survival of the Fittest is the primary tutor engine: pitch a creature, fetch Gravecrawler or Spore Frog or whatever the board demands. Use Intuition or Gifts Ungiven to assemble pile setups at instant speed — typical piles grab three graveyard payoffs or set up a Living Death line. Spore Frog, replayed every turn from the graveyard, handles combat indefinitely.
+Land Muldrotha. Protect her immediately — Lightning Greaves grants haste and shroud on the same turn; Kaya's Ghostform eats the first hard removal. From here, replay one permanent of each type every turn. Survival of the Fittest is the primary tutor engine: pitch a creature, fetch Gravecrawler or Spore Frog or whatever the board demands. Intuition assembles instant-speed piles — typical piles grab three graveyard payoffs or set up a Living Death line. Hold Cyclonic Rift for the kill turn rather than using it reactively. Spore Frog, replayed every turn from the graveyard, handles combat indefinitely.
 
 ### Closing
 
-Choose the kill line based on what's already assembled:
+Lead the kill turn with Cyclonic Rift (overloaded) if opponents have meaningful boards or stax pieces that survived incremental answers — bouncing everything creates a clean window. Then choose the kill line based on what's assembled:
 - **Konrad + Living Death** if you have a deep creature graveyard and can exile opponents' first.
 - **Jarad fling** if Lord of Extinction is already large and Jarad is in play or graveyard.
 - **Gravecrawler loop** if both altars and Pitiless Plunderer are on board — this is the most deterministic line.
