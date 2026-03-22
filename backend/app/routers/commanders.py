@@ -53,7 +53,7 @@ def get_commanders(
                c.functional_categories AS functional_categories,
                c.mechanics AS mechanics, c.themes AS themes,
                c.archetype AS archetype, c.popularity_score AS popularity_score
-        ORDER BY c.edhrec_rank ASC
+        ORDER BY COALESCE(c.edhrec_rank, 9999) ASC
         SKIP $offset LIMIT $limit
     """
     result = session.run(query, params)
