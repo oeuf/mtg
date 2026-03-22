@@ -79,9 +79,10 @@ class RecommendationService:
     ) -> List[RecommendationResponse]:
         """Get cards that share roles with the commander."""
         records = self._query(
-            "MATCH (cmd WHERE cmd:Card OR cmd:Commander {name: $name})-[:FILLS_ROLE]->(r:Functional_Role)"
+            "MATCH (cmd)-[:FILLS_ROLE]->(r:Functional_Role) "
             "<-[:FILLS_ROLE]-(card:Card) "
-            "WHERE NOT card:Commander AND card.name <> $name "
+            "WHERE (cmd:Card OR cmd:Commander) AND cmd.name = $name "
+            "AND NOT card:Commander AND card.name <> $name "
             "RETURN card.name AS card_name, "
             "coalesce(card.edhrec_rank, 99999) AS edhrec_rank, "
             "count(r) AS shared_roles "
@@ -107,7 +108,8 @@ class RecommendationService:
     ) -> List[RecommendationResponse]:
         """Get highly-ranked community cards in the commander's color identity."""
         records = self._query(
-            "MATCH (cmd WHERE cmd:Card OR cmd:Commander {name: $name}) "
+            "MATCH (cmd) "
+            "WHERE (cmd:Card OR cmd:Commander) AND cmd.name = $name "
             "MATCH (card:Card) "
             "WHERE NOT card:Commander "
             "AND card.edhrec_rank IS NOT NULL "
