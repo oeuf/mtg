@@ -82,8 +82,8 @@ def build_deck_shell(request: Request, body: BuildShellRequest, session: Session
 
 @router.post("/decks/analyze")
 @limiter.limit("20/minute")
-def analyze_deck(request: Request, body: AnalyzeDeckRequest):
-    """Analyze deck composition. Pure computation, no DB needed."""
+def analyze_deck(request: Request, body: AnalyzeDeckRequest, session: Session = Depends(get_neo4j_session)):
+    """Analyze deck composition."""
     cards = body.cards
 
     total_cards = len(cards) + 1  # +1 for commander
@@ -105,8 +105,22 @@ def analyze_deck(request: Request, body: AnalyzeDeckRequest):
         type_counter[card.type_line] += 1
     type_distribution = dict(type_counter)
 
-    # Role distribution (cards don't carry roles in the payload)
-    role_distribution: dict = {}
+    # Role distribution — look up functional_roles from Neo4j per card name
+    role_counter: Counter = Counter()
+    card_names = [card.name for card in cards if card.name]
+    if card_names:
+        roles_result = session.run(
+            """
+            UNWIND $names AS name
+            MATCH (c:Card {name: name})
+            UNWIND coalesce(c.functional_categories, []) AS role
+            RETURN role, count(*) AS cnt
+            """,
+            names=card_names,
+        )
+        for rec in roles_result:
+            role_counter[rec["role"]] += rec["cnt"]
+    role_distribution = dict(role_counter)
 
     # Mana curve: count cards per CMC value
     mana_counter: Counter = Counter()
