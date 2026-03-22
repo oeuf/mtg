@@ -183,7 +183,7 @@ class GDSScoring:
         print(f"Computing Adamic-Adar scores on '{projection_name}'...")
 
         query = """
-        CALL gds.alpha.linkprediction.adamicAdar.stream($projection)
+        CALL gds.linkprediction.adamicAdar.stream($projection)
         YIELD node1, node2, score
         RETURN gds.util.asNode(node1).name AS card1,
                gds.util.asNode(node2).name AS card2,
@@ -205,7 +205,7 @@ class GDSScoring:
         print(f"Computing Common Neighbors on '{projection_name}'...")
 
         query = """
-        CALL gds.alpha.linkprediction.commonNeighbors.stream($projection)
+        CALL gds.linkprediction.commonNeighbors.stream($projection)
         YIELD node1, node2, score
         RETURN gds.util.asNode(node1).name AS card1,
                gds.util.asNode(node2).name AS card2,
