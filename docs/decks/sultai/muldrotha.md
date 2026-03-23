@@ -64,7 +64,7 @@
 - Arcane Denial
 - Assassin's Trophy
 - Counterspell
-- Cyclonic Rift (GC)
+- Gifts Ungiven (GC)
 - Deadly Rollick
 - Entomb
 - Force of Negation
