@@ -182,31 +182,15 @@ describe("Synergy types", () => {
 });
 
 describe("Deck types", () => {
-  it("DeckShell has commander and cards", () => {
+  it("DeckShell has commander and cards_by_role", () => {
     const deck: DeckShell = {
-      commander: {
-        name: "Muldrotha, the Gravetide",
-        mana_cost: "{3}{B}{G}{U}",
-        cmc: 6,
-        type_line: "Legendary Creature — Elemental Avatar",
-        oracle_text: "",
-        color_identity: ["B", "G", "U"],
-        colors: ["B", "G", "U"],
-        keywords: [],
-        is_legendary: true,
-        edhrec_rank: null,
-        functional_categories: [],
-        mechanics: [],
-        themes: [],
-        archetype: null,
-        popularity_score: 0.9,
-        power: 6,
-        toughness: 6,
-      },
-      cards: [],
+      commander: "Muldrotha, the Gravetide",
+      cards_by_role: { ramp: ["Sol Ring", "Cultivate"], draw: ["Rhystic Study"] },
+      total_cards: 4,
     };
-    expect(deck.commander.name).toBe("Muldrotha, the Gravetide");
-    expect(deck.cards).toHaveLength(0);
+    expect(deck.commander).toBe("Muldrotha, the Gravetide");
+    expect(Object.keys(deck.cards_by_role)).toHaveLength(2);
+    expect(deck.total_cards).toBe(4);
   });
 
   it("DeckAnalysis has distribution maps", () => {

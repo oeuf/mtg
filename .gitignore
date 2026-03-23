@@ -28,6 +28,19 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+# Node / frontend build artifacts
+node_modules/
+.pnpm-store/
+.pnp/
+.pnp.js
+*.tsbuildinfo
+.next/
+.nuxt/
+.svelte-kit/
+.output/
+.vite/
+coverage/
+
 # PyInstaller
 *.manifest
 *.spec
@@ -82,5 +95,14 @@ query_untap_artifacts.cypher
 # Neo4j
 .neo4j/
 
+# FalkorDB
+falkordb.graph
+
 # Git worktrees
 .worktrees/
+
+# Playwright MCP
+.playwright-mcp/
+
+# Analysis output
+docs/analysis/

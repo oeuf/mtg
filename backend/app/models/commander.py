@@ -10,8 +10,8 @@ class Commander(Card):
     """Represents a legendary creature that can be a Commander."""
 
     is_legendary: bool = Field(default=True, description="Commanders must be legendary")
-    power: Optional[int] = Field(default=None, ge=0, description="Creature power")
-    toughness: Optional[int] = Field(default=None, ge=0, description="Creature toughness")
+    power: Optional[str] = Field(default=None, description="Creature power")
+    toughness: Optional[str] = Field(default=None, description="Creature toughness")
 
     @field_validator("is_legendary")
     @classmethod

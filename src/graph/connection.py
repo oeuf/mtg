@@ -1,5 +1,8 @@
 """Manage Neo4j database connection."""
 
+import logging
+from typing import Optional
+
 from neo4j import GraphDatabase
 
 
@@ -9,14 +12,14 @@ class Neo4jConnection:
     def __init__(self, uri: str, user: str, password: str):
         """Initialize connection to Neo4j."""
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
-        print(f"✓ Connected to Neo4j at {uri}")
+        logging.info("Connected to Neo4j at %s", uri)
 
     def close(self):
         """Close database connection."""
         self.driver.close()
-        print("✓ Connection closed")
+        logging.info("Neo4j connection closed")
 
-    def execute_query(self, query: str, parameters: dict = None):
+    def execute_query(self, query: str, parameters: Optional[dict] = None):
         """Execute a Cypher query."""
         with self.driver.session() as session:
             result = session.run(query, parameters or {})
@@ -45,12 +48,11 @@ class Neo4jConnection:
             "CREATE INDEX card_popularity IF NOT EXISTS FOR (c:Card) ON (c.popularity_score)",
         ]
 
-        print("Creating constraints and indexes...")
+        logging.info("Creating constraints and indexes...")
         for constraint in constraints:
             try:
                 self.execute_query(constraint)
             except Exception as e:
-                # Constraint might already exist
-                pass
+                logging.warning("Constraint or index may already exist: %s", e)
 
-        print("✓ Constraints and indexes created")
+        logging.info("Constraints and indexes created")

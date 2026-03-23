@@ -14,14 +14,11 @@ def get_graph_stats(session: Session = Depends(get_neo4j_session)):
     """Get graph statistics."""
     result = session.run(
         """
-        OPTIONAL MATCH (card:Card)
-        WITH count(card) AS cards
-        OPTIONAL MATCH (cmd:Commander)
-        WITH cards, count(cmd) AS commanders
-        OPTIONAL MATCH (m:Mechanic)
-        WITH cards, commanders, count(m) AS mechanics
-        OPTIONAL MATCH ()-[r]->()
-        RETURN cards, commanders, mechanics, count(r) AS relationships
+        CALL { MATCH (card:Card) RETURN count(card) AS cards }
+        CALL { MATCH (cmd:Commander) RETURN count(cmd) AS commanders }
+        CALL { MATCH (m:Mechanic) RETURN count(m) AS mechanics }
+        CALL { MATCH ()-[r]->() RETURN count(r) AS relationships }
+        RETURN cards, commanders, mechanics, relationships
         """
     )
     record = result.single()
@@ -102,8 +99,8 @@ def get_graph_health(session: Session = Depends(get_neo4j_session)):
     try:
         session.run("RETURN 1")
         return {"status": "healthy", "message": "Connected to Neo4j"}
-    except Exception as e:
+    except Exception:
         return JSONResponse(
             status_code=503,
-            content={"status": "unhealthy", "message": str(e)},
+            content={"status": "unhealthy", "message": "Unable to connect to database"},
         )

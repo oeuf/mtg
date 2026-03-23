@@ -21,8 +21,8 @@ class TestCommanderModel:
             colors=["B", "G", "U"],
             keywords=[],
             is_legendary=True,
-            power=6,
-            toughness=6,
+            power="6",
+            toughness="6",
         )
         assert commander.name == "Muldrotha, the Gravetide"
         assert commander.is_legendary is True
@@ -40,8 +40,8 @@ class TestCommanderModel:
                 colors=[],
                 keywords=[],
                 is_legendary=False,
-                power=1,
-                toughness=1,
+                power="1",
+                toughness="1",
             )
 
     def test_commander_power_toughness(self):
@@ -56,8 +56,8 @@ class TestCommanderModel:
             colors=[],
             keywords=[],
             is_legendary=True,
-            power=2,
-            toughness=2,
+            power="2",
+            toughness="2",
         )
-        assert commander.power == 2
-        assert commander.toughness == 2
+        assert commander.power == "2"
+        assert commander.toughness == "2"

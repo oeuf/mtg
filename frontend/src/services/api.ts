@@ -3,12 +3,14 @@ import type {
   Card,
   CardSearchFilters,
   Commander,
-  SynergyResponse,
-  SimilarCardResponse,
-  RecommendationResponse,
-  DeckShell,
-  DeckAnalysis,
+  ComboResponse,
+  SimilarCardsResponse,
+  CardSynergiesResponse,
+  CommanderSynergiesResponse,
+  CommanderRecommendationsResponse,
+  GraphListResponse,
 } from "../types";
+import type { AutocompleteItem } from "../components/SearchAutocomplete";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
@@ -16,9 +18,9 @@ const api = axios.create({
 });
 
 export const commandersAPI = {
-  list(page = 1, limit = 20) {
+  list(page = 1, limit = 20, search?: string) {
     return api.get<{ items: Commander[]; total: number }>("/api/commanders", {
-      params: { page, limit },
+      params: { page, limit, ...(search ? { search } : {}) },
     });
   },
 
@@ -27,14 +29,14 @@ export const commandersAPI = {
   },
 
   getSynergies(name: string, params?: { limit?: number }) {
-    return api.get<SynergyResponse[]>(
+    return api.get<CommanderSynergiesResponse>(
       `/api/commanders/${encodeURIComponent(name)}/synergies`,
       { params },
     );
   },
 
   getRecommendations(name: string, params?: { top_k?: number }) {
-    return api.get<RecommendationResponse[]>(
+    return api.get<CommanderRecommendationsResponse>(
       `/api/commanders/${encodeURIComponent(name)}/recommendations`,
       { params },
     );
@@ -53,15 +55,21 @@ export const cardsAPI = {
   },
 
   getSimilar(name: string, params?: { limit?: number }) {
-    return api.get<SimilarCardResponse[]>(
+    return api.get<SimilarCardsResponse>(
       `/api/cards/${encodeURIComponent(name)}/similar`,
       { params },
     );
   },
 
   getSynergies(name: string) {
-    return api.get<SynergyResponse[]>(
+    return api.get<CardSynergiesResponse>(
       `/api/cards/${encodeURIComponent(name)}/synergies`,
+    );
+  },
+
+  getCombos(name: string) {
+    return api.get<{ card: string; combos: ComboResponse[] }>(
+      `/api/cards/${encodeURIComponent(name)}/combos`,
     );
   },
 
@@ -70,17 +78,11 @@ export const cardsAPI = {
       params: colorIdentity ? { color_identity: colorIdentity } : undefined,
     });
   },
-};
 
-export const decksAPI = {
-  buildShell(commanderName: string) {
-    return api.post<DeckShell>("/api/decks/build-shell", {
-      commander: commanderName,
+  autocomplete(query: string, commanderOnly = false) {
+    return api.get<AutocompleteItem[]>("/api/cards/autocomplete", {
+      params: { q: query, commander_only: commanderOnly },
     });
-  },
-
-  analyze(deck: { commander: string; cards: string[] }) {
-    return api.post<DeckAnalysis>("/api/decks/analyze", deck);
   },
 };
 
@@ -90,15 +92,15 @@ export const graphAPI = {
   },
 
   mechanics() {
-    return api.get<string[]>("/api/mechanics");
+    return api.get<GraphListResponse>("/api/mechanics");
   },
 
   themes() {
-    return api.get<string[]>("/api/themes");
+    return api.get<GraphListResponse>("/api/themes");
   },
 
   roles() {
-    return api.get<string[]>("/api/roles");
+    return api.get<GraphListResponse>("/api/roles");
   },
 };
 

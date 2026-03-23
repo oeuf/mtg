@@ -4,7 +4,6 @@ const navLinks = [
   { to: '/', label: 'Home' },
   { to: '/commanders', label: 'Commanders' },
   { to: '/cards', label: 'Cards' },
-  { to: '/deck-builder/select', label: 'Deck Builder' },
   { to: '/collection', label: 'Collection' },
 ];
 
@@ -17,7 +16,7 @@ export default function Header() {
         </NavLink>
         <ul className="flex items-center gap-1">
           {navLinks.map(({ to, label }) => (
-            <li key={to}>
+            <li key={label}>
               <NavLink
                 to={to}
                 end={to === '/'}

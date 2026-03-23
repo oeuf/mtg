@@ -3,6 +3,9 @@
 from typing import List, Dict, Tuple
 import math
 
+ZONE_WRITES = "writes"
+ZONE_READS = "reads"
+
 
 class FeatureScorers:
     """Collection of scoring functions for card property dimensions."""
@@ -97,7 +100,7 @@ class FeatureScorers:
                         best_pair = (r1, r2)
 
         # Penalty if roles are identical (redundancy)
-        if set(roles1) & set(roles2):
+        if best_pair and best_pair[0] == best_pair[1]:
             max_score *= 0.3
 
         return max_score, {
@@ -154,13 +157,13 @@ class FeatureScorers:
             for z2 in zones2:
                 if z1["zone"] == z2["zone"]:
                     # Same zone interaction
-                    if z1["interaction_type"] == "writes" and z2["interaction_type"] == "reads":
+                    if z1["interaction_type"] == ZONE_WRITES and z2["interaction_type"] == ZONE_READS:
                         chains.append({
                             "zone": z1["zone"],
                             "type": "write_read",
                             "score": 0.8
                         })
-                    elif z1["interaction_type"] == "reads" and z2["interaction_type"] == "writes":
+                    elif z1["interaction_type"] == ZONE_READS and z2["interaction_type"] == ZONE_WRITES:
                         chains.append({
                             "zone": z1["zone"],
                             "type": "read_write",
@@ -211,8 +214,7 @@ class FeatureScorers:
             # Colorless compatibility
             if not colors1 and not colors2:
                 return 1.0, {"type": "both_colorless"}
-            elif not colors1 or not colors2:
-                return 0.9, {"type": "one_colorless"}
+            return 0.9, {"type": "one_colorless"}
 
         colors1_set = set(colors1)
         colors2_set = set(colors2)

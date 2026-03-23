@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import axios from "axios";
-import { commandersAPI, cardsAPI, decksAPI, graphAPI } from "../api";
+import { commandersAPI, cardsAPI, graphAPI } from "../api";
 
 vi.mock("axios", () => {
   const mockAxiosInstance = {
@@ -48,6 +48,28 @@ describe("commandersAPI", () => {
 
     expect(mock.get).toHaveBeenCalledWith("/api/commanders", {
       params: { page: 1, limit: 20 },
+    });
+  });
+
+  it("list passes search param when provided", async () => {
+    const mock = getMockApi();
+    mock.get.mockResolvedValueOnce({ data: { items: [], total: 0 } });
+
+    await commandersAPI.list(1, 50, "muldrotha");
+
+    expect(mock.get).toHaveBeenCalledWith("/api/commanders", {
+      params: { page: 1, limit: 50, search: "muldrotha" },
+    });
+  });
+
+  it("list omits search param when not provided", async () => {
+    const mock = getMockApi();
+    mock.get.mockResolvedValueOnce({ data: { items: [], total: 0 } });
+
+    await commandersAPI.list(1, 50);
+
+    expect(mock.get).toHaveBeenCalledWith("/api/commanders", {
+      params: { page: 1, limit: 50 },
     });
   });
 
@@ -161,28 +183,6 @@ describe("cardsAPI", () => {
   });
 });
 
-describe("decksAPI", () => {
-  it("buildShell posts commander name", async () => {
-    const mock = getMockApi();
-    mock.post.mockResolvedValueOnce({ data: {} });
-
-    await decksAPI.buildShell("Muldrotha, the Gravetide");
-
-    expect(mock.post).toHaveBeenCalledWith("/api/decks/build-shell", {
-      commander: "Muldrotha, the Gravetide",
-    });
-  });
-
-  it("analyze posts deck data", async () => {
-    const mock = getMockApi();
-    mock.post.mockResolvedValueOnce({ data: {} });
-
-    const deck = { commander: "Muldrotha", cards: ["Sol Ring", "Forest"] };
-    await decksAPI.analyze(deck);
-
-    expect(mock.post).toHaveBeenCalledWith("/api/decks/analyze", deck);
-  });
-});
 
 describe("graphAPI", () => {
   it("stats calls /api/graph/stats", async () => {

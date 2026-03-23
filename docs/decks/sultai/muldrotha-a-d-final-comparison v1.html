@@ -1,0 +1,1929 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MUL-A vs MUL-D vs MUL-FINAL</title>
+  <style>
+    :root {
+      --bg: #0f1114;
+      --panel: #151a20;
+      --panel-2: #1a2027;
+      --ink: #e6edf3;
+      --muted: #98a6b5;
+      --line: #2a323c;
+      --a: #6ea8fe;
+      --d: #f7b267;
+      --f: #8ee3a1;
+      --shared: #d9ebff;
+      --shared2: #ff9fd0;
+      --gc: #ffd166;
+      --mono: "IBM Plex Mono", Menlo, Consolas, monospace;
+      --sans: "Space Grotesk", "Avenir Next", "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(1000px 540px at 20% -10%, #1a2430 0%, transparent 55%),
+        radial-gradient(900px 500px at 90% -10%, #23201a 0%, transparent 45%),
+        var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.2;
+    }
+    .wrap {
+      width: min(1700px, 98vw);
+      margin: 14px auto 18px;
+      display: grid;
+      gap: 10px;
+    }
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      border-radius: 10px;
+    }
+    .title { font-weight: 700; letter-spacing: .01em; }
+    .meta { color: var(--muted); font-size: 12px; }
+    .tabs { display: flex; gap: 8px; margin-top: 3px; }
+    .tab-btn {
+      border: 1px solid #304055;
+      background: #121a23;
+      color: var(--muted);
+      border-radius: 999px;
+      font-size: 11px;
+      letter-spacing: .02em;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-family: var(--mono);
+    }
+    .tab-btn.active {
+      color: var(--ink);
+      border-color: #5e83b6;
+      background: #1b2736;
+    }
+    .controls { display: flex; gap: 12px; align-items: center; color: var(--muted); font-size: 12px; flex-wrap: wrap; justify-content: flex-end; }
+    .legend { display: flex; gap: 10px; align-items: center; }
+    .swatch { display: inline-flex; align-items: center; gap: 5px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+    .dot.shared-all { background: var(--shared); }
+    .dot.shared-two { background: var(--shared2); }
+
+    .grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(3, minmax(340px, 1fr));
+      align-items: start;
+      overflow-x: auto;
+    }
+    .col {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+      min-height: 70vh;
+    }
+    .col-head {
+      position: sticky;
+      top: 6px;
+      z-index: 20;
+      background: var(--panel-2);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 12px 8px;
+      display: grid;
+      gap: 6px;
+    }
+    .deck-id { font-family: var(--mono); font-size: 13px; font-weight: 700; }
+    .tot { color: var(--muted); font-size: 11px; }
+    .gc-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .gc {
+      border: 1px solid #8c6e22;
+      color: #ffe8a3;
+      background: #3b3217;
+      border-radius: 999px;
+      font-size: 10px;
+      padding: 2px 6px;
+      white-space: nowrap;
+    }
+    .section { border-bottom: 1px solid var(--line); }
+    .sec-head {
+      width: 100%;
+      border: 0;
+      background: #12171d;
+      color: var(--ink);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      font-size: 11px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: var(--mono);
+    }
+    .cards { list-style: none; margin: 0; padding: 0; display: grid; }
+    .card {
+      padding: 4px 8px;
+      border-top: 1px solid #1b222c;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+      font-size: 12px;
+    }
+    .card span:first-child {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .card-link {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px dotted #3c4653;
+    }
+    .card-link:hover { text-decoration: underline; }
+    .card-link:focus-visible {
+      outline: 1px solid #6fa8ff;
+      outline-offset: 1px;
+      border-radius: 2px;
+    }
+    .card.shared-all {
+      color: var(--shared);
+      background: rgba(255, 255, 255, 0.015);
+    }
+    .card.shared-two { color: var(--shared2); }
+    .card.unique-mul-a { color: var(--a); }
+    .card.unique-mul-d { color: var(--d); }
+    .card.unique-mul-final { color: var(--f); }
+    .badge {
+      font-size: 9px;
+      color: #161616;
+      background: var(--gc);
+      border-radius: 999px;
+      padding: 1px 5px;
+      font-family: var(--mono);
+      letter-spacing: .04em;
+    }
+    .collapsed .cards { display: none; }
+    .hide-shared .card.shared-all { display: none; }
+    .tab-panel[hidden] { display: none; }
+    .analysis-wrap {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .analysis-content {
+      color: var(--ink);
+      display: grid;
+      gap: 10px;
+      line-height: 1.4;
+    }
+    .analysis-content h1,
+    .analysis-content h2,
+    .analysis-content h3,
+    .analysis-content h4 {
+      margin: 6px 0 0;
+      line-height: 1.2;
+      letter-spacing: .01em;
+    }
+    .analysis-content h1 {
+      font-size: 21px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #2b3542;
+    }
+    .analysis-content h2 {
+      font-size: 17px;
+      margin-top: 6px;
+      color: #cfe3ff;
+    }
+    .analysis-content h3 {
+      font-size: 15px;
+      color: #d8e6f7;
+    }
+    .analysis-content h4 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--muted);
+    }
+    .analysis-content p {
+      margin: 0;
+      color: #d7e2ee;
+      font-size: 13px;
+    }
+    .analysis-content ul,
+    .analysis-content ol {
+      margin: 0;
+      padding-left: 20px;
+      display: grid;
+      gap: 4px;
+    }
+    .analysis-content li {
+      font-size: 13px;
+      color: #d2deea;
+    }
+    .analysis-content code {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 1px 5px;
+      border-radius: 5px;
+      background: #111923;
+      border: 1px solid #243244;
+      color: #d8e7ff;
+    }
+    .analysis-content hr {
+      width: 100%;
+      border: 0;
+      border-top: 1px solid #293241;
+      margin: 2px 0;
+    }
+    .analysis-link {
+      color: #9fc6ff;
+      text-decoration: none;
+      border-bottom: 1px dotted #476185;
+    }
+    .analysis-link:hover { text-decoration: underline; }
+    .analysis-card-link {
+      color: #ffd78f;
+      text-decoration: none;
+      border-bottom: 1px dotted #8d6c34;
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 0 1px;
+    }
+    .analysis-card-link:hover { text-decoration: underline; }
+    .analysis-table-wrap {
+      overflow-x: auto;
+      border: 1px solid #2a3441;
+      border-radius: 8px;
+      background: #111821;
+    }
+    .analysis-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      min-width: 560px;
+    }
+    .analysis-table th,
+    .analysis-table td {
+      border-bottom: 1px solid #243040;
+      border-right: 1px solid #202a37;
+      padding: 6px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .analysis-table th:last-child,
+    .analysis-table td:last-child { border-right: 0; }
+    .analysis-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: #172232;
+      color: #d8e7ff;
+      font-family: var(--mono);
+      letter-spacing: .03em;
+      font-size: 11px;
+    }
+    .analysis-table tbody tr:nth-child(2n) {
+      background: rgba(255, 255, 255, 0.015);
+    }
+    .analysis-table tbody tr:hover {
+      background: rgba(110, 168, 254, 0.08);
+    }
+    .analysis-table td {
+      color: var(--ink);
+    }
+    .modal[hidden] { display: none; }
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+    }
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(6, 8, 10, 0.72);
+    }
+    .modal-panel {
+      position: relative;
+      width: min(420px, 94vw);
+      background: #0f141b;
+      border: 1px solid #2a3441;
+      border-radius: 10px;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.45);
+    }
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .modal-title {
+      font-size: 12px;
+      font-family: var(--mono);
+      color: var(--ink);
+      overflow-wrap: anywhere;
+    }
+    .modal-close {
+      border: 1px solid #2f3a48;
+      background: #121a23;
+      color: var(--ink);
+      border-radius: 6px;
+      font-size: 11px;
+      padding: 3px 7px;
+      cursor: pointer;
+    }
+    .modal-link {
+      color: #b5cfff;
+      font-size: 11px;
+      text-decoration: none;
+    }
+    .modal-link:hover { text-decoration: underline; }
+    .modal-image-wrap {
+      min-height: 50px;
+      display: grid;
+      place-items: center;
+    }
+    .modal-image {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid #27313d;
+      background: #0b1016;
+      max-height: 72vh;
+      object-fit: contain;
+    }
+    .modal-status {
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .modal-error {
+      color: #f8b4b4;
+      font-size: 11px;
+    }
+
+    @media (max-width: 1400px) {
+      .grid { grid-template-columns: repeat(2, minmax(320px, 1fr)); }
+      .col-head { top: 6px; }
+    }
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      .col-head { top: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <div class="title">MUL-A vs MUL-D vs MUL-FINAL</div>
+        <div class="meta">Grouped by permanent/spell type, alphabetized; data generated 2026-03-01 20:42:06 UTC.</div>
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="comparison" type="button">Comparison</button>
+          <button class="tab-btn" data-tab="analysis" type="button">Analysis</button>
+        </div>
+      </div>
+      <div id="comparisonControls" class="controls">
+        <div class="legend">
+          <span class="swatch"><span class="dot shared-all"></span>Shared by all 3</span>
+          <span class="swatch"><span class="dot shared-two"></span>Shared by 2</span>
+        </div>
+        <label><input id="diffOnly" type="checkbox" autocomplete="off"> Show only differences</label>
+      </div>
+    </div>
+    <section id="comparisonTab" class="tab-panel">
+      <div id="grid" class="grid"></div>
+    </section>
+    <section id="analysisTab" class="tab-panel" hidden>
+      <div class="analysis-wrap">
+        <article class="analysis-content"><h1>Muldrotha Comparative Audit and MUL-FINAL Synthesis</h1>
+<p>Generated: <strong>2026-03-01 20:42:05 UTC</strong></p>
+<h2>Sources and Constraints</h2>
+<ul>
+<li>Source decks: <code>MUL-A</code>, <code>MUL-D</code> from <code>muldrotha-reference.md</code>.</li>
+<li>Pool gate: <strong>strictly</strong> <code>MTG COLLECTION - Sheet5.tsv</code> + basic lands (<code>Island</code>, <code>Swamp</code>, <code>Forest</code>) only; no non-basic exceptions.</li>
+<li>Metadata: <code>enriched_cards.json</code> for CMC/type/functional tags.</li>
+<li>Bracket/Game Changer references: Wizards Commander Brackets updates (Oct 21, 2025 and Feb 9, 2026).</li>
+<li>EDHREC signal source: commander page and optimized subpages snapshot (used as 5% advisory signal in row scoring).</li>
+</ul>
+<h2>Phase 1 - Comparative Audit (MUL-A vs MUL-D)</h2>
+<p><strong>Key takeaway:</strong> <strong>the consensus core is large (87 cards), but the highest leverage differences are concentrated in low-slot engine pieces (altar package, tutor stack, and one utility land slot).</strong></p>
+<h3>Creatures</h3>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Bucket</th>
+<th>Cards</th>
+</tr></thead><tbody>
+<tr>
+<td>Shared cards (17)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Accursed%20Marauder%22" data-card-name="Accursed Marauder" target="_blank" rel="noopener noreferrer">Accursed Marauder</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Baleful%20Strix%22" data-card-name="Baleful Strix" target="_blank" rel="noopener noreferrer">Baleful Strix</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Birds%20of%20Paradise%22" data-card-name="Birds of Paradise" target="_blank" rel="noopener noreferrer">Birds of Paradise</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Dauthi%20Voidwalker%22" data-card-name="Dauthi Voidwalker" target="_blank" rel="noopener noreferrer">Dauthi Voidwalker</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Deathrite%20Shaman%22" data-card-name="Deathrite Shaman" target="_blank" rel="noopener noreferrer">Deathrite Shaman</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Eternal%20Witness%22" data-card-name="Eternal Witness" target="_blank" rel="noopener noreferrer">Eternal Witness</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Hedron%20Crab%22" data-card-name="Hedron Crab" target="_blank" rel="noopener noreferrer">Hedron Crab</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Jarad%2C%20Golgari%20Lich%20Lord%22" data-card-name="Jarad, Golgari Lich Lord" target="_blank" rel="noopener noreferrer">Jarad, Golgari Lich Lord</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Lord%20of%20Extinction%22" data-card-name="Lord of Extinction" target="_blank" rel="noopener noreferrer">Lord of Extinction</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Nyx%20Weaver%22" data-card-name="Nyx Weaver" target="_blank" rel="noopener noreferrer">Nyx Weaver</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Plaguecrafter%22" data-card-name="Plaguecrafter" target="_blank" rel="noopener noreferrer">Plaguecrafter</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Ramunap%20Excavator%22" data-card-name="Ramunap Excavator" target="_blank" rel="noopener noreferrer">Ramunap Excavator</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Satyr%20Wayfinder%22" data-card-name="Satyr Wayfinder" target="_blank" rel="noopener noreferrer">Satyr Wayfinder</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Stitcher%27s%20Supplier%22" data-card-name="Stitcher&#x27;s Supplier" target="_blank" rel="noopener noreferrer">Stitcher&#x27;s Supplier</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Syr%20Konrad%2C%20the%20Grim%22" data-card-name="Syr Konrad, the Grim" target="_blank" rel="noopener noreferrer">Syr Konrad, the Grim</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Underrealm%20Lich%22" data-card-name="Underrealm Lich" target="_blank" rel="noopener noreferrer">Underrealm Lich</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22World%20Shaper%22" data-card-name="World Shaper" target="_blank" rel="noopener noreferrer">World Shaper</a></td>
+</tr>
+<tr>
+<td>Unique to MUL-A (4)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Ledger%20Shredder%22" data-card-name="Ledger Shredder" target="_blank" rel="noopener noreferrer">Ledger Shredder</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Massacre%20Wurm%22" data-card-name="Massacre Wurm" target="_blank" rel="noopener noreferrer">Massacre Wurm</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mulldrifter%22" data-card-name="Mulldrifter" target="_blank" rel="noopener noreferrer">Mulldrifter</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22River%20Kelpie%22" data-card-name="River Kelpie" target="_blank" rel="noopener noreferrer">River Kelpie</a></td>
+</tr>
+<tr>
+<td>Unique to MUL-D (6)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Bloom%20Tender%22" data-card-name="Bloom Tender" target="_blank" rel="noopener noreferrer">Bloom Tender</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Caustic%20Caterpillar%22" data-card-name="Caustic Caterpillar" target="_blank" rel="noopener noreferrer">Caustic Caterpillar</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Craterhoof%20Behemoth%22" data-card-name="Craterhoof Behemoth" target="_blank" rel="noopener noreferrer">Craterhoof Behemoth</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravecrawler%22" data-card-name="Gravecrawler" target="_blank" rel="noopener noreferrer">Gravecrawler</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Haywire%20Mite%22" data-card-name="Haywire Mite" target="_blank" rel="noopener noreferrer">Haywire Mite</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pitiless%20Plunderer%22" data-card-name="Pitiless Plunderer" target="_blank" rel="noopener noreferrer">Pitiless Plunderer</a></td>
+</tr>
+</tbody></table></div>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Card</th>
+<th>Deck</th>
+<th>Muldrotha Synergy / Win-Path / Mana (1-5)</th>
+<th>1-Sentence Evaluation</th>
+</tr></thead><tbody>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Ledger%20Shredder%22" data-card-name="Ledger Shredder" target="_blank" rel="noopener noreferrer">Ledger Shredder</a></td>
+<td>MUL-A</td>
+<td>2 / 2 / 4</td>
+<td>Cheap filtering body, but its connive value is less deterministic than dedicated yard tutors/self-mill in Muldrotha shells.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Massacre%20Wurm%22" data-card-name="Massacre Wurm" target="_blank" rel="noopener noreferrer">Massacre Wurm</a></td>
+<td>MUL-A</td>
+<td>3 / 4 / 2</td>
+<td>Strong board-punish finisher, but high CMC and low recursion-loop density make it clunkier than primary combo cash-outs.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mulldrifter%22" data-card-name="Mulldrifter" target="_blank" rel="noopener noreferrer">Mulldrifter</a></td>
+<td>MUL-A</td>
+<td>3 / 2 / 3</td>
+<td>Replayable draw creature is fine with Muldrotha, but it does not materially tighten your kill clock.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22River%20Kelpie%22" data-card-name="River Kelpie" target="_blank" rel="noopener noreferrer">River Kelpie</a></td>
+<td>MUL-A</td>
+<td>4 / 3 / 2</td>
+<td>Synergistic with graveyard casting, but six mana for value-only impact competes poorly with proactive finish enablers.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Bloom%20Tender%22" data-card-name="Bloom Tender" target="_blank" rel="noopener noreferrer">Bloom Tender</a></td>
+<td>MUL-D</td>
+<td>3 / 3 / 5</td>
+<td>Explosive acceleration into Muldrotha and setup turns, even if it is not itself a graveyard engine piece.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Caustic%20Caterpillar%22" data-card-name="Caustic Caterpillar" target="_blank" rel="noopener noreferrer">Caustic Caterpillar</a></td>
+<td>MUL-D</td>
+<td>5 / 3 / 5</td>
+<td>One-mana recurable hate-bear is premium Muldrotha texture and repeatedly answers graveyard hate pieces.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Craterhoof%20Behemoth%22" data-card-name="Craterhoof Behemoth" target="_blank" rel="noopener noreferrer">Craterhoof Behemoth</a></td>
+<td>MUL-D</td>
+<td>2 / 5 / 2</td>
+<td>Low recursion synergy but excellent terminal conversion once recursive board development has gone wide.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravecrawler%22" data-card-name="Gravecrawler" target="_blank" rel="noopener noreferrer">Gravecrawler</a></td>
+<td>MUL-D</td>
+<td>5 / 5 / 5</td>
+<td>Combo-grade recursion piece that converts graveyard access into repeatable loop pressure with altar shells.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Haywire%20Mite%22" data-card-name="Haywire Mite" target="_blank" rel="noopener noreferrer">Haywire Mite</a></td>
+<td>MUL-D</td>
+<td>5 / 3 / 5</td>
+<td>Efficient recurable answer that cleanly removes opposing hate while fitting Muldrotha replay cadence.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pitiless%20Plunderer%22" data-card-name="Pitiless Plunderer" target="_blank" rel="noopener noreferrer">Pitiless Plunderer</a></td>
+<td>MUL-D</td>
+<td>5 / 5 / 3</td>
+<td>Core combo glue for recursive sac loops and one of the cleanest win-path multipliers in this pool.</td>
+</tr>
+</tbody></table></div>
+<h3>Enchantments</h3>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Bucket</th>
+<th>Cards</th>
+</tr></thead><tbody>
+<tr>
+<td>Shared cards (6)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Animate%20Dead%22" data-card-name="Animate Dead" target="_blank" rel="noopener noreferrer">Animate Dead</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Exploration%22" data-card-name="Exploration" target="_blank" rel="noopener noreferrer">Exploration</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Necromancy%22" data-card-name="Necromancy" target="_blank" rel="noopener noreferrer">Necromancy</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Phyrexian%20Reclamation%22" data-card-name="Phyrexian Reclamation" target="_blank" rel="noopener noreferrer">Phyrexian Reclamation</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Seal%20of%20Primordium%22" data-card-name="Seal of Primordium" target="_blank" rel="noopener noreferrer">Seal of Primordium</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Survival%20of%20the%20Fittest%22" data-card-name="Survival of the Fittest" target="_blank" rel="noopener noreferrer">Survival of the Fittest</a></td>
+</tr>
+<tr>
+<td>Unique to MUL-A (1)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Sylvan%20Library%22" data-card-name="Sylvan Library" target="_blank" rel="noopener noreferrer">Sylvan Library</a></td>
+</tr>
+<tr>
+<td>Unique to MUL-D (0)</td>
+<td>-</td>
+</tr>
+</tbody></table></div>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Card</th>
+<th>Deck</th>
+<th>Muldrotha Synergy / Win-Path / Mana (1-5)</th>
+<th>1-Sentence Evaluation</th>
+</tr></thead><tbody>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Sylvan%20Library%22" data-card-name="Sylvan Library" target="_blank" rel="noopener noreferrer">Sylvan Library</a></td>
+<td>MUL-A</td>
+<td>2 / 3 / 4</td>
+<td>Premium card quality engine, but less deck-defining than dedicated recursion loop support in this build target.</td>
+</tr>
+</tbody></table></div>
+<h3>Artifacts</h3>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Bucket</th>
+<th>Cards</th>
+</tr></thead><tbody>
+<tr>
+<td>Shared cards (10)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Arcane%20Signet%22" data-card-name="Arcane Signet" target="_blank" rel="noopener noreferrer">Arcane Signet</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Crucible%20of%20Worlds%22" data-card-name="Crucible of Worlds" target="_blank" rel="noopener noreferrer">Crucible of Worlds</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Lightning%20Greaves%22" data-card-name="Lightning Greaves" target="_blank" rel="noopener noreferrer">Lightning Greaves</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mesmeric%20Orb%22" data-card-name="Mesmeric Orb" target="_blank" rel="noopener noreferrer">Mesmeric Orb</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Perpetual%20Timepiece%22" data-card-name="Perpetual Timepiece" target="_blank" rel="noopener noreferrer">Perpetual Timepiece</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Skullclamp%22" data-card-name="Skullclamp" target="_blank" rel="noopener noreferrer">Skullclamp</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Sol%20Ring%22" data-card-name="Sol Ring" target="_blank" rel="noopener noreferrer">Sol Ring</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Soul-Guide%20Lantern%22" data-card-name="Soul-Guide Lantern" target="_blank" rel="noopener noreferrer">Soul-Guide Lantern</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Talisman%20of%20Curiosity%22" data-card-name="Talisman of Curiosity" target="_blank" rel="noopener noreferrer">Talisman of Curiosity</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22The%20One%20Ring%22" data-card-name="The One Ring" target="_blank" rel="noopener noreferrer">The One Ring</a></td>
+</tr>
+<tr>
+<td>Unique to MUL-A (2)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Conduit%20of%20Worlds%22" data-card-name="Conduit of Worlds" target="_blank" rel="noopener noreferrer">Conduit of Worlds</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Talisman%20of%20Resilience%22" data-card-name="Talisman of Resilience" target="_blank" rel="noopener noreferrer">Talisman of Resilience</a></td>
+</tr>
+<tr>
+<td>Unique to MUL-D (2)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Phyrexian%20Altar%22" data-card-name="Phyrexian Altar" target="_blank" rel="noopener noreferrer">Phyrexian Altar</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Talisman%20of%20Dominance%22" data-card-name="Talisman of Dominance" target="_blank" rel="noopener noreferrer">Talisman of Dominance</a></td>
+</tr>
+</tbody></table></div>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Card</th>
+<th>Deck</th>
+<th>Muldrotha Synergy / Win-Path / Mana (1-5)</th>
+<th>1-Sentence Evaluation</th>
+</tr></thead><tbody>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Conduit%20of%20Worlds%22" data-card-name="Conduit of Worlds" target="_blank" rel="noopener noreferrer">Conduit of Worlds</a></td>
+<td>MUL-A</td>
+<td>4 / 3 / 3</td>
+<td>Backup Muldrotha effect that improves recursion redundancy and land replay in grindy games.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Talisman%20of%20Resilience%22" data-card-name="Talisman of Resilience" target="_blank" rel="noopener noreferrer">Talisman of Resilience</a></td>
+<td>MUL-A</td>
+<td>2 / 2 / 4</td>
+<td>Serviceable fixing, but weaker than role-compression options that also enable sacrifice/loop lines.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Phyrexian%20Altar%22" data-card-name="Phyrexian Altar" target="_blank" rel="noopener noreferrer">Phyrexian Altar</a></td>
+<td>MUL-D</td>
+<td>5 / 5 / 3</td>
+<td>Top-tier recursion engine card enabling deterministic Gravecrawler loop kills and flexible mana conversion.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Talisman%20of%20Dominance%22" data-card-name="Talisman of Dominance" target="_blank" rel="noopener noreferrer">Talisman of Dominance</a></td>
+<td>MUL-D</td>
+<td>2 / 2 / 4</td>
+<td>Efficient rock with better color split for blue interaction turns than Resilience in this configuration.</td>
+</tr>
+</tbody></table></div>
+<h3>Instants</h3>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Bucket</th>
+<th>Cards</th>
+</tr></thead><tbody>
+<tr>
+<td>Shared cards (11)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22An%20Offer%20You%20Can%27t%20Refuse%22" data-card-name="An Offer You Can&#x27;t Refuse" target="_blank" rel="noopener noreferrer">An Offer You Can&#x27;t Refuse</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Assassin%27s%20Trophy%22" data-card-name="Assassin&#x27;s Trophy" target="_blank" rel="noopener noreferrer">Assassin&#x27;s Trophy</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Beast%20Within%22" data-card-name="Beast Within" target="_blank" rel="noopener noreferrer">Beast Within</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Counterspell%22" data-card-name="Counterspell" target="_blank" rel="noopener noreferrer">Counterspell</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Entomb%22" data-card-name="Entomb" target="_blank" rel="noopener noreferrer">Entomb</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Force%20of%20Negation%22" data-card-name="Force of Negation" target="_blank" rel="noopener noreferrer">Force of Negation</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Heroic%20Intervention%22" data-card-name="Heroic Intervention" target="_blank" rel="noopener noreferrer">Heroic Intervention</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Krosan%20Grip%22" data-card-name="Krosan Grip" target="_blank" rel="noopener noreferrer">Krosan Grip</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Nature%27s%20Claim%22" data-card-name="Nature&#x27;s Claim" target="_blank" rel="noopener noreferrer">Nature&#x27;s Claim</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Noxious%20Revival%22" data-card-name="Noxious Revival" target="_blank" rel="noopener noreferrer">Noxious Revival</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Swan%20Song%22" data-card-name="Swan Song" target="_blank" rel="noopener noreferrer">Swan Song</a></td>
+</tr>
+<tr>
+<td>Unique to MUL-A (4)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fact%20or%20Fiction%22" data-card-name="Fact or Fiction" target="_blank" rel="noopener noreferrer">Fact or Fiction</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Force%20of%20Will%22" data-card-name="Force of Will" target="_blank" rel="noopener noreferrer">Force of Will</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Lim-Dul%27s%20Vault%22" data-card-name="Lim-Dul&#x27;s Vault" target="_blank" rel="noopener noreferrer">Lim-Dul&#x27;s Vault</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mana%20Drain%22" data-card-name="Mana Drain" target="_blank" rel="noopener noreferrer">Mana Drain</a></td>
+</tr>
+<tr>
+<td>Unique to MUL-D (3)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Arcane%20Denial%22" data-card-name="Arcane Denial" target="_blank" rel="noopener noreferrer">Arcane Denial</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fierce%20Guardianship%22" data-card-name="Fierce Guardianship" target="_blank" rel="noopener noreferrer">Fierce Guardianship</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pact%20of%20Negation%22" data-card-name="Pact of Negation" target="_blank" rel="noopener noreferrer">Pact of Negation</a></td>
+</tr>
+</tbody></table></div>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Card</th>
+<th>Deck</th>
+<th>Muldrotha Synergy / Win-Path / Mana (1-5)</th>
+<th>1-Sentence Evaluation</th>
+</tr></thead><tbody>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fact%20or%20Fiction%22" data-card-name="Fact or Fiction" target="_blank" rel="noopener noreferrer">Fact or Fiction</a></td>
+<td>MUL-A</td>
+<td>3 / 3 / 3</td>
+<td>Graveyard-friendly card velocity, though four mana at instant speed is slower than focused pile/tutor setup.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Force%20of%20Will%22" data-card-name="Force of Will" target="_blank" rel="noopener noreferrer">Force of Will</a></td>
+<td>MUL-A</td>
+<td>1 / 4 / 4</td>
+<td>Excellent protection, but one-shot non-permanent interaction has lower long-game recursion leverage.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Lim-Dul%27s%20Vault%22" data-card-name="Lim-Dul&#x27;s Vault" target="_blank" rel="noopener noreferrer">Lim-Dul&#x27;s Vault</a></td>
+<td>MUL-A</td>
+<td>2 / 3 / 3</td>
+<td>Powerful selection spell, but it does not directly advance permanent recursion engines.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mana%20Drain%22" data-card-name="Mana Drain" target="_blank" rel="noopener noreferrer">Mana Drain</a></td>
+<td>MUL-A</td>
+<td>1 / 4 / 5</td>
+<td>Best-in-class tempo counter, strong efficiency despite limited direct graveyard synergy.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Arcane%20Denial%22" data-card-name="Arcane Denial" target="_blank" rel="noopener noreferrer">Arcane Denial</a></td>
+<td>MUL-D</td>
+<td>1 / 2 / 4</td>
+<td>Broad counterspell coverage, but lower conversion pressure than free-protection or engine tutors.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fierce%20Guardianship%22" data-card-name="Fierce Guardianship" target="_blank" rel="noopener noreferrer">Fierce Guardianship</a></td>
+<td>MUL-D</td>
+<td>1 / 4 / 5</td>
+<td>Exceptional protection while Muldrotha is online, though it contributes little to recursive value loops.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pact%20of%20Negation%22" data-card-name="Pact of Negation" target="_blank" rel="noopener noreferrer">Pact of Negation</a></td>
+<td>MUL-D</td>
+<td>1 / 4 / 5</td>
+<td>Protects all-in combo turns at zero mana and is ideal for forced cash-out windows.</td>
+</tr>
+</tbody></table></div>
+<h3>Sorceries</h3>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Bucket</th>
+<th>Cards</th>
+</tr></thead><tbody>
+<tr>
+<td>Shared cards (8)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Buried%20Alive%22" data-card-name="Buried Alive" target="_blank" rel="noopener noreferrer">Buried Alive</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Life%20from%20the%20Loam%22" data-card-name="Life from the Loam" target="_blank" rel="noopener noreferrer">Life from the Loam</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Living%20Death%22" data-card-name="Living Death" target="_blank" rel="noopener noreferrer">Living Death</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Nature%27s%20Lore%22" data-card-name="Nature&#x27;s Lore" target="_blank" rel="noopener noreferrer">Nature&#x27;s Lore</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Reanimate%22" data-card-name="Reanimate" target="_blank" rel="noopener noreferrer">Reanimate</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Regrowth%22" data-card-name="Regrowth" target="_blank" rel="noopener noreferrer">Regrowth</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Three%20Visits%22" data-card-name="Three Visits" target="_blank" rel="noopener noreferrer">Three Visits</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Victimize%22" data-card-name="Victimize" target="_blank" rel="noopener noreferrer">Victimize</a></td>
+</tr>
+<tr>
+<td>Unique to MUL-A (0)</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Unique to MUL-D (0)</td>
+<td>-</td>
+</tr>
+</tbody></table></div>
+<h3>Lands</h3>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Bucket</th>
+<th>Cards</th>
+</tr></thead><tbody>
+<tr>
+<td>Shared cards (35)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Bayou%22" data-card-name="Bayou" target="_blank" rel="noopener noreferrer">Bayou</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Bloodstained%20Mire%22" data-card-name="Bloodstained Mire" target="_blank" rel="noopener noreferrer">Bloodstained Mire</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Blooming%20Marsh%22" data-card-name="Blooming Marsh" target="_blank" rel="noopener noreferrer">Blooming Marsh</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Bojuka%20Bog%22" data-card-name="Bojuka Bog" target="_blank" rel="noopener noreferrer">Bojuka Bog</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Boseiju%2C%20Who%20Endures%22" data-card-name="Boseiju, Who Endures" target="_blank" rel="noopener noreferrer">Boseiju, Who Endures</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Botanical%20Sanctum%22" data-card-name="Botanical Sanctum" target="_blank" rel="noopener noreferrer">Botanical Sanctum</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Breeding%20Pool%22" data-card-name="Breeding Pool" target="_blank" rel="noopener noreferrer">Breeding Pool</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22City%20of%20Brass%22" data-card-name="City of Brass" target="_blank" rel="noopener noreferrer">City of Brass</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Command%20Tower%22" data-card-name="Command Tower" target="_blank" rel="noopener noreferrer">Command Tower</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Darkslick%20Shores%22" data-card-name="Darkslick Shores" target="_blank" rel="noopener noreferrer">Darkslick Shores</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Deathcap%20Glade%22" data-card-name="Deathcap Glade" target="_blank" rel="noopener noreferrer">Deathcap Glade</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Dreamroot%20Cascade%22" data-card-name="Dreamroot Cascade" target="_blank" rel="noopener noreferrer">Dreamroot Cascade</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fabled%20Passage%22" data-card-name="Fabled Passage" target="_blank" rel="noopener noreferrer">Fabled Passage</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Flooded%20Strand%22" data-card-name="Flooded Strand" target="_blank" rel="noopener noreferrer">Flooded Strand</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mana%20Confluence%22" data-card-name="Mana Confluence" target="_blank" rel="noopener noreferrer">Mana Confluence</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Marsh%20Flats%22" data-card-name="Marsh Flats" target="_blank" rel="noopener noreferrer">Marsh Flats</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Misty%20Rainforest%22" data-card-name="Misty Rainforest" target="_blank" rel="noopener noreferrer">Misty Rainforest</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Morphic%20Pool%22" data-card-name="Morphic Pool" target="_blank" rel="noopener noreferrer">Morphic Pool</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Otawara%2C%20Soaring%20City%22" data-card-name="Otawara, Soaring City" target="_blank" rel="noopener noreferrer">Otawara, Soaring City</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Overgrown%20Tomb%22" data-card-name="Overgrown Tomb" target="_blank" rel="noopener noreferrer">Overgrown Tomb</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Polluted%20Delta%22" data-card-name="Polluted Delta" target="_blank" rel="noopener noreferrer">Polluted Delta</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Prismatic%20Vista%22" data-card-name="Prismatic Vista" target="_blank" rel="noopener noreferrer">Prismatic Vista</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Reflecting%20Pool%22" data-card-name="Reflecting Pool" target="_blank" rel="noopener noreferrer">Reflecting Pool</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Rejuvenating%20Springs%22" data-card-name="Rejuvenating Springs" target="_blank" rel="noopener noreferrer">Rejuvenating Springs</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Scalding%20Tarn%22" data-card-name="Scalding Tarn" target="_blank" rel="noopener noreferrer">Scalding Tarn</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Shipwreck%20Marsh%22" data-card-name="Shipwreck Marsh" target="_blank" rel="noopener noreferrer">Shipwreck Marsh</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Takenuma%2C%20Abandoned%20Mire%22" data-card-name="Takenuma, Abandoned Mire" target="_blank" rel="noopener noreferrer">Takenuma, Abandoned Mire</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Tropical%20Island%22" data-card-name="Tropical Island" target="_blank" rel="noopener noreferrer">Tropical Island</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Underground%20Sea%22" data-card-name="Underground Sea" target="_blank" rel="noopener noreferrer">Underground Sea</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Undergrowth%20Stadium%22" data-card-name="Undergrowth Stadium" target="_blank" rel="noopener noreferrer">Undergrowth Stadium</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Verdant%20Catacombs%22" data-card-name="Verdant Catacombs" target="_blank" rel="noopener noreferrer">Verdant Catacombs</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Watery%20Grave%22" data-card-name="Watery Grave" target="_blank" rel="noopener noreferrer">Watery Grave</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Windswept%20Heath%22" data-card-name="Windswept Heath" target="_blank" rel="noopener noreferrer">Windswept Heath</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Wooded%20Foothills%22" data-card-name="Wooded Foothills" target="_blank" rel="noopener noreferrer">Wooded Foothills</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Zagoth%20Triome%22" data-card-name="Zagoth Triome" target="_blank" rel="noopener noreferrer">Zagoth Triome</a></td>
+</tr>
+<tr>
+<td>Unique to MUL-A (1)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Exotic%20Orchard%22" data-card-name="Exotic Orchard" target="_blank" rel="noopener noreferrer">Exotic Orchard</a></td>
+</tr>
+<tr>
+<td>Unique to MUL-D (1)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Volrath%27s%20Stronghold%22" data-card-name="Volrath&#x27;s Stronghold" target="_blank" rel="noopener noreferrer">Volrath&#x27;s Stronghold</a></td>
+</tr>
+</tbody></table></div>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Card</th>
+<th>Deck</th>
+<th>Muldrotha Synergy / Win-Path / Mana (1-5)</th>
+<th>1-Sentence Evaluation</th>
+</tr></thead><tbody>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Exotic%20Orchard%22" data-card-name="Exotic Orchard" target="_blank" rel="noopener noreferrer">Exotic Orchard</a></td>
+<td>MUL-A</td>
+<td>2 / 2 / 4</td>
+<td>Fixing is strong in multiplayer, but fetchable/self-mill-positive lands improve this deck&#x27;s recursion velocity.</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Volrath%27s%20Stronghold%22" data-card-name="Volrath&#x27;s Stronghold" target="_blank" rel="noopener noreferrer">Volrath&#x27;s Stronghold</a></td>
+<td>MUL-D</td>
+<td>5 / 3 / 3</td>
+<td>Repeatable creature recursion land that upgrades grind resilience without consuming spell slots.</td>
+</tr>
+</tbody></table></div>
+<h3>Game Changers Audit</h3>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Deck</th>
+<th>GC Cards</th>
+<th>Count</th>
+<th>Bracket-3 Cap (Exactly 3)</th>
+</tr></thead><tbody>
+<tr>
+<td>MUL-A</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Force%20of%20Will%22" data-card-name="Force of Will" target="_blank" rel="noopener noreferrer">Force of Will</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Survival%20of%20the%20Fittest%22" data-card-name="Survival of the Fittest" target="_blank" rel="noopener noreferrer">Survival of the Fittest</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22The%20One%20Ring%22" data-card-name="The One Ring" target="_blank" rel="noopener noreferrer">The One Ring</a></td>
+<td>3</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>MUL-D</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fierce%20Guardianship%22" data-card-name="Fierce Guardianship" target="_blank" rel="noopener noreferrer">Fierce Guardianship</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Survival%20of%20the%20Fittest%22" data-card-name="Survival of the Fittest" target="_blank" rel="noopener noreferrer">Survival of the Fittest</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22The%20One%20Ring%22" data-card-name="The One Ring" target="_blank" rel="noopener noreferrer">The One Ring</a></td>
+<td>3</td>
+<td>PASS</td>
+</tr>
+</tbody></table></div>
+<p><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Sol%20Ring%22" data-card-name="Sol Ring" target="_blank" rel="noopener noreferrer">Sol Ring</a> is treated as non-GC per Wizards bracket updates.</p>
+<h2>Phase 2 - Win Condition Critical Review</h2>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Deck</th>
+<th>Primary Win Path(s)</th>
+<th>Backup Path(s)</th>
+<th>Muldrotha Dependency</th>
+<th>Assessment</th>
+</tr></thead><tbody>
+<tr>
+<td>MUL-A</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Living%20Death%22" data-card-name="Living Death" target="_blank" rel="noopener noreferrer">Living Death</a> burst into <code>Syr Konrad</code> / <code>Jarad + Lord of Extinction</code> conversions.</td>
+<td>Grind through interaction using recursive permanents, then incremental combat with value board.</td>
+<td>Medium-High</td>
+<td>Clear primary cash-out exists, but backup closes are slower when Konrad/Jarad lines are disrupted.</td>
+</tr>
+<tr>
+<td>MUL-D</td>
+<td>Same graveyard cash-out core plus more explicit creature-loop pressure (<a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravecrawler%22" data-card-name="Gravecrawler" target="_blank" rel="noopener noreferrer">Gravecrawler</a> + <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pitiless%20Plunderer%22" data-card-name="Pitiless Plunderer" target="_blank" rel="noopener noreferrer">Pitiless Plunderer</a> support package) and <code>Craterhoof</code> board kill.</td>
+<td>Free-protection line (<code>Fierce</code>) preserves all-in turn; recursion grind still functions without immediate combo.</td>
+<td>Medium</td>
+<td><strong>More redundant close package and cleaner secondary kill vector than MUL-A.</strong></td>
+</tr>
+</tbody></table></div>
+<p><strong>Verdict:</strong> both decks have a real table-kill plan, but <strong>MUL-D is more explicit and redundant under disruption.</strong></p>
+<h2>Phase 3 - MUL-FINAL Synthesis</h2>
+<h3>3.1 Deck Personality</h3>
+<p><strong>Grave Tide Pile Engine</strong>: a recursion-dense Muldrotha shell that repeatedly converts self-mill and sac loops into inevitability, then ends games through deterministic graveyard cash-outs rather than generic goodstuff attrition.</p>
+<h3>3.2 Game Changer Package Selection</h3>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Package</th>
+<th>Cards</th>
+<th>Engine Fit</th>
+<th>Protection/Consistency</th>
+<th>Speed</th>
+<th>Opportunity Cost</th>
+<th>Weighted Score</th>
+</tr></thead><tbody>
+<tr>
+<td>Package A (A Baseline)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Force%20of%20Will%22" data-card-name="Force of Will" target="_blank" rel="noopener noreferrer">Force of Will</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Survival%20of%20the%20Fittest%22" data-card-name="Survival of the Fittest" target="_blank" rel="noopener noreferrer">Survival of the Fittest</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22The%20One%20Ring%22" data-card-name="The One Ring" target="_blank" rel="noopener noreferrer">The One Ring</a></td>
+<td>4.2</td>
+<td>4.6</td>
+<td>3.0</td>
+<td>3.4</td>
+<td><strong>4.060</strong></td>
+</tr>
+<tr>
+<td>Package D (D Baseline)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fierce%20Guardianship%22" data-card-name="Fierce Guardianship" target="_blank" rel="noopener noreferrer">Fierce Guardianship</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Survival%20of%20the%20Fittest%22" data-card-name="Survival of the Fittest" target="_blank" rel="noopener noreferrer">Survival of the Fittest</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22The%20One%20Ring%22" data-card-name="The One Ring" target="_blank" rel="noopener noreferrer">The One Ring</a></td>
+<td>4.3</td>
+<td>4.8</td>
+<td>3.1</td>
+<td>3.5</td>
+<td><strong>4.190</strong></td>
+</tr>
+<tr>
+<td>Package G (Pile Engine)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gifts%20Ungiven%22" data-card-name="Gifts Ungiven" target="_blank" rel="noopener noreferrer">Gifts Ungiven</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Intuition%22" data-card-name="Intuition" target="_blank" rel="noopener noreferrer">Intuition</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Survival%20of%20the%20Fittest%22" data-card-name="Survival of the Fittest" target="_blank" rel="noopener noreferrer">Survival of the Fittest</a></td>
+<td>5.0</td>
+<td>3.9</td>
+<td>3.6</td>
+<td>4.3</td>
+<td><strong>4.390</strong></td>
+</tr>
+<tr>
+<td>Package Turbo</td>
+<td><code>Ancient Tomb</code>, <code>Chrome Mox</code>, <code>Mana Vault</code></td>
+<td>3.3</td>
+<td>2.7</td>
+<td>5.0</td>
+<td>2.8</td>
+<td><strong>3.325</strong></td>
+</tr>
+<tr>
+<td>Package Control</td>
+<td><code>Cyclonic Rift</code>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fierce%20Guardianship%22" data-card-name="Fierce Guardianship" target="_blank" rel="noopener noreferrer">Fierce Guardianship</a>, <code>Rhystic Study</code></td>
+<td>3.0</td>
+<td>4.9</td>
+<td>3.2</td>
+<td>3.0</td>
+<td><strong>3.600</strong></td>
+</tr>
+</tbody></table></div>
+<p><strong>Selected package:</strong> <strong>Package G (Pile Engine)</strong> (<a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gifts%20Ungiven%22" data-card-name="Gifts Ungiven" target="_blank" rel="noopener noreferrer">Gifts Ungiven</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Intuition%22" data-card-name="Intuition" target="_blank" rel="noopener noreferrer">Intuition</a>, <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Survival%20of%20the%20Fittest%22" data-card-name="Survival of the Fittest" target="_blank" rel="noopener noreferrer">Survival of the Fittest</a>).</p>
+<h3>3.3 Contested Slot 3-Way Evaluation</h3>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Category</th>
+<th>MUL-A Candidate</th>
+<th>MUL-D Candidate</th>
+<th>Best Collection Alternative</th>
+<th>Winner for MUL-FINAL</th>
+<th>Why Winner</th>
+</tr></thead><tbody>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Ledger%20Shredder%22" data-card-name="Ledger Shredder" target="_blank" rel="noopener noreferrer">Ledger Shredder</a> (S/W/M 2.2/1.8/4.4, C 2.50)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Bloom%20Tender%22" data-card-name="Bloom Tender" target="_blank" rel="noopener noreferrer">Bloom Tender</a> (S/W/M 2.2/1.8/4.4, C 2.50)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Underrealm%20Lich%22" data-card-name="Underrealm Lich" target="_blank" rel="noopener noreferrer">Underrealm Lich</a> (S/W/M 4.5/3.5/2.5, C 3.75)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Bloom%20Tender%22" data-card-name="Bloom Tender" target="_blank" rel="noopener noreferrer">Bloom Tender</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Bloom%20Tender%22" data-card-name="Bloom Tender" target="_blank" rel="noopener noreferrer">Bloom Tender</a> over <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Underrealm%20Lich%22" data-card-name="Underrealm Lich" target="_blank" rel="noopener noreferrer">Underrealm Lich</a> for better mana efficiency.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Massacre%20Wurm%22" data-card-name="Massacre Wurm" target="_blank" rel="noopener noreferrer">Massacre Wurm</a> (S/W/M 2.2/1.8/2.2, C 2.18)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pitiless%20Plunderer%22" data-card-name="Pitiless Plunderer" target="_blank" rel="noopener noreferrer">Pitiless Plunderer</a> (S/W/M 5.0/4.5/3.5, C 4.40)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Syr%20Konrad%2C%20the%20Grim%22" data-card-name="Syr Konrad, the Grim" target="_blank" rel="noopener noreferrer">Syr Konrad, the Grim</a> (S/W/M 5.0/5.0/2.5, C 4.40)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pitiless%20Plunderer%22" data-card-name="Pitiless Plunderer" target="_blank" rel="noopener noreferrer">Pitiless Plunderer</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pitiless%20Plunderer%22" data-card-name="Pitiless Plunderer" target="_blank" rel="noopener noreferrer">Pitiless Plunderer</a> over <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Syr%20Konrad%2C%20the%20Grim%22" data-card-name="Syr Konrad, the Grim" target="_blank" rel="noopener noreferrer">Syr Konrad, the Grim</a> for better mana efficiency.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mulldrifter%22" data-card-name="Mulldrifter" target="_blank" rel="noopener noreferrer">Mulldrifter</a> (S/W/M 2.2/1.8/2.8, C 2.27)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Craterhoof%20Behemoth%22" data-card-name="Craterhoof Behemoth" target="_blank" rel="noopener noreferrer">Craterhoof Behemoth</a> (S/W/M 3.0/4.5/1.5, C 3.10)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Underrealm%20Lich%22" data-card-name="Underrealm Lich" target="_blank" rel="noopener noreferrer">Underrealm Lich</a> (S/W/M 4.5/3.5/2.5, C 3.75)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Craterhoof%20Behemoth%22" data-card-name="Craterhoof Behemoth" target="_blank" rel="noopener noreferrer">Craterhoof Behemoth</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Craterhoof%20Behemoth%22" data-card-name="Craterhoof Behemoth" target="_blank" rel="noopener noreferrer">Craterhoof Behemoth</a> over <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Underrealm%20Lich%22" data-card-name="Underrealm Lich" target="_blank" rel="noopener noreferrer">Underrealm Lich</a> for better win-path conversion.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22River%20Kelpie%22" data-card-name="River Kelpie" target="_blank" rel="noopener noreferrer">River Kelpie</a> (S/W/M 2.2/1.8/2.8, C 2.27)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravecrawler%22" data-card-name="Gravecrawler" target="_blank" rel="noopener noreferrer">Gravecrawler</a> (S/W/M 5.0/4.5/4.5, C 4.65)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Underrealm%20Lich%22" data-card-name="Underrealm Lich" target="_blank" rel="noopener noreferrer">Underrealm Lich</a> (S/W/M 4.5/3.5/2.5, C 3.75)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravecrawler%22" data-card-name="Gravecrawler" target="_blank" rel="noopener noreferrer">Gravecrawler</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravecrawler%22" data-card-name="Gravecrawler" target="_blank" rel="noopener noreferrer">Gravecrawler</a> over <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Underrealm%20Lich%22" data-card-name="Underrealm Lich" target="_blank" rel="noopener noreferrer">Underrealm Lich</a> for higher Muldrotha synergy, better win-path conversion, better mana efficiency.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td>-</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Caustic%20Caterpillar%22" data-card-name="Caustic Caterpillar" target="_blank" rel="noopener noreferrer">Caustic Caterpillar</a> (S/W/M 2.2/1.8/5.0, C 2.59)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Deathrite%20Shaman%22" data-card-name="Deathrite Shaman" target="_blank" rel="noopener noreferrer">Deathrite Shaman</a> (S/W/M 2.2/1.8/5.0, C 2.59)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Caustic%20Caterpillar%22" data-card-name="Caustic Caterpillar" target="_blank" rel="noopener noreferrer">Caustic Caterpillar</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Caustic%20Caterpillar%22" data-card-name="Caustic Caterpillar" target="_blank" rel="noopener noreferrer">Caustic Caterpillar</a> over <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Deathrite%20Shaman%22" data-card-name="Deathrite Shaman" target="_blank" rel="noopener noreferrer">Deathrite Shaman</a> for better overall slot fit.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td>-</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Haywire%20Mite%22" data-card-name="Haywire Mite" target="_blank" rel="noopener noreferrer">Haywire Mite</a> (S/W/M 2.2/1.8/5.0, C 2.59)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravecrawler%22" data-card-name="Gravecrawler" target="_blank" rel="noopener noreferrer">Gravecrawler</a> (S/W/M 5.0/4.5/4.5, C 4.65)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Haywire%20Mite%22" data-card-name="Haywire Mite" target="_blank" rel="noopener noreferrer">Haywire Mite</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Haywire%20Mite%22" data-card-name="Haywire Mite" target="_blank" rel="noopener noreferrer">Haywire Mite</a> over <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravecrawler%22" data-card-name="Gravecrawler" target="_blank" rel="noopener noreferrer">Gravecrawler</a> for better mana efficiency.</td>
+</tr>
+<tr>
+<td>Enchantments</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Sylvan%20Library%22" data-card-name="Sylvan Library" target="_blank" rel="noopener noreferrer">Sylvan Library</a> (S/W/M 2.2/1.8/4.4, C 2.50)</td>
+<td>-</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Survival%20of%20the%20Fittest%22" data-card-name="Survival of the Fittest" target="_blank" rel="noopener noreferrer">Survival of the Fittest</a> (S/W/M 5.0/4.5/3.5, C 4.42)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Survival%20of%20the%20Fittest%22" data-card-name="Survival of the Fittest" target="_blank" rel="noopener noreferrer">Survival of the Fittest</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Survival%20of%20the%20Fittest%22" data-card-name="Survival of the Fittest" target="_blank" rel="noopener noreferrer">Survival of the Fittest</a> over <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Sylvan%20Library%22" data-card-name="Sylvan Library" target="_blank" rel="noopener noreferrer">Sylvan Library</a> for higher Muldrotha synergy, better win-path conversion.</td>
+</tr>
+<tr>
+<td>Artifacts</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Conduit%20of%20Worlds%22" data-card-name="Conduit of Worlds" target="_blank" rel="noopener noreferrer">Conduit of Worlds</a> (S/W/M 4.0/3.0/3.0, C 3.48)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Phyrexian%20Altar%22" data-card-name="Phyrexian Altar" target="_blank" rel="noopener noreferrer">Phyrexian Altar</a> (S/W/M 5.0/4.5/3.0, C 4.38)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Birthing%20Pod%22" data-card-name="Birthing Pod" target="_blank" rel="noopener noreferrer">Birthing Pod</a> (S/W/M 4.0/4.0/3.3, C 3.72)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Conduit%20of%20Worlds%22" data-card-name="Conduit of Worlds" target="_blank" rel="noopener noreferrer">Conduit of Worlds</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Conduit%20of%20Worlds%22" data-card-name="Conduit of Worlds" target="_blank" rel="noopener noreferrer">Conduit of Worlds</a> over <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Phyrexian%20Altar%22" data-card-name="Phyrexian Altar" target="_blank" rel="noopener noreferrer">Phyrexian Altar</a> for better overall slot fit.</td>
+</tr>
+<tr>
+<td>Artifacts</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Talisman%20of%20Resilience%22" data-card-name="Talisman of Resilience" target="_blank" rel="noopener noreferrer">Talisman of Resilience</a> (S/W/M 2.2/1.8/4.4, C 2.47)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Talisman%20of%20Dominance%22" data-card-name="Talisman of Dominance" target="_blank" rel="noopener noreferrer">Talisman of Dominance</a> (S/W/M 2.2/1.8/4.4, C 2.46)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Arcane%20Signet%22" data-card-name="Arcane Signet" target="_blank" rel="noopener noreferrer">Arcane Signet</a> (S/W/M 2.2/1.8/4.4, C 2.47)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Talisman%20of%20Dominance%22" data-card-name="Talisman of Dominance" target="_blank" rel="noopener noreferrer">Talisman of Dominance</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Talisman%20of%20Dominance%22" data-card-name="Talisman of Dominance" target="_blank" rel="noopener noreferrer">Talisman of Dominance</a> over <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Arcane%20Signet%22" data-card-name="Arcane Signet" target="_blank" rel="noopener noreferrer">Arcane Signet</a> for better overall slot fit.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fact%20or%20Fiction%22" data-card-name="Fact or Fiction" target="_blank" rel="noopener noreferrer">Fact or Fiction</a> (S/W/M 1.8/1.8/3.3, C 2.06)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fierce%20Guardianship%22" data-card-name="Fierce Guardianship" target="_blank" rel="noopener noreferrer">Fierce Guardianship</a> (S/W/M 1.5/3.5/5.0, C 2.63)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gifts%20Ungiven%22" data-card-name="Gifts Ungiven" target="_blank" rel="noopener noreferrer">Gifts Ungiven</a> (S/W/M 5.0/5.0/3.5, C 4.50)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gifts%20Ungiven%22" data-card-name="Gifts Ungiven" target="_blank" rel="noopener noreferrer">Gifts Ungiven</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gifts%20Ungiven%22" data-card-name="Gifts Ungiven" target="_blank" rel="noopener noreferrer">Gifts Ungiven</a> over <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fierce%20Guardianship%22" data-card-name="Fierce Guardianship" target="_blank" rel="noopener noreferrer">Fierce Guardianship</a> for higher Muldrotha synergy, better win-path conversion.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Force%20of%20Will%22" data-card-name="Force of Will" target="_blank" rel="noopener noreferrer">Force of Will</a> (S/W/M 1.5/3.5/4.0, C 2.48)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pact%20of%20Negation%22" data-card-name="Pact of Negation" target="_blank" rel="noopener noreferrer">Pact of Negation</a> (S/W/M 1.8/1.8/5.0, C 2.32)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Force%20of%20Negation%22" data-card-name="Force of Negation" target="_blank" rel="noopener noreferrer">Force of Negation</a> (S/W/M 1.8/1.8/3.9, C 2.15)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Force%20of%20Negation%22" data-card-name="Force of Negation" target="_blank" rel="noopener noreferrer">Force of Negation</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Force%20of%20Negation%22" data-card-name="Force of Negation" target="_blank" rel="noopener noreferrer">Force of Negation</a> over <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Force%20of%20Will%22" data-card-name="Force of Will" target="_blank" rel="noopener noreferrer">Force of Will</a> for higher Muldrotha synergy.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Lim-Dul%27s%20Vault%22" data-card-name="Lim-Dul&#x27;s Vault" target="_blank" rel="noopener noreferrer">Lim-Dul&#x27;s Vault</a> (S/W/M 1.8/1.8/5.0, C 2.32)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Arcane%20Denial%22" data-card-name="Arcane Denial" target="_blank" rel="noopener noreferrer">Arcane Denial</a> (S/W/M 1.8/1.8/4.4, C 2.23)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Entomb%22" data-card-name="Entomb" target="_blank" rel="noopener noreferrer">Entomb</a> (S/W/M 2.7/3.0/5.0, C 3.12)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Arcane%20Denial%22" data-card-name="Arcane Denial" target="_blank" rel="noopener noreferrer">Arcane Denial</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Arcane%20Denial%22" data-card-name="Arcane Denial" target="_blank" rel="noopener noreferrer">Arcane Denial</a> over <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Entomb%22" data-card-name="Entomb" target="_blank" rel="noopener noreferrer">Entomb</a> for better overall slot fit.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mana%20Drain%22" data-card-name="Mana Drain" target="_blank" rel="noopener noreferrer">Mana Drain</a> (S/W/M 1.8/1.8/4.4, C 2.23)</td>
+<td>-</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Force%20of%20Negation%22" data-card-name="Force of Negation" target="_blank" rel="noopener noreferrer">Force of Negation</a> (S/W/M 1.8/1.8/3.9, C 2.15)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mana%20Drain%22" data-card-name="Mana Drain" target="_blank" rel="noopener noreferrer">Mana Drain</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mana%20Drain%22" data-card-name="Mana Drain" target="_blank" rel="noopener noreferrer">Mana Drain</a> over <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Force%20of%20Negation%22" data-card-name="Force of Negation" target="_blank" rel="noopener noreferrer">Force of Negation</a> for better mana efficiency.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Exotic%20Orchard%22" data-card-name="Exotic Orchard" target="_blank" rel="noopener noreferrer">Exotic Orchard</a> (S/W/M 2.2/1.8/5.0, C 2.53)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Volrath%27s%20Stronghold%22" data-card-name="Volrath&#x27;s Stronghold" target="_blank" rel="noopener noreferrer">Volrath&#x27;s Stronghold</a> (S/W/M 2.2/1.8/5.0, C 2.59)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Bayou%22" data-card-name="Bayou" target="_blank" rel="noopener noreferrer">Bayou</a> (S/W/M 2.2/1.8/5.0, C 2.59)</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Volrath%27s%20Stronghold%22" data-card-name="Volrath&#x27;s Stronghold" target="_blank" rel="noopener noreferrer">Volrath&#x27;s Stronghold</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Volrath%27s%20Stronghold%22" data-card-name="Volrath&#x27;s Stronghold" target="_blank" rel="noopener noreferrer">Volrath&#x27;s Stronghold</a> over <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Bayou%22" data-card-name="Bayou" target="_blank" rel="noopener noreferrer">Bayou</a> for better overall slot fit.</td>
+</tr>
+</tbody></table></div>
+<h3>3.4 Shared-Card Challenge and Anti-Bias Pass</h3>
+<ul>
+<li>Rows evaluated: <strong>99 / 99</strong></li>
+<li>Rows where final card equals MUL-A incumbent: <strong>71</strong></li>
+<li>Rows where final card equals MUL-D incumbent: <strong>79</strong></li>
+<li>Rows where an external/non-incumbent option won: <strong>18</strong></li>
+<li>Red-team no-incumbent pass: confirmed win paths remained <code>Living Death/Konrad</code>, <code>Jarad/Lord</code>, and <code>Gravecrawler + altar</code> lines with acceptable curve/ramp profile.</li>
+</ul>
+<p><strong>Shared-card replacement outcomes (proof of non-sacred consensus pass):</strong></p>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Category</th>
+<th>Shared Card Replaced</th>
+<th>Replacement Chosen</th>
+<th>Rationale</th>
+</tr></thead><tbody>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Accursed%20Marauder%22" data-card-name="Accursed Marauder" target="_blank" rel="noopener noreferrer">Accursed Marauder</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Bloom%20Tender%22" data-card-name="Bloom Tender" target="_blank" rel="noopener noreferrer">Bloom Tender</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Bloom%20Tender%22" data-card-name="Bloom Tender" target="_blank" rel="noopener noreferrer">Bloom Tender</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Baleful%20Strix%22" data-card-name="Baleful Strix" target="_blank" rel="noopener noreferrer">Baleful Strix</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravecrawler%22" data-card-name="Gravecrawler" target="_blank" rel="noopener noreferrer">Gravecrawler</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravecrawler%22" data-card-name="Gravecrawler" target="_blank" rel="noopener noreferrer">Gravecrawler</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Plaguecrafter%22" data-card-name="Plaguecrafter" target="_blank" rel="noopener noreferrer">Plaguecrafter</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pitiless%20Plunderer%22" data-card-name="Pitiless Plunderer" target="_blank" rel="noopener noreferrer">Pitiless Plunderer</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pitiless%20Plunderer%22" data-card-name="Pitiless Plunderer" target="_blank" rel="noopener noreferrer">Pitiless Plunderer</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Artifacts</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Soul-Guide%20Lantern%22" data-card-name="Soul-Guide Lantern" target="_blank" rel="noopener noreferrer">Soul-Guide Lantern</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Altar%20of%20Dementia%22" data-card-name="Altar of Dementia" target="_blank" rel="noopener noreferrer">Altar of Dementia</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Altar%20of%20Dementia%22" data-card-name="Altar of Dementia" target="_blank" rel="noopener noreferrer">Altar of Dementia</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Artifacts</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22The%20One%20Ring%22" data-card-name="The One Ring" target="_blank" rel="noopener noreferrer">The One Ring</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Birthing%20Pod%22" data-card-name="Birthing Pod" target="_blank" rel="noopener noreferrer">Birthing Pod</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Birthing%20Pod%22" data-card-name="Birthing Pod" target="_blank" rel="noopener noreferrer">Birthing Pod</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22An%20Offer%20You%20Can%27t%20Refuse%22" data-card-name="An Offer You Can&#x27;t Refuse" target="_blank" rel="noopener noreferrer">An Offer You Can&#x27;t Refuse</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mana%20Drain%22" data-card-name="Mana Drain" target="_blank" rel="noopener noreferrer">Mana Drain</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mana%20Drain%22" data-card-name="Mana Drain" target="_blank" rel="noopener noreferrer">Mana Drain</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Beast%20Within%22" data-card-name="Beast Within" target="_blank" rel="noopener noreferrer">Beast Within</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Intuition%22" data-card-name="Intuition" target="_blank" rel="noopener noreferrer">Intuition</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Intuition%22" data-card-name="Intuition" target="_blank" rel="noopener noreferrer">Intuition</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Counterspell%22" data-card-name="Counterspell" target="_blank" rel="noopener noreferrer">Counterspell</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Arcane%20Denial%22" data-card-name="Arcane Denial" target="_blank" rel="noopener noreferrer">Arcane Denial</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Arcane%20Denial%22" data-card-name="Arcane Denial" target="_blank" rel="noopener noreferrer">Arcane Denial</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Nature%27s%20Claim%22" data-card-name="Nature&#x27;s Claim" target="_blank" rel="noopener noreferrer">Nature&#x27;s Claim</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gifts%20Ungiven%22" data-card-name="Gifts Ungiven" target="_blank" rel="noopener noreferrer">Gifts Ungiven</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gifts%20Ungiven%22" data-card-name="Gifts Ungiven" target="_blank" rel="noopener noreferrer">Gifts Ungiven</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Noxious%20Revival%22" data-card-name="Noxious Revival" target="_blank" rel="noopener noreferrer">Noxious Revival</a></td>
+<td>(No direct 1:1; role compression)</td>
+<td>Slot was absorbed by denser package composition in this category.</td>
+</tr>
+<tr>
+<td>Sorceries</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Three%20Visits%22" data-card-name="Three Visits" target="_blank" rel="noopener noreferrer">Three Visits</a></td>
+<td>(No direct 1:1; role compression)</td>
+<td>Slot was absorbed by denser package composition in this category.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Blooming%20Marsh%22" data-card-name="Blooming Marsh" target="_blank" rel="noopener noreferrer">Blooming Marsh</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Command%20Beacon%22" data-card-name="Command Beacon" target="_blank" rel="noopener noreferrer">Command Beacon</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Command%20Beacon%22" data-card-name="Command Beacon" target="_blank" rel="noopener noreferrer">Command Beacon</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Botanical%20Sanctum%22" data-card-name="Botanical Sanctum" target="_blank" rel="noopener noreferrer">Botanical Sanctum</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Strip%20Mine%22" data-card-name="Strip Mine" target="_blank" rel="noopener noreferrer">Strip Mine</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Strip%20Mine%22" data-card-name="Strip Mine" target="_blank" rel="noopener noreferrer">Strip Mine</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Darkslick%20Shores%22" data-card-name="Darkslick Shores" target="_blank" rel="noopener noreferrer">Darkslick Shores</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Volrath%27s%20Stronghold%22" data-card-name="Volrath&#x27;s Stronghold" target="_blank" rel="noopener noreferrer">Volrath&#x27;s Stronghold</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Volrath%27s%20Stronghold%22" data-card-name="Volrath&#x27;s Stronghold" target="_blank" rel="noopener noreferrer">Volrath&#x27;s Stronghold</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Deathcap%20Glade%22" data-card-name="Deathcap Glade" target="_blank" rel="noopener noreferrer">Deathcap Glade</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Wasteland%22" data-card-name="Wasteland" target="_blank" rel="noopener noreferrer">Wasteland</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Wasteland%22" data-card-name="Wasteland" target="_blank" rel="noopener noreferrer">Wasteland</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Dreamroot%20Cascade%22" data-card-name="Dreamroot Cascade" target="_blank" rel="noopener noreferrer">Dreamroot Cascade</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Phyrexian%20Tower%22" data-card-name="Phyrexian Tower" target="_blank" rel="noopener noreferrer">Phyrexian Tower</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Phyrexian%20Tower%22" data-card-name="Phyrexian Tower" target="_blank" rel="noopener noreferrer">Phyrexian Tower</a> was preferred for higher recursion leverage, better win conversion under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fabled%20Passage%22" data-card-name="Fabled Passage" target="_blank" rel="noopener noreferrer">Fabled Passage</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Dakmor%20Salvage%22" data-card-name="Dakmor Salvage" target="_blank" rel="noopener noreferrer">Dakmor Salvage</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Dakmor%20Salvage%22" data-card-name="Dakmor Salvage" target="_blank" rel="noopener noreferrer">Dakmor Salvage</a> was preferred for higher recursion leverage, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Shipwreck%20Marsh%22" data-card-name="Shipwreck Marsh" target="_blank" rel="noopener noreferrer">Shipwreck Marsh</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Urborg%2C%20Tomb%20of%20Yawgmoth%22" data-card-name="Urborg, Tomb of Yawgmoth" target="_blank" rel="noopener noreferrer">Urborg, Tomb of Yawgmoth</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Urborg%2C%20Tomb%20of%20Yawgmoth%22" data-card-name="Urborg, Tomb of Yawgmoth" target="_blank" rel="noopener noreferrer">Urborg, Tomb of Yawgmoth</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+</tbody></table></div>
+<p><strong>Rows where neither MUL-A nor MUL-D had the winning card (external winners):</strong></p>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Category</th>
+<th>External Winner</th>
+<th>Composite Breakdown</th>
+</tr></thead><tbody>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Glen%20Elendra%20Archmage%22" data-card-name="Glen Elendra Archmage" target="_blank" rel="noopener noreferrer">Glen Elendra Archmage</a></td>
+<td>Composite 2.34 (S2.2/W1.8/M3.3/R3.0/E2.5)</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravebreaker%20Lamia%22" data-card-name="Gravebreaker Lamia" target="_blank" rel="noopener noreferrer">Gravebreaker Lamia</a></td>
+<td>Composite 3.99 (S4.5/W4.0/M3.0/R3.5/E3.8)</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Meren%20of%20Clan%20Nel%20Toth%22" data-card-name="Meren of Clan Nel Toth" target="_blank" rel="noopener noreferrer">Meren of Clan Nel Toth</a></td>
+<td>Composite 3.80 (S4.5/W3.5/M2.5/R4.5/E2.5)</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Sidisi%2C%20Brood%20Tyrant%22" data-card-name="Sidisi, Brood Tyrant" target="_blank" rel="noopener noreferrer">Sidisi, Brood Tyrant</a></td>
+<td>Composite 3.85 (S4.5/W4.0/M2.5/R3.5/E2.5)</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Vile%20Entomber%22" data-card-name="Vile Entomber" target="_blank" rel="noopener noreferrer">Vile Entomber</a></td>
+<td>Composite 4.00 (S4.5/W4.0/M3.5/R3.5/E2.5)</td>
+</tr>
+<tr>
+<td>Enchantments</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Tortured%20Existence%22" data-card-name="Tortured Existence" target="_blank" rel="noopener noreferrer">Tortured Existence</a></td>
+<td>Composite 4.03 (S4.5/W3.5/M4.0/R4.5/E2.5)</td>
+</tr>
+<tr>
+<td>Artifacts</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Altar%20of%20Dementia%22" data-card-name="Altar of Dementia" target="_blank" rel="noopener noreferrer">Altar of Dementia</a></td>
+<td>Composite 4.52 (S5.0/W4.5/M4.0/R4.5/E2.5)</td>
+</tr>
+<tr>
+<td>Artifacts</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Ashnod%27s%20Altar%22" data-card-name="Ashnod&#x27;s Altar" target="_blank" rel="noopener noreferrer">Ashnod&#x27;s Altar</a></td>
+<td>Composite 3.09 (S3.1/W2.8/M3.9/R3.0/E2.6)</td>
+</tr>
+<tr>
+<td>Artifacts</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Birthing%20Pod%22" data-card-name="Birthing Pod" target="_blank" rel="noopener noreferrer">Birthing Pod</a></td>
+<td>Composite 3.72 (S4.0/W4.0/M3.3/R3.0/E2.5)</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gifts%20Ungiven%22" data-card-name="Gifts Ungiven" target="_blank" rel="noopener noreferrer">Gifts Ungiven</a></td>
+<td>Composite 4.50 (S5.0/W5.0/M3.5/R3.5/E2.5)</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Intuition%22" data-card-name="Intuition" target="_blank" rel="noopener noreferrer">Intuition</a></td>
+<td>Composite 4.67 (S5.0/W5.0/M4.0/R3.5/E4.3)</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Command%20Beacon%22" data-card-name="Command Beacon" target="_blank" rel="noopener noreferrer">Command Beacon</a></td>
+<td>Composite 2.59 (S2.2/W1.8/M5.0/R3.0/E2.5)</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Dakmor%20Salvage%22" data-card-name="Dakmor Salvage" target="_blank" rel="noopener noreferrer">Dakmor Salvage</a></td>
+<td>Composite 3.75 (S4.9/W1.8/M5.0/R3.8/E2.5)</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Phyrexian%20Tower%22" data-card-name="Phyrexian Tower" target="_blank" rel="noopener noreferrer">Phyrexian Tower</a></td>
+<td>Composite 3.25 (S3.1/W2.8/M5.0/R3.0/E2.5)</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Strip%20Mine%22" data-card-name="Strip Mine" target="_blank" rel="noopener noreferrer">Strip Mine</a></td>
+<td>Composite 2.59 (S2.2/W1.8/M5.0/R3.0/E2.5)</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Urborg%2C%20Tomb%20of%20Yawgmoth%22" data-card-name="Urborg, Tomb of Yawgmoth" target="_blank" rel="noopener noreferrer">Urborg, Tomb of Yawgmoth</a></td>
+<td>Composite 2.59 (S2.2/W1.8/M5.0/R3.0/E2.5)</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Wasteland%22" data-card-name="Wasteland" target="_blank" rel="noopener noreferrer">Wasteland</a></td>
+<td>Composite 2.59 (S2.2/W1.8/M5.0/R3.0/E2.5)</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Yavimaya%2C%20Cradle%20of%20Growth%22" data-card-name="Yavimaya, Cradle of Growth" target="_blank" rel="noopener noreferrer">Yavimaya, Cradle of Growth</a></td>
+<td>Composite 2.59 (S2.2/W1.8/M5.0/R3.0/E2.5)</td>
+</tr>
+</tbody></table></div>
+<h3>3.5 MUL-FINAL Decklist</h3>
+<p><strong>Commander:</strong> <code>Muldrotha, the Gravetide</code></p>
+<h4>Creatures (25)</h4>
+<ul>
+<li>Birds of Paradise</li>
+<li>Bloom Tender</li>
+<li>Caustic Caterpillar</li>
+<li>Craterhoof Behemoth</li>
+<li>Dauthi Voidwalker</li>
+<li>Deathrite Shaman</li>
+<li>Eternal Witness</li>
+<li>Glen Elendra Archmage</li>
+<li>Gravebreaker Lamia</li>
+<li>Gravecrawler</li>
+<li>Haywire Mite</li>
+<li>Hedron Crab</li>
+<li>Jarad, Golgari Lich Lord</li>
+<li>Lord of Extinction</li>
+<li>Meren of Clan Nel Toth</li>
+<li>Nyx Weaver</li>
+<li>Pitiless Plunderer</li>
+<li>Ramunap Excavator</li>
+<li>Satyr Wayfinder</li>
+<li>Sidisi, Brood Tyrant</li>
+<li>Stitcher&#x27;s Supplier</li>
+<li>Syr Konrad, the Grim</li>
+<li>Underrealm Lich</li>
+<li>Vile Entomber</li>
+<li>World Shaper</li>
+</ul>
+<h4>Enchantments (7)</h4>
+<ul>
+<li>Animate Dead</li>
+<li>Exploration</li>
+<li>Necromancy</li>
+<li>Phyrexian Reclamation</li>
+<li>Seal of Primordium</li>
+<li>Survival of the Fittest (GC)</li>
+<li>Tortured Existence</li>
+</ul>
+<h4>Artifacts (14)</h4>
+<ul>
+<li>Altar of Dementia</li>
+<li>Arcane Signet</li>
+<li>Ashnod&#x27;s Altar</li>
+<li>Birthing Pod</li>
+<li>Conduit of Worlds</li>
+<li>Crucible of Worlds</li>
+<li>Lightning Greaves</li>
+<li>Mesmeric Orb</li>
+<li>Perpetual Timepiece</li>
+<li>Phyrexian Altar</li>
+<li>Skullclamp</li>
+<li>Sol Ring</li>
+<li>Talisman of Curiosity</li>
+<li>Talisman of Dominance</li>
+</ul>
+<h4>Instants (10)</h4>
+<ul>
+<li>Arcane Denial</li>
+<li>Assassin&#x27;s Trophy</li>
+<li>Entomb</li>
+<li>Force of Negation</li>
+<li>Gifts Ungiven (GC)</li>
+<li>Heroic Intervention</li>
+<li>Intuition (GC)</li>
+<li>Krosan Grip</li>
+<li>Mana Drain</li>
+<li>Swan Song</li>
+</ul>
+<h4>Sorceries (7)</h4>
+<ul>
+<li>Buried Alive</li>
+<li>Life from the Loam</li>
+<li>Living Death</li>
+<li>Nature&#x27;s Lore</li>
+<li>Reanimate</li>
+<li>Regrowth</li>
+<li>Victimize</li>
+</ul>
+<h4>Lands (36)</h4>
+<ul>
+<li>Bayou</li>
+<li>Bloodstained Mire</li>
+<li>Bojuka Bog</li>
+<li>Boseiju, Who Endures</li>
+<li>Breeding Pool</li>
+<li>City of Brass</li>
+<li>Command Beacon</li>
+<li>Command Tower</li>
+<li>Dakmor Salvage</li>
+<li>Flooded Strand</li>
+<li>Mana Confluence</li>
+<li>Marsh Flats</li>
+<li>Misty Rainforest</li>
+<li>Morphic Pool</li>
+<li>Otawara, Soaring City</li>
+<li>Overgrown Tomb</li>
+<li>Phyrexian Tower</li>
+<li>Polluted Delta</li>
+<li>Prismatic Vista</li>
+<li>Reflecting Pool</li>
+<li>Rejuvenating Springs</li>
+<li>Scalding Tarn</li>
+<li>Strip Mine</li>
+<li>Takenuma, Abandoned Mire</li>
+<li>Tropical Island</li>
+<li>Underground Sea</li>
+<li>Undergrowth Stadium</li>
+<li>Urborg, Tomb of Yawgmoth</li>
+<li>Verdant Catacombs</li>
+<li>Volrath&#x27;s Stronghold</li>
+<li>Wasteland</li>
+<li>Watery Grave</li>
+<li>Windswept Heath</li>
+<li>Wooded Foothills</li>
+<li>Yavimaya, Cradle of Growth</li>
+<li>Zagoth Triome</li>
+</ul>
+<h3>3.6 Validation Checklist</h3>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Check</th>
+<th>Result</th>
+</tr></thead><tbody>
+<tr>
+<td>MUL-A totals 99</td>
+<td>PASS (99)</td>
+</tr>
+<tr>
+<td>MUL-D totals 99</td>
+<td>PASS (99)</td>
+</tr>
+<tr>
+<td>MUL-FINAL totals 99</td>
+<td>PASS (99)</td>
+</tr>
+<tr>
+<td>Singleton (MUL-FINAL)</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>MUL-FINAL Game Changers exactly 3</td>
+<td>PASS (3)</td>
+</tr>
+<tr>
+<td>MUL-FINAL pool legality</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Explicit win paths &gt;= 2</td>
+<td>PASS (3 primary documented)</td>
+</tr>
+<tr>
+<td>Mana curve reviewed</td>
+<td>PASS (avg nonland CMC 2.6, ramp 11, lands 36)</td>
+</tr>
+<tr>
+<td>Permanent type diversity</td>
+<td>PASS (Creatures 25, Artifacts 14, Enchantments 7, Lands 36)</td>
+</tr>
+<tr>
+<td>HTML artifact count checks</td>
+<td>PASS (all deck totals and category counts computed from same normalized model)</td>
+</tr>
+</tbody></table></div>
+<h3>3.7 Win Paths in MUL-FINAL</h3>
+<ol>
+<li><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Living%20Death%22" data-card-name="Living Death" target="_blank" rel="noopener noreferrer">Living Death</a> + <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Syr%20Konrad%2C%20the%20Grim%22" data-card-name="Syr Konrad, the Grim" target="_blank" rel="noopener noreferrer">Syr Konrad, the Grim</a> burst kill after self-mill/pile setup.</li>
+<li><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Jarad%2C%20Golgari%20Lich%20Lord%22" data-card-name="Jarad, Golgari Lich Lord" target="_blank" rel="noopener noreferrer">Jarad, Golgari Lich Lord</a> + <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Lord%20of%20Extinction%22" data-card-name="Lord of Extinction" target="_blank" rel="noopener noreferrer">Lord of Extinction</a> table-drain conversion.</li>
+<li><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravecrawler%22" data-card-name="Gravecrawler" target="_blank" rel="noopener noreferrer">Gravecrawler</a> + (<a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Phyrexian%20Altar%22" data-card-name="Phyrexian Altar" target="_blank" rel="noopener noreferrer">Phyrexian Altar</a> or <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Ashnod%27s%20Altar%22" data-card-name="Ashnod&#x27;s Altar" target="_blank" rel="noopener noreferrer">Ashnod&#x27;s Altar</a>) + <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pitiless%20Plunderer%22" data-card-name="Pitiless Plunderer" target="_blank" rel="noopener noreferrer">Pitiless Plunderer</a>, converted via <code>Syr Konrad</code> and/or <a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Altar%20of%20Dementia%22" data-card-name="Altar of Dementia" target="_blank" rel="noopener noreferrer">Altar of Dementia</a>.</li>
+</ol>
+<h2>Phase 4 - Change Log</h2>
+<h3>MUL-A -&gt; MUL-FINAL</h3>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Category</th>
+<th>Cut</th>
+<th>Replacement</th>
+<th>Rationale</th>
+</tr></thead><tbody>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Accursed%20Marauder%22" data-card-name="Accursed Marauder" target="_blank" rel="noopener noreferrer">Accursed Marauder</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Bloom%20Tender%22" data-card-name="Bloom Tender" target="_blank" rel="noopener noreferrer">Bloom Tender</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Bloom%20Tender%22" data-card-name="Bloom Tender" target="_blank" rel="noopener noreferrer">Bloom Tender</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Baleful%20Strix%22" data-card-name="Baleful Strix" target="_blank" rel="noopener noreferrer">Baleful Strix</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravecrawler%22" data-card-name="Gravecrawler" target="_blank" rel="noopener noreferrer">Gravecrawler</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravecrawler%22" data-card-name="Gravecrawler" target="_blank" rel="noopener noreferrer">Gravecrawler</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Ledger%20Shredder%22" data-card-name="Ledger Shredder" target="_blank" rel="noopener noreferrer">Ledger Shredder</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Caustic%20Caterpillar%22" data-card-name="Caustic Caterpillar" target="_blank" rel="noopener noreferrer">Caustic Caterpillar</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Caustic%20Caterpillar%22" data-card-name="Caustic Caterpillar" target="_blank" rel="noopener noreferrer">Caustic Caterpillar</a> was preferred for cleaner mana efficiency under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Massacre%20Wurm%22" data-card-name="Massacre Wurm" target="_blank" rel="noopener noreferrer">Massacre Wurm</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravebreaker%20Lamia%22" data-card-name="Gravebreaker Lamia" target="_blank" rel="noopener noreferrer">Gravebreaker Lamia</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravebreaker%20Lamia%22" data-card-name="Gravebreaker Lamia" target="_blank" rel="noopener noreferrer">Gravebreaker Lamia</a> was preferred for higher recursion leverage, better win conversion, cleaner mana efficiency, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mulldrifter%22" data-card-name="Mulldrifter" target="_blank" rel="noopener noreferrer">Mulldrifter</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pitiless%20Plunderer%22" data-card-name="Pitiless Plunderer" target="_blank" rel="noopener noreferrer">Pitiless Plunderer</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pitiless%20Plunderer%22" data-card-name="Pitiless Plunderer" target="_blank" rel="noopener noreferrer">Pitiless Plunderer</a> was preferred for higher recursion leverage, better win conversion, cleaner mana efficiency, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Plaguecrafter%22" data-card-name="Plaguecrafter" target="_blank" rel="noopener noreferrer">Plaguecrafter</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Vile%20Entomber%22" data-card-name="Vile Entomber" target="_blank" rel="noopener noreferrer">Vile Entomber</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Vile%20Entomber%22" data-card-name="Vile Entomber" target="_blank" rel="noopener noreferrer">Vile Entomber</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22River%20Kelpie%22" data-card-name="River Kelpie" target="_blank" rel="noopener noreferrer">River Kelpie</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Sidisi%2C%20Brood%20Tyrant%22" data-card-name="Sidisi, Brood Tyrant" target="_blank" rel="noopener noreferrer">Sidisi, Brood Tyrant</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Sidisi%2C%20Brood%20Tyrant%22" data-card-name="Sidisi, Brood Tyrant" target="_blank" rel="noopener noreferrer">Sidisi, Brood Tyrant</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Enchantments</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Sylvan%20Library%22" data-card-name="Sylvan Library" target="_blank" rel="noopener noreferrer">Sylvan Library</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Tortured%20Existence%22" data-card-name="Tortured Existence" target="_blank" rel="noopener noreferrer">Tortured Existence</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Tortured%20Existence%22" data-card-name="Tortured Existence" target="_blank" rel="noopener noreferrer">Tortured Existence</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Artifacts</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Soul-Guide%20Lantern%22" data-card-name="Soul-Guide Lantern" target="_blank" rel="noopener noreferrer">Soul-Guide Lantern</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Altar%20of%20Dementia%22" data-card-name="Altar of Dementia" target="_blank" rel="noopener noreferrer">Altar of Dementia</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Altar%20of%20Dementia%22" data-card-name="Altar of Dementia" target="_blank" rel="noopener noreferrer">Altar of Dementia</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Artifacts</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Talisman%20of%20Resilience%22" data-card-name="Talisman of Resilience" target="_blank" rel="noopener noreferrer">Talisman of Resilience</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Talisman%20of%20Dominance%22" data-card-name="Talisman of Dominance" target="_blank" rel="noopener noreferrer">Talisman of Dominance</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Talisman%20of%20Dominance%22" data-card-name="Talisman of Dominance" target="_blank" rel="noopener noreferrer">Talisman of Dominance</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Artifacts</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22The%20One%20Ring%22" data-card-name="The One Ring" target="_blank" rel="noopener noreferrer">The One Ring</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Birthing%20Pod%22" data-card-name="Birthing Pod" target="_blank" rel="noopener noreferrer">Birthing Pod</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Birthing%20Pod%22" data-card-name="Birthing Pod" target="_blank" rel="noopener noreferrer">Birthing Pod</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22An%20Offer%20You%20Can%27t%20Refuse%22" data-card-name="An Offer You Can&#x27;t Refuse" target="_blank" rel="noopener noreferrer">An Offer You Can&#x27;t Refuse</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Arcane%20Denial%22" data-card-name="Arcane Denial" target="_blank" rel="noopener noreferrer">Arcane Denial</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Arcane%20Denial%22" data-card-name="Arcane Denial" target="_blank" rel="noopener noreferrer">Arcane Denial</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Beast%20Within%22" data-card-name="Beast Within" target="_blank" rel="noopener noreferrer">Beast Within</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Intuition%22" data-card-name="Intuition" target="_blank" rel="noopener noreferrer">Intuition</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Intuition%22" data-card-name="Intuition" target="_blank" rel="noopener noreferrer">Intuition</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Counterspell%22" data-card-name="Counterspell" target="_blank" rel="noopener noreferrer">Counterspell</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gifts%20Ungiven%22" data-card-name="Gifts Ungiven" target="_blank" rel="noopener noreferrer">Gifts Ungiven</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gifts%20Ungiven%22" data-card-name="Gifts Ungiven" target="_blank" rel="noopener noreferrer">Gifts Ungiven</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fact%20or%20Fiction%22" data-card-name="Fact or Fiction" target="_blank" rel="noopener noreferrer">Fact or Fiction</a></td>
+<td>(No direct 1:1; role compression)</td>
+<td>Slot was absorbed by denser package composition in this category.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Force%20of%20Will%22" data-card-name="Force of Will" target="_blank" rel="noopener noreferrer">Force of Will</a></td>
+<td>(No direct 1:1; role compression)</td>
+<td>Slot was absorbed by denser package composition in this category.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Lim-Dul%27s%20Vault%22" data-card-name="Lim-Dul&#x27;s Vault" target="_blank" rel="noopener noreferrer">Lim-Dul&#x27;s Vault</a></td>
+<td>(No direct 1:1; role compression)</td>
+<td>Slot was absorbed by denser package composition in this category.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Nature%27s%20Claim%22" data-card-name="Nature&#x27;s Claim" target="_blank" rel="noopener noreferrer">Nature&#x27;s Claim</a></td>
+<td>(No direct 1:1; role compression)</td>
+<td>Slot was absorbed by denser package composition in this category.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Noxious%20Revival%22" data-card-name="Noxious Revival" target="_blank" rel="noopener noreferrer">Noxious Revival</a></td>
+<td>(No direct 1:1; role compression)</td>
+<td>Slot was absorbed by denser package composition in this category.</td>
+</tr>
+<tr>
+<td>Sorceries</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Three%20Visits%22" data-card-name="Three Visits" target="_blank" rel="noopener noreferrer">Three Visits</a></td>
+<td>(No direct 1:1; role compression)</td>
+<td>Slot was absorbed by denser package composition in this category.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Blooming%20Marsh%22" data-card-name="Blooming Marsh" target="_blank" rel="noopener noreferrer">Blooming Marsh</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Command%20Beacon%22" data-card-name="Command Beacon" target="_blank" rel="noopener noreferrer">Command Beacon</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Command%20Beacon%22" data-card-name="Command Beacon" target="_blank" rel="noopener noreferrer">Command Beacon</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Botanical%20Sanctum%22" data-card-name="Botanical Sanctum" target="_blank" rel="noopener noreferrer">Botanical Sanctum</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Strip%20Mine%22" data-card-name="Strip Mine" target="_blank" rel="noopener noreferrer">Strip Mine</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Strip%20Mine%22" data-card-name="Strip Mine" target="_blank" rel="noopener noreferrer">Strip Mine</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Darkslick%20Shores%22" data-card-name="Darkslick Shores" target="_blank" rel="noopener noreferrer">Darkslick Shores</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Volrath%27s%20Stronghold%22" data-card-name="Volrath&#x27;s Stronghold" target="_blank" rel="noopener noreferrer">Volrath&#x27;s Stronghold</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Volrath%27s%20Stronghold%22" data-card-name="Volrath&#x27;s Stronghold" target="_blank" rel="noopener noreferrer">Volrath&#x27;s Stronghold</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Deathcap%20Glade%22" data-card-name="Deathcap Glade" target="_blank" rel="noopener noreferrer">Deathcap Glade</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Wasteland%22" data-card-name="Wasteland" target="_blank" rel="noopener noreferrer">Wasteland</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Wasteland%22" data-card-name="Wasteland" target="_blank" rel="noopener noreferrer">Wasteland</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Dreamroot%20Cascade%22" data-card-name="Dreamroot Cascade" target="_blank" rel="noopener noreferrer">Dreamroot Cascade</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Phyrexian%20Tower%22" data-card-name="Phyrexian Tower" target="_blank" rel="noopener noreferrer">Phyrexian Tower</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Phyrexian%20Tower%22" data-card-name="Phyrexian Tower" target="_blank" rel="noopener noreferrer">Phyrexian Tower</a> was preferred for higher recursion leverage, better win conversion under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Exotic%20Orchard%22" data-card-name="Exotic Orchard" target="_blank" rel="noopener noreferrer">Exotic Orchard</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Dakmor%20Salvage%22" data-card-name="Dakmor Salvage" target="_blank" rel="noopener noreferrer">Dakmor Salvage</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Dakmor%20Salvage%22" data-card-name="Dakmor Salvage" target="_blank" rel="noopener noreferrer">Dakmor Salvage</a> was preferred for higher recursion leverage, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fabled%20Passage%22" data-card-name="Fabled Passage" target="_blank" rel="noopener noreferrer">Fabled Passage</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Urborg%2C%20Tomb%20of%20Yawgmoth%22" data-card-name="Urborg, Tomb of Yawgmoth" target="_blank" rel="noopener noreferrer">Urborg, Tomb of Yawgmoth</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Urborg%2C%20Tomb%20of%20Yawgmoth%22" data-card-name="Urborg, Tomb of Yawgmoth" target="_blank" rel="noopener noreferrer">Urborg, Tomb of Yawgmoth</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Shipwreck%20Marsh%22" data-card-name="Shipwreck Marsh" target="_blank" rel="noopener noreferrer">Shipwreck Marsh</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Yavimaya%2C%20Cradle%20of%20Growth%22" data-card-name="Yavimaya, Cradle of Growth" target="_blank" rel="noopener noreferrer">Yavimaya, Cradle of Growth</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Yavimaya%2C%20Cradle%20of%20Growth%22" data-card-name="Yavimaya, Cradle of Growth" target="_blank" rel="noopener noreferrer">Yavimaya, Cradle of Growth</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+</tbody></table></div>
+<h3>MUL-D -&gt; MUL-FINAL</h3>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Category</th>
+<th>Cut</th>
+<th>Replacement</th>
+<th>Rationale</th>
+</tr></thead><tbody>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Accursed%20Marauder%22" data-card-name="Accursed Marauder" target="_blank" rel="noopener noreferrer">Accursed Marauder</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Vile%20Entomber%22" data-card-name="Vile Entomber" target="_blank" rel="noopener noreferrer">Vile Entomber</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Vile%20Entomber%22" data-card-name="Vile Entomber" target="_blank" rel="noopener noreferrer">Vile Entomber</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Baleful%20Strix%22" data-card-name="Baleful Strix" target="_blank" rel="noopener noreferrer">Baleful Strix</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Sidisi%2C%20Brood%20Tyrant%22" data-card-name="Sidisi, Brood Tyrant" target="_blank" rel="noopener noreferrer">Sidisi, Brood Tyrant</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Sidisi%2C%20Brood%20Tyrant%22" data-card-name="Sidisi, Brood Tyrant" target="_blank" rel="noopener noreferrer">Sidisi, Brood Tyrant</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Creatures</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Plaguecrafter%22" data-card-name="Plaguecrafter" target="_blank" rel="noopener noreferrer">Plaguecrafter</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Meren%20of%20Clan%20Nel%20Toth%22" data-card-name="Meren of Clan Nel Toth" target="_blank" rel="noopener noreferrer">Meren of Clan Nel Toth</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Meren%20of%20Clan%20Nel%20Toth%22" data-card-name="Meren of Clan Nel Toth" target="_blank" rel="noopener noreferrer">Meren of Clan Nel Toth</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Artifacts</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Soul-Guide%20Lantern%22" data-card-name="Soul-Guide Lantern" target="_blank" rel="noopener noreferrer">Soul-Guide Lantern</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Altar%20of%20Dementia%22" data-card-name="Altar of Dementia" target="_blank" rel="noopener noreferrer">Altar of Dementia</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Altar%20of%20Dementia%22" data-card-name="Altar of Dementia" target="_blank" rel="noopener noreferrer">Altar of Dementia</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Artifacts</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22The%20One%20Ring%22" data-card-name="The One Ring" target="_blank" rel="noopener noreferrer">The One Ring</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Birthing%20Pod%22" data-card-name="Birthing Pod" target="_blank" rel="noopener noreferrer">Birthing Pod</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Birthing%20Pod%22" data-card-name="Birthing Pod" target="_blank" rel="noopener noreferrer">Birthing Pod</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22An%20Offer%20You%20Can%27t%20Refuse%22" data-card-name="An Offer You Can&#x27;t Refuse" target="_blank" rel="noopener noreferrer">An Offer You Can&#x27;t Refuse</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mana%20Drain%22" data-card-name="Mana Drain" target="_blank" rel="noopener noreferrer">Mana Drain</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mana%20Drain%22" data-card-name="Mana Drain" target="_blank" rel="noopener noreferrer">Mana Drain</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Beast%20Within%22" data-card-name="Beast Within" target="_blank" rel="noopener noreferrer">Beast Within</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Intuition%22" data-card-name="Intuition" target="_blank" rel="noopener noreferrer">Intuition</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Intuition%22" data-card-name="Intuition" target="_blank" rel="noopener noreferrer">Intuition</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Counterspell%22" data-card-name="Counterspell" target="_blank" rel="noopener noreferrer">Counterspell</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gifts%20Ungiven%22" data-card-name="Gifts Ungiven" target="_blank" rel="noopener noreferrer">Gifts Ungiven</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gifts%20Ungiven%22" data-card-name="Gifts Ungiven" target="_blank" rel="noopener noreferrer">Gifts Ungiven</a> was preferred for higher recursion leverage, better win conversion, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fierce%20Guardianship%22" data-card-name="Fierce Guardianship" target="_blank" rel="noopener noreferrer">Fierce Guardianship</a></td>
+<td>(No direct 1:1; role compression)</td>
+<td>Slot was absorbed by denser package composition in this category.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Nature%27s%20Claim%22" data-card-name="Nature&#x27;s Claim" target="_blank" rel="noopener noreferrer">Nature&#x27;s Claim</a></td>
+<td>(No direct 1:1; role compression)</td>
+<td>Slot was absorbed by denser package composition in this category.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Noxious%20Revival%22" data-card-name="Noxious Revival" target="_blank" rel="noopener noreferrer">Noxious Revival</a></td>
+<td>(No direct 1:1; role compression)</td>
+<td>Slot was absorbed by denser package composition in this category.</td>
+</tr>
+<tr>
+<td>Instants</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Pact%20of%20Negation%22" data-card-name="Pact of Negation" target="_blank" rel="noopener noreferrer">Pact of Negation</a></td>
+<td>(No direct 1:1; role compression)</td>
+<td>Slot was absorbed by denser package composition in this category.</td>
+</tr>
+<tr>
+<td>Sorceries</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Three%20Visits%22" data-card-name="Three Visits" target="_blank" rel="noopener noreferrer">Three Visits</a></td>
+<td>(No direct 1:1; role compression)</td>
+<td>Slot was absorbed by denser package composition in this category.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Blooming%20Marsh%22" data-card-name="Blooming Marsh" target="_blank" rel="noopener noreferrer">Blooming Marsh</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Command%20Beacon%22" data-card-name="Command Beacon" target="_blank" rel="noopener noreferrer">Command Beacon</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Command%20Beacon%22" data-card-name="Command Beacon" target="_blank" rel="noopener noreferrer">Command Beacon</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Botanical%20Sanctum%22" data-card-name="Botanical Sanctum" target="_blank" rel="noopener noreferrer">Botanical Sanctum</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Strip%20Mine%22" data-card-name="Strip Mine" target="_blank" rel="noopener noreferrer">Strip Mine</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Strip%20Mine%22" data-card-name="Strip Mine" target="_blank" rel="noopener noreferrer">Strip Mine</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Darkslick%20Shores%22" data-card-name="Darkslick Shores" target="_blank" rel="noopener noreferrer">Darkslick Shores</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Wasteland%22" data-card-name="Wasteland" target="_blank" rel="noopener noreferrer">Wasteland</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Wasteland%22" data-card-name="Wasteland" target="_blank" rel="noopener noreferrer">Wasteland</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Deathcap%20Glade%22" data-card-name="Deathcap Glade" target="_blank" rel="noopener noreferrer">Deathcap Glade</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Phyrexian%20Tower%22" data-card-name="Phyrexian Tower" target="_blank" rel="noopener noreferrer">Phyrexian Tower</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Phyrexian%20Tower%22" data-card-name="Phyrexian Tower" target="_blank" rel="noopener noreferrer">Phyrexian Tower</a> was preferred for higher recursion leverage, better win conversion under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Dreamroot%20Cascade%22" data-card-name="Dreamroot Cascade" target="_blank" rel="noopener noreferrer">Dreamroot Cascade</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Dakmor%20Salvage%22" data-card-name="Dakmor Salvage" target="_blank" rel="noopener noreferrer">Dakmor Salvage</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Dakmor%20Salvage%22" data-card-name="Dakmor Salvage" target="_blank" rel="noopener noreferrer">Dakmor Salvage</a> was preferred for higher recursion leverage, improves rebuild resilience under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Fabled%20Passage%22" data-card-name="Fabled Passage" target="_blank" rel="noopener noreferrer">Fabled Passage</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Urborg%2C%20Tomb%20of%20Yawgmoth%22" data-card-name="Urborg, Tomb of Yawgmoth" target="_blank" rel="noopener noreferrer">Urborg, Tomb of Yawgmoth</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Urborg%2C%20Tomb%20of%20Yawgmoth%22" data-card-name="Urborg, Tomb of Yawgmoth" target="_blank" rel="noopener noreferrer">Urborg, Tomb of Yawgmoth</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+<tr>
+<td>Lands</td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Shipwreck%20Marsh%22" data-card-name="Shipwreck Marsh" target="_blank" rel="noopener noreferrer">Shipwreck Marsh</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Yavimaya%2C%20Cradle%20of%20Growth%22" data-card-name="Yavimaya, Cradle of Growth" target="_blank" rel="noopener noreferrer">Yavimaya, Cradle of Growth</a></td>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Yavimaya%2C%20Cradle%20of%20Growth%22" data-card-name="Yavimaya, Cradle of Growth" target="_blank" rel="noopener noreferrer">Yavimaya, Cradle of Growth</a> was preferred for better role fit in the finalized engine package under the weighted slot model.</td>
+</tr>
+</tbody></table></div>
+<h2>EDHREC Signals Used (Advisory Only)</h2>
+<div class="analysis-table-wrap"><table class="analysis-table">
+<thead><tr>
+<th>Card</th>
+<th>Inclusion</th>
+<th>Synergy</th>
+<th>Impact on Decisions</th>
+</tr></thead><tbody>
+<tr>
+<td><code>Spore Frog</code></td>
+<td>60%</td>
+<td>53%</td>
+<td>Evaluated, not selected</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Seal%20of%20Primordium%22" data-card-name="Seal of Primordium" target="_blank" rel="noopener noreferrer">Seal of Primordium</a></td>
+<td>50%</td>
+<td>45%</td>
+<td>Kept/promoted</td>
+</tr>
+<tr>
+<td><code>Kaya&#x27;s Ghostform</code></td>
+<td>49%</td>
+<td>43%</td>
+<td>Evaluated, not selected</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Gravebreaker%20Lamia%22" data-card-name="Gravebreaker Lamia" target="_blank" rel="noopener noreferrer">Gravebreaker Lamia</a></td>
+<td>47%</td>
+<td>43%</td>
+<td>Kept/promoted</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Mesmeric%20Orb%22" data-card-name="Mesmeric Orb" target="_blank" rel="noopener noreferrer">Mesmeric Orb</a></td>
+<td>21%</td>
+<td>10%</td>
+<td>Kept/promoted</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Perpetual%20Timepiece%22" data-card-name="Perpetual Timepiece" target="_blank" rel="noopener noreferrer">Perpetual Timepiece</a></td>
+<td>27%</td>
+<td>23%</td>
+<td>Kept/promoted</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Ashnod%27s%20Altar%22" data-card-name="Ashnod&#x27;s Altar" target="_blank" rel="noopener noreferrer">Ashnod&#x27;s Altar</a></td>
+<td>18%</td>
+<td>15%</td>
+<td>Kept/promoted</td>
+</tr>
+<tr>
+<td><code>Evolving Wilds</code></td>
+<td>40%</td>
+<td>13%</td>
+<td>Evaluated, not selected</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Exotic%20Orchard%22" data-card-name="Exotic Orchard" target="_blank" rel="noopener noreferrer">Exotic Orchard</a></td>
+<td>42%</td>
+<td>-14%</td>
+<td>Evaluated, not selected</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Entomb%22" data-card-name="Entomb" target="_blank" rel="noopener noreferrer">Entomb</a></td>
+<td>60%</td>
+<td>51%</td>
+<td>Kept/promoted</td>
+</tr>
+<tr>
+<td><a class="analysis-card-link" href="https://scryfall.com/search?q=%21%22Intuition%22" data-card-name="Intuition" target="_blank" rel="noopener noreferrer">Intuition</a></td>
+<td>56%</td>
+<td>55%</td>
+<td>Kept/promoted</td>
+</tr>
+</tbody></table></div>
+<p><strong>Interpretation note:</strong> EDHREC was used as a weak prior (5%) and never overrode pool legality, GC cap, or recursion-engine fit.</p>
+<h2>External References</h2>
+<ul>
+<li>EDHREC commander page: https://edhrec.com/commanders/muldrotha-the-gravetide</li>
+<li>EDHREC JSON endpoint: https://json.edhrec.com/pages/commanders/muldrotha-the-gravetide.json</li>
+<li>EDHREC optimized page: https://edhrec.com/commanders/muldrotha-the-gravetide/optimized</li>
+<li>Wizards Brackets update (Oct 21, 2025): https://magic.wizards.com/en/news/announcements/commander-brackets-beta-update-october-21-2025</li>
+<li>Wizards Brackets update (Feb 9, 2026): https://magic.wizards.com/en/news/announcements/commander-brackets-beta-update-february-9-2026</li>
+<li>Commander Brackets portal: https://magic.wizards.com/en/commander-brackets</li>
+<li>Commander RC context hub: https://mtgcommander.net/</li>
+</ul></article>
+      </div>
+    </section>
+  </div>
+  <div id="cardModal" class="modal" hidden>
+    <div class="modal-backdrop" data-close-modal="1"></div>
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="cardModalTitle">
+      <div class="modal-head">
+        <div id="cardModalTitle" class="modal-title"></div>
+        <button id="cardModalClose" class="modal-close" type="button" aria-label="Close preview">Close</button>
+      </div>
+      <a id="cardModalLink" class="modal-link" href="#" target="_blank" rel="noopener noreferrer">Open Scryfall page</a>
+      <div class="modal-image-wrap">
+        <img id="cardModalImg" class="modal-image" alt="" hidden>
+      </div>
+      <div id="cardModalStatus" class="modal-status">Loading image...</div>
+      <div id="cardModalError" class="modal-error" hidden>Unable to load this card image from Scryfall.</div>
+    </div>
+  </div>
+  <script>
+    const DATA = {"generatedAt": "2026-03-01 20:42:06 UTC", "decks": [{"id": "MUL-A", "total": 99, "categories": [{"name": "Creatures", "count": 21, "cards": [{"name": "Accursed Marauder", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Creature \u2014 Zombie Warrior"}, {"name": "Baleful Strix", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact Creature \u2014 Bird"}, {"name": "Birds of Paradise", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Bird"}, {"name": "Dauthi Voidwalker", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Creature \u2014 Dauthi Rogue"}, {"name": "Deathrite Shaman", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Elf Shaman"}, {"name": "Eternal Witness", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Creature \u2014 Human Shaman"}, {"name": "Hedron Crab", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Crab"}, {"name": "Jarad, Golgari Lich Lord", "presence": "shared-all", "isGameChanger": false, "cmc": 4.0, "typeLine": "Legendary Creature \u2014 Zombie Elf"}, {"name": "Ledger Shredder", "presence": "unique-mul-a", "isGameChanger": false, "cmc": 2.0, "typeLine": "Creature \u2014 Bird Advisor"}, {"name": "Lord of Extinction", "presence": "shared-all", "isGameChanger": false, "cmc": 5.0, "typeLine": "Creature \u2014 Elemental"}, {"name": "Massacre Wurm", "presence": "unique-mul-a", "isGameChanger": false, "cmc": 6.0, "typeLine": "Creature \u2014 Phyrexian Wurm"}, {"name": "Mulldrifter", "presence": "unique-mul-a", "isGameChanger": false, "cmc": 5.0, "typeLine": "Creature \u2014 Elemental"}, {"name": "Nyx Weaver", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Enchantment Creature \u2014 Spider"}, {"name": "Plaguecrafter", "presence": "shared-two", "isGameChanger": false, "cmc": 3.0, "typeLine": "Creature \u2014 Human Shaman"}, {"name": "Ramunap Excavator", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Creature \u2014 Snake Cleric"}, {"name": "River Kelpie", "presence": "unique-mul-a", "isGameChanger": false, "cmc": 5.0, "typeLine": "Creature \u2014 Beast"}, {"name": "Satyr Wayfinder", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Creature \u2014 Satyr"}, {"name": "Stitcher's Supplier", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Zombie"}, {"name": "Syr Konrad, the Grim", "presence": "shared-all", "isGameChanger": false, "cmc": 5.0, "typeLine": "Legendary Creature \u2014 Human Knight"}, {"name": "Underrealm Lich", "presence": "shared-all", "isGameChanger": false, "cmc": 5.0, "typeLine": "Creature \u2014 Zombie Elf Shaman"}, {"name": "World Shaper", "presence": "shared-all", "isGameChanger": false, "cmc": 4.0, "typeLine": "Creature \u2014 Merfolk Shaman"}]}, {"name": "Enchantments", "count": 7, "cards": [{"name": "Animate Dead", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Enchantment \u2014 Aura"}, {"name": "Exploration", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Enchantment"}, {"name": "Necromancy", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Enchantment"}, {"name": "Phyrexian Reclamation", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Enchantment"}, {"name": "Seal of Primordium", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Enchantment"}, {"name": "Survival of the Fittest", "presence": "shared-all", "isGameChanger": true, "cmc": 2.0, "typeLine": "Enchantment"}, {"name": "Sylvan Library", "presence": "unique-mul-a", "isGameChanger": false, "cmc": 2.0, "typeLine": "Enchantment"}]}, {"name": "Artifacts", "count": 12, "cards": [{"name": "Arcane Signet", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "Conduit of Worlds", "presence": "shared-two", "isGameChanger": false, "cmc": 4.0, "typeLine": "Artifact"}, {"name": "Crucible of Worlds", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Artifact"}, {"name": "Lightning Greaves", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact \u2014 Equipment"}, {"name": "Mesmeric Orb", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "Perpetual Timepiece", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "Skullclamp", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Artifact \u2014 Equipment"}, {"name": "Sol Ring", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Artifact"}, {"name": "Soul-Guide Lantern", "presence": "shared-two", "isGameChanger": false, "cmc": 1.0, "typeLine": "Artifact"}, {"name": "Talisman of Curiosity", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "Talisman of Resilience", "presence": "unique-mul-a", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "The One Ring", "presence": "shared-two", "isGameChanger": true, "cmc": 4.0, "typeLine": "Legendary Artifact"}]}, {"name": "Instants", "count": 15, "cards": [{"name": "An Offer You Can't Refuse", "presence": "shared-two", "isGameChanger": false, "cmc": 1.0, "typeLine": "Instant"}, {"name": "Assassin's Trophy", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Instant"}, {"name": "Beast Within", "presence": "shared-two", "isGameChanger": false, "cmc": 3.0, "typeLine": "Instant"}, {"name": "Counterspell", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Instant"}, {"name": "Entomb", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Instant"}, {"name": "Fact or Fiction", "presence": "unique-mul-a", "isGameChanger": false, "cmc": 4.0, "typeLine": "Instant"}, {"name": "Force of Negation", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Instant"}, {"name": "Force of Will", "presence": "unique-mul-a", "isGameChanger": true, "cmc": 5.0, "typeLine": "Instant"}, {"name": "Heroic Intervention", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Instant"}, {"name": "Krosan Grip", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Instant"}, {"name": "Lim-Dul's Vault", "presence": "unique-mul-a", "isGameChanger": false, "cmc": null, "typeLine": ""}, {"name": "Mana Drain", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Instant"}, {"name": "Nature's Claim", "presence": "shared-two", "isGameChanger": false, "cmc": 1.0, "typeLine": "Instant"}, {"name": "Noxious Revival", "presence": "shared-two", "isGameChanger": false, "cmc": 1.0, "typeLine": "Instant"}, {"name": "Swan Song", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Instant"}]}, {"name": "Sorceries", "count": 8, "cards": [{"name": "Buried Alive", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Sorcery"}, {"name": "Life from the Loam", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Sorcery"}, {"name": "Living Death", "presence": "shared-all", "isGameChanger": false, "cmc": 5.0, "typeLine": "Sorcery"}, {"name": "Nature's Lore", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Sorcery"}, {"name": "Reanimate", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Sorcery"}, {"name": "Regrowth", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Sorcery"}, {"name": "Three Visits", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Sorcery"}, {"name": "Victimize", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Sorcery"}]}, {"name": "Lands", "count": 36, "cards": [{"name": "Bayou", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Swamp Forest"}, {"name": "Bloodstained Mire", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Blooming Marsh", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Bojuka Bog", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Boseiju, Who Endures", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Legendary Land"}, {"name": "Botanical Sanctum", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Breeding Pool", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Forest Island"}, {"name": "City of Brass", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Command Tower", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Darkslick Shores", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Deathcap Glade", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Dreamroot Cascade", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Exotic Orchard", "presence": "unique-mul-a", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Fabled Passage", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Flooded Strand", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Mana Confluence", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Marsh Flats", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Misty Rainforest", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Morphic Pool", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Otawara, Soaring City", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Legendary Land"}, {"name": "Overgrown Tomb", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Swamp Forest"}, {"name": "Polluted Delta", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Prismatic Vista", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Reflecting Pool", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Rejuvenating Springs", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Scalding Tarn", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Shipwreck Marsh", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Takenuma, Abandoned Mire", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Legendary Land"}, {"name": "Tropical Island", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Forest Island"}, {"name": "Underground Sea", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Island Swamp"}, {"name": "Undergrowth Stadium", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Verdant Catacombs", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Watery Grave", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Island Swamp"}, {"name": "Windswept Heath", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Wooded Foothills", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Zagoth Triome", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Swamp Forest Island"}]}], "gameChangers": ["Force of Will", "Survival of the Fittest", "The One Ring"]}, {"id": "MUL-D", "total": 99, "categories": [{"name": "Creatures", "count": 23, "cards": [{"name": "Accursed Marauder", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Creature \u2014 Zombie Warrior"}, {"name": "Baleful Strix", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact Creature \u2014 Bird"}, {"name": "Birds of Paradise", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Bird"}, {"name": "Bloom Tender", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Creature \u2014 Elf Druid"}, {"name": "Caustic Caterpillar", "presence": "shared-two", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Insect"}, {"name": "Craterhoof Behemoth", "presence": "shared-two", "isGameChanger": false, "cmc": 8.0, "typeLine": "Creature \u2014 Beast"}, {"name": "Dauthi Voidwalker", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Creature \u2014 Dauthi Rogue"}, {"name": "Deathrite Shaman", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Elf Shaman"}, {"name": "Eternal Witness", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Creature \u2014 Human Shaman"}, {"name": "Gravecrawler", "presence": "shared-two", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Zombie"}, {"name": "Haywire Mite", "presence": "shared-two", "isGameChanger": false, "cmc": 1.0, "typeLine": "Artifact Creature \u2014 Insect"}, {"name": "Hedron Crab", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Crab"}, {"name": "Jarad, Golgari Lich Lord", "presence": "shared-all", "isGameChanger": false, "cmc": 4.0, "typeLine": "Legendary Creature \u2014 Zombie Elf"}, {"name": "Lord of Extinction", "presence": "shared-all", "isGameChanger": false, "cmc": 5.0, "typeLine": "Creature \u2014 Elemental"}, {"name": "Nyx Weaver", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Enchantment Creature \u2014 Spider"}, {"name": "Pitiless Plunderer", "presence": "shared-two", "isGameChanger": false, "cmc": 4.0, "typeLine": "Creature \u2014 Human Pirate"}, {"name": "Plaguecrafter", "presence": "shared-two", "isGameChanger": false, "cmc": 3.0, "typeLine": "Creature \u2014 Human Shaman"}, {"name": "Ramunap Excavator", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Creature \u2014 Snake Cleric"}, {"name": "Satyr Wayfinder", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Creature \u2014 Satyr"}, {"name": "Stitcher's Supplier", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Zombie"}, {"name": "Syr Konrad, the Grim", "presence": "shared-all", "isGameChanger": false, "cmc": 5.0, "typeLine": "Legendary Creature \u2014 Human Knight"}, {"name": "Underrealm Lich", "presence": "shared-all", "isGameChanger": false, "cmc": 5.0, "typeLine": "Creature \u2014 Zombie Elf Shaman"}, {"name": "World Shaper", "presence": "shared-all", "isGameChanger": false, "cmc": 4.0, "typeLine": "Creature \u2014 Merfolk Shaman"}]}, {"name": "Enchantments", "count": 6, "cards": [{"name": "Animate Dead", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Enchantment \u2014 Aura"}, {"name": "Exploration", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Enchantment"}, {"name": "Necromancy", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Enchantment"}, {"name": "Phyrexian Reclamation", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Enchantment"}, {"name": "Seal of Primordium", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Enchantment"}, {"name": "Survival of the Fittest", "presence": "shared-all", "isGameChanger": true, "cmc": 2.0, "typeLine": "Enchantment"}]}, {"name": "Artifacts", "count": 12, "cards": [{"name": "Arcane Signet", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "Crucible of Worlds", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Artifact"}, {"name": "Lightning Greaves", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact \u2014 Equipment"}, {"name": "Mesmeric Orb", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "Perpetual Timepiece", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "Phyrexian Altar", "presence": "shared-two", "isGameChanger": false, "cmc": 3.0, "typeLine": "Artifact"}, {"name": "Skullclamp", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Artifact \u2014 Equipment"}, {"name": "Sol Ring", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Artifact"}, {"name": "Soul-Guide Lantern", "presence": "shared-two", "isGameChanger": false, "cmc": 1.0, "typeLine": "Artifact"}, {"name": "Talisman of Curiosity", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "Talisman of Dominance", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "The One Ring", "presence": "shared-two", "isGameChanger": true, "cmc": 4.0, "typeLine": "Legendary Artifact"}]}, {"name": "Instants", "count": 14, "cards": [{"name": "An Offer You Can't Refuse", "presence": "shared-two", "isGameChanger": false, "cmc": 1.0, "typeLine": "Instant"}, {"name": "Arcane Denial", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Instant"}, {"name": "Assassin's Trophy", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Instant"}, {"name": "Beast Within", "presence": "shared-two", "isGameChanger": false, "cmc": 3.0, "typeLine": "Instant"}, {"name": "Counterspell", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Instant"}, {"name": "Entomb", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Instant"}, {"name": "Fierce Guardianship", "presence": "unique-mul-d", "isGameChanger": true, "cmc": 3.0, "typeLine": "Instant"}, {"name": "Force of Negation", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Instant"}, {"name": "Heroic Intervention", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Instant"}, {"name": "Krosan Grip", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Instant"}, {"name": "Nature's Claim", "presence": "shared-two", "isGameChanger": false, "cmc": 1.0, "typeLine": "Instant"}, {"name": "Noxious Revival", "presence": "shared-two", "isGameChanger": false, "cmc": 1.0, "typeLine": "Instant"}, {"name": "Pact of Negation", "presence": "unique-mul-d", "isGameChanger": false, "cmc": 0.0, "typeLine": "Instant"}, {"name": "Swan Song", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Instant"}]}, {"name": "Sorceries", "count": 8, "cards": [{"name": "Buried Alive", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Sorcery"}, {"name": "Life from the Loam", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Sorcery"}, {"name": "Living Death", "presence": "shared-all", "isGameChanger": false, "cmc": 5.0, "typeLine": "Sorcery"}, {"name": "Nature's Lore", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Sorcery"}, {"name": "Reanimate", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Sorcery"}, {"name": "Regrowth", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Sorcery"}, {"name": "Three Visits", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Sorcery"}, {"name": "Victimize", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Sorcery"}]}, {"name": "Lands", "count": 36, "cards": [{"name": "Bayou", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Swamp Forest"}, {"name": "Bloodstained Mire", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Blooming Marsh", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Bojuka Bog", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Boseiju, Who Endures", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Legendary Land"}, {"name": "Botanical Sanctum", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Breeding Pool", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Forest Island"}, {"name": "City of Brass", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Command Tower", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Darkslick Shores", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Deathcap Glade", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Dreamroot Cascade", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Fabled Passage", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Flooded Strand", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Mana Confluence", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Marsh Flats", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Misty Rainforest", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Morphic Pool", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Otawara, Soaring City", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Legendary Land"}, {"name": "Overgrown Tomb", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Swamp Forest"}, {"name": "Polluted Delta", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Prismatic Vista", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Reflecting Pool", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Rejuvenating Springs", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Scalding Tarn", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Shipwreck Marsh", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Takenuma, Abandoned Mire", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Legendary Land"}, {"name": "Tropical Island", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Forest Island"}, {"name": "Underground Sea", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Island Swamp"}, {"name": "Undergrowth Stadium", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Verdant Catacombs", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Volrath's Stronghold", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Legendary Land"}, {"name": "Watery Grave", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Island Swamp"}, {"name": "Windswept Heath", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Wooded Foothills", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Zagoth Triome", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Swamp Forest Island"}]}], "gameChangers": ["Fierce Guardianship", "Survival of the Fittest", "The One Ring"]}, {"id": "MUL-FINAL", "total": 99, "categories": [{"name": "Creatures", "count": 25, "cards": [{"name": "Birds of Paradise", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Bird"}, {"name": "Bloom Tender", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Creature \u2014 Elf Druid"}, {"name": "Caustic Caterpillar", "presence": "shared-two", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Insect"}, {"name": "Craterhoof Behemoth", "presence": "shared-two", "isGameChanger": false, "cmc": 8.0, "typeLine": "Creature \u2014 Beast"}, {"name": "Dauthi Voidwalker", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Creature \u2014 Dauthi Rogue"}, {"name": "Deathrite Shaman", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Elf Shaman"}, {"name": "Eternal Witness", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Creature \u2014 Human Shaman"}, {"name": "Glen Elendra Archmage", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 4.0, "typeLine": "Creature \u2014 Faerie Wizard"}, {"name": "Gravebreaker Lamia", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 5.0, "typeLine": "Enchantment Creature \u2014 Snake Lamia"}, {"name": "Gravecrawler", "presence": "shared-two", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Zombie"}, {"name": "Haywire Mite", "presence": "shared-two", "isGameChanger": false, "cmc": 1.0, "typeLine": "Artifact Creature \u2014 Insect"}, {"name": "Hedron Crab", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Crab"}, {"name": "Jarad, Golgari Lich Lord", "presence": "shared-all", "isGameChanger": false, "cmc": 4.0, "typeLine": "Legendary Creature \u2014 Zombie Elf"}, {"name": "Lord of Extinction", "presence": "shared-all", "isGameChanger": false, "cmc": 5.0, "typeLine": "Creature \u2014 Elemental"}, {"name": "Meren of Clan Nel Toth", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 4.0, "typeLine": "Legendary Creature \u2014 Human Shaman"}, {"name": "Nyx Weaver", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Enchantment Creature \u2014 Spider"}, {"name": "Pitiless Plunderer", "presence": "shared-two", "isGameChanger": false, "cmc": 4.0, "typeLine": "Creature \u2014 Human Pirate"}, {"name": "Ramunap Excavator", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Creature \u2014 Snake Cleric"}, {"name": "Satyr Wayfinder", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Creature \u2014 Satyr"}, {"name": "Sidisi, Brood Tyrant", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 4.0, "typeLine": "Legendary Creature \u2014 Snake Shaman"}, {"name": "Stitcher's Supplier", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Creature \u2014 Zombie"}, {"name": "Syr Konrad, the Grim", "presence": "shared-all", "isGameChanger": false, "cmc": 5.0, "typeLine": "Legendary Creature \u2014 Human Knight"}, {"name": "Underrealm Lich", "presence": "shared-all", "isGameChanger": false, "cmc": 5.0, "typeLine": "Creature \u2014 Zombie Elf Shaman"}, {"name": "Vile Entomber", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 4.0, "typeLine": "Creature \u2014 Zombie Warlock"}, {"name": "World Shaper", "presence": "shared-all", "isGameChanger": false, "cmc": 4.0, "typeLine": "Creature \u2014 Merfolk Shaman"}]}, {"name": "Enchantments", "count": 7, "cards": [{"name": "Animate Dead", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Enchantment \u2014 Aura"}, {"name": "Exploration", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Enchantment"}, {"name": "Necromancy", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Enchantment"}, {"name": "Phyrexian Reclamation", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Enchantment"}, {"name": "Seal of Primordium", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Enchantment"}, {"name": "Survival of the Fittest", "presence": "shared-all", "isGameChanger": true, "cmc": 2.0, "typeLine": "Enchantment"}, {"name": "Tortured Existence", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 1.0, "typeLine": "Enchantment"}]}, {"name": "Artifacts", "count": 14, "cards": [{"name": "Altar of Dementia", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "Arcane Signet", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "Ashnod's Altar", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 3.0, "typeLine": "Artifact"}, {"name": "Birthing Pod", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 4.0, "typeLine": "Artifact"}, {"name": "Conduit of Worlds", "presence": "shared-two", "isGameChanger": false, "cmc": 4.0, "typeLine": "Artifact"}, {"name": "Crucible of Worlds", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Artifact"}, {"name": "Lightning Greaves", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact \u2014 Equipment"}, {"name": "Mesmeric Orb", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "Perpetual Timepiece", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "Phyrexian Altar", "presence": "shared-two", "isGameChanger": false, "cmc": 3.0, "typeLine": "Artifact"}, {"name": "Skullclamp", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Artifact \u2014 Equipment"}, {"name": "Sol Ring", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Artifact"}, {"name": "Talisman of Curiosity", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}, {"name": "Talisman of Dominance", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Artifact"}]}, {"name": "Instants", "count": 10, "cards": [{"name": "Arcane Denial", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Instant"}, {"name": "Assassin's Trophy", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Instant"}, {"name": "Entomb", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Instant"}, {"name": "Force of Negation", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Instant"}, {"name": "Gifts Ungiven", "presence": "unique-mul-final", "isGameChanger": true, "cmc": 4.0, "typeLine": "Instant"}, {"name": "Heroic Intervention", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Instant"}, {"name": "Intuition", "presence": "unique-mul-final", "isGameChanger": true, "cmc": 3.0, "typeLine": "Instant"}, {"name": "Krosan Grip", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Instant"}, {"name": "Mana Drain", "presence": "shared-two", "isGameChanger": false, "cmc": 2.0, "typeLine": "Instant"}, {"name": "Swan Song", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Instant"}]}, {"name": "Sorceries", "count": 7, "cards": [{"name": "Buried Alive", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Sorcery"}, {"name": "Life from the Loam", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Sorcery"}, {"name": "Living Death", "presence": "shared-all", "isGameChanger": false, "cmc": 5.0, "typeLine": "Sorcery"}, {"name": "Nature's Lore", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Sorcery"}, {"name": "Reanimate", "presence": "shared-all", "isGameChanger": false, "cmc": 1.0, "typeLine": "Sorcery"}, {"name": "Regrowth", "presence": "shared-all", "isGameChanger": false, "cmc": 2.0, "typeLine": "Sorcery"}, {"name": "Victimize", "presence": "shared-all", "isGameChanger": false, "cmc": 3.0, "typeLine": "Sorcery"}]}, {"name": "Lands", "count": 36, "cards": [{"name": "Bayou", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Swamp Forest"}, {"name": "Bloodstained Mire", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Bojuka Bog", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Boseiju, Who Endures", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Legendary Land"}, {"name": "Breeding Pool", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Forest Island"}, {"name": "City of Brass", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Command Beacon", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Command Tower", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Dakmor Salvage", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Flooded Strand", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Mana Confluence", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Marsh Flats", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Misty Rainforest", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Morphic Pool", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Otawara, Soaring City", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Legendary Land"}, {"name": "Overgrown Tomb", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Swamp Forest"}, {"name": "Phyrexian Tower", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 0.0, "typeLine": "Legendary Land"}, {"name": "Polluted Delta", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Prismatic Vista", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Reflecting Pool", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Rejuvenating Springs", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Scalding Tarn", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Strip Mine", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Takenuma, Abandoned Mire", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Legendary Land"}, {"name": "Tropical Island", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Forest Island"}, {"name": "Underground Sea", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Island Swamp"}, {"name": "Undergrowth Stadium", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Urborg, Tomb of Yawgmoth", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 0.0, "typeLine": "Legendary Land"}, {"name": "Verdant Catacombs", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Volrath's Stronghold", "presence": "shared-two", "isGameChanger": false, "cmc": 0.0, "typeLine": "Legendary Land"}, {"name": "Wasteland", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Watery Grave", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Island Swamp"}, {"name": "Windswept Heath", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Wooded Foothills", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land"}, {"name": "Yavimaya, Cradle of Growth", "presence": "unique-mul-final", "isGameChanger": false, "cmc": 0.0, "typeLine": "Legendary Land"}, {"name": "Zagoth Triome", "presence": "shared-all", "isGameChanger": false, "cmc": 0.0, "typeLine": "Land \u2014 Swamp Forest Island"}]}], "gameChangers": ["Gifts Ungiven", "Intuition", "Survival of the Fittest"]}], "categories": ["Creatures", "Enchantments", "Artifacts", "Instants", "Sorceries", "Lands"]};
+    const grid = document.getElementById('grid');
+    const diffOnly = document.getElementById('diffOnly');
+    const comparisonTab = document.getElementById('comparisonTab');
+    const analysisTab = document.getElementById('analysisTab');
+    const comparisonControls = document.getElementById('comparisonControls');
+    const tabButtons = Array.from(document.querySelectorAll('.tab-btn'));
+    const DIFF_FILTER_DEFAULT = false;
+    let diffOnlyState = DIFF_FILTER_DEFAULT;
+    const cardModal = document.getElementById('cardModal');
+    const cardModalTitle = document.getElementById('cardModalTitle');
+    const cardModalImg = document.getElementById('cardModalImg');
+    const cardModalStatus = document.getElementById('cardModalStatus');
+    const cardModalError = document.getElementById('cardModalError');
+    const cardModalLink = document.getElementById('cardModalLink');
+    const cardModalClose = document.getElementById('cardModalClose');
+    const scryfallCache = new Map();
+    let modalToken = 0;
+
+    function esc(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function scryfallCardUrl(cardName) {
+      return `https://scryfall.com/search?q=%21%22${encodeURIComponent(cardName)}%22`;
+    }
+
+    async function getScryfallCard(cardName) {
+      if (scryfallCache.has(cardName)) return scryfallCache.get(cardName);
+      const fallback = { imageUrl: `https://api.scryfall.com/cards/named?exact=${encodeURIComponent(cardName)}&format=image&version=normal`, pageUrl: scryfallCardUrl(cardName) };
+      try {
+        const resp = await fetch(`https://api.scryfall.com/cards/named?exact=${encodeURIComponent(cardName)}`);
+        if (!resp.ok) {
+          scryfallCache.set(cardName, fallback);
+          return fallback;
+        }
+        const data = await resp.json();
+        const firstFace = Array.isArray(data.card_faces) ? data.card_faces.find(face => face.image_uris && face.image_uris.normal) : null;
+        const imageUrl = (data.image_uris && data.image_uris.normal) || (firstFace && firstFace.image_uris.normal) || fallback.imageUrl;
+        const pageUrl = data.scryfall_uri || fallback.pageUrl;
+        const payload = { imageUrl, pageUrl };
+        scryfallCache.set(cardName, payload);
+        return payload;
+      } catch (_err) {
+        scryfallCache.set(cardName, fallback);
+        return fallback;
+      }
+    }
+
+    function closeCardModal() {
+      cardModal.hidden = true;
+    }
+
+    async function openCardModal(cardName) {
+      const token = ++modalToken;
+      cardModal.hidden = false;
+      cardModalTitle.textContent = cardName;
+      cardModalImg.hidden = true;
+      cardModalError.hidden = true;
+      cardModalStatus.hidden = false;
+      cardModalStatus.textContent = 'Loading image...';
+      cardModalImg.alt = `${cardName} card image`;
+      cardModalLink.href = scryfallCardUrl(cardName);
+      const cardData = await getScryfallCard(cardName);
+      if (token !== modalToken) return;
+      cardModalLink.href = cardData.pageUrl;
+      cardModalImg.src = cardData.imageUrl;
+      cardModalImg.hidden = false;
+      cardModalStatus.hidden = true;
+      cardModalImg.onerror = () => {
+        if (token !== modalToken) return;
+        cardModalImg.hidden = true;
+        cardModalStatus.hidden = true;
+        cardModalError.hidden = false;
+      };
+    }
+
+    function render() {
+      grid.innerHTML = DATA.decks.map(deck => `
+        <section class="col" data-deck="${deck.id}">
+          <div class="col-head">
+            <div class="deck-id">${deck.id}</div>
+            <div class="tot">Total cards: ${deck.total} / 99</div>
+            <div class="gc-row">${deck.gameChangers.map(gc => `<span class="gc">GC: ${gc}</span>`).join('')}</div>
+          </div>
+          ${deck.categories.map(cat => `
+            <div class="section" data-cat="${cat.name}">
+              <button class="sec-head" type="button">
+                <span>${cat.name}</span>
+                <span>${cat.count}</span>
+              </button>
+              <ul class="cards">
+                ${cat.cards.map(card => `
+                  <li class="card ${card.presence}" title="${esc(`${card.typeLine || ''} | CMC: ${card.cmc ?? 'n/a'}`)}">
+                    <span><a class="card-link" href="${scryfallCardUrl(card.name)}" data-card-name="${esc(card.name)}" target="_blank" rel="noopener noreferrer">${esc(card.name)}</a></span>
+                    ${card.isGameChanger ? '<span class="badge">GC</span>' : ''}
+                  </li>
+                `).join('')}
+              </ul>
+            </div>
+          `).join('')}
+        </section>
+      `).join('');
+
+      grid.querySelectorAll('.sec-head').forEach(btn => {
+        btn.addEventListener('click', () => btn.parentElement.classList.toggle('collapsed'));
+      });
+      applyDiffToggle();
+    }
+
+    function applyDiffToggle() {
+      grid.classList.toggle('hide-shared', diffOnlyState);
+      if (diffOnly.checked !== diffOnlyState) diffOnly.checked = diffOnlyState;
+    }
+
+    function setTab(tab) {
+      const showComparison = tab === 'comparison';
+      comparisonTab.hidden = !showComparison;
+      analysisTab.hidden = showComparison;
+      comparisonControls.hidden = !showComparison;
+      tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tab));
+    }
+
+    // Some browsers restore prior checkbox state on reload; force deterministic initial view.
+    function resetDiffFilter() {
+      diffOnlyState = DIFF_FILTER_DEFAULT;
+      applyDiffToggle();
+    }
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => setTab(btn.dataset.tab || 'comparison'));
+    });
+    setTab('comparison');
+    resetDiffFilter();
+    diffOnly.addEventListener('change', () => {
+      diffOnlyState = !!diffOnly.checked;
+      applyDiffToggle();
+    });
+    window.addEventListener('pageshow', () => {
+      resetDiffFilter();
+      requestAnimationFrame(resetDiffFilter);
+      setTimeout(resetDiffFilter, 50);
+    });
+    setTimeout(resetDiffFilter, 0);
+    grid.addEventListener('click', (event) => {
+      const link = event.target.closest('.card-link');
+      if (!link) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+      event.preventDefault();
+      openCardModal(link.dataset.cardName || link.textContent || '');
+    });
+    analysisTab.addEventListener('click', (event) => {
+      const link = event.target.closest('.analysis-card-link');
+      if (!link) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+      event.preventDefault();
+      openCardModal(link.dataset.cardName || link.textContent || '');
+    });
+    cardModal.addEventListener('click', (event) => {
+      if (event.target === cardModal || event.target.dataset.closeModal === '1') closeCardModal();
+    });
+    cardModalClose.addEventListener('click', closeCardModal);
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !cardModal.hidden) closeCardModal();
+    });
+    render();
+  </script>
+</body>
+</html>

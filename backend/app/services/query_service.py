@@ -130,7 +130,7 @@ class QueryService:
         result = self._conn.execute_query(query_colors, {"commander_name": commander_name})
 
         if not result:
-            return {"error": f"Commander '{commander_name}' not found"}
+            raise ValueError(f"Commander '{commander_name}' not found")
 
         colors = result[0]["colors"]
 

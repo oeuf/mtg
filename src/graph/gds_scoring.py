@@ -1,6 +1,8 @@
 """Neo4j Graph Data Science scoring operations."""
 
+import logging
 from typing import Dict
+
 from src.graph.connection import Neo4jConnection
 
 
@@ -22,9 +24,9 @@ class GDSScoring:
         """
         try:
             self.conn.execute_query(query)
-            print(f"✓ Dropped existing projection '{name}'")
-        except Exception:
-            pass
+            logging.info("Dropped existing projection '%s'", name)
+        except Exception as e:
+            logging.warning("Could not drop projection '%s' (may not exist): %s", name, e)
 
     def create_projection(self) -> Dict:
         """Create in-memory graph projection for GDS algorithms."""
@@ -87,7 +89,21 @@ class GDSScoring:
         query = """
         CALL gds.graph.project(
             'card-feature-graph',
-            ['Card', 'Mechanic', 'Functional_Role', 'Theme', 'Subtype', 'Zone', 'Phase'],
+            {
+                Card: {
+                    properties: [
+                        'cmc_normalized', 'mana_efficiency', 'is_colorless',
+                        'color_count', 'is_creature', 'is_instant_sorcery',
+                        'is_artifact', 'is_land', 'is_fast_mana_int'
+                    ]
+                },
+                Mechanic: {},
+                Functional_Role: {},
+                Theme: {},
+                Subtype: {},
+                Zone: {},
+                Phase: {}
+            },
             {
                 HAS_MECHANIC: {
                     type: 'HAS_MECHANIC',
@@ -167,7 +183,7 @@ class GDSScoring:
         print(f"Computing Adamic-Adar scores on '{projection_name}'...")
 
         query = """
-        CALL gds.alpha.linkprediction.adamicAdar.stream($projection)
+        CALL gds.linkprediction.adamicAdar.stream($projection)
         YIELD node1, node2, score
         RETURN gds.util.asNode(node1).name AS card1,
                gds.util.asNode(node2).name AS card2,
@@ -189,7 +205,7 @@ class GDSScoring:
         print(f"Computing Common Neighbors on '{projection_name}'...")
 
         query = """
-        CALL gds.alpha.linkprediction.commonNeighbors.stream($projection)
+        CALL gds.linkprediction.commonNeighbors.stream($projection)
         YIELD node1, node2, score
         RETURN gds.util.asNode(node1).name AS card1,
                gds.util.asNode(node2).name AS card2,
@@ -250,10 +266,27 @@ class GDSScoring:
 
         return result[0] if result else {}
 
+    def clear_embedding_similar(self) -> int:
+        """Delete all EMBEDDING_SIMILAR relationships."""
+        print("Deleting stale EMBEDDING_SIMILAR relationships...")
+        query = "MATCH ()-[r:EMBEDDING_SIMILAR]->() DELETE r RETURN count(r) AS deleted"
+        result = self.conn.execute_query(query)
+        deleted = result[0]["deleted"] if result else 0
+        print(f"✓ Deleted {deleted} EMBEDDING_SIMILAR relationships")
+        return deleted
+
     def compute_fastrp_embeddings(self, projection_name: str = "card-feature-graph",
                                   embedding_dim: int = 128) -> Dict:
-        """Compute FastRP embeddings for cards."""
+        """Compute FastRP embeddings for cards using numeric node features."""
         print(f"Computing {embedding_dim}-dim FastRP embeddings on '{projection_name}'...")
+
+        # Pre-flight: verify feature properties exist before FastRP
+        preflight = self.conn.execute_query(
+            "MATCH (c:Card) WHERE c.cmc_normalized IS NOT NULL RETURN count(c) AS cnt"
+        )
+        cards_with_features = preflight[0]["cnt"] if preflight else 0
+        if cards_with_features == 0:
+            print("WARNING: No Card nodes have cmc_normalized property — FastRP will use topology-only embeddings")
 
         query = """
         CALL gds.fastRP.write(
@@ -261,7 +294,21 @@ class GDSScoring:
             {
                 embeddingDimension: $dim,
                 writeProperty: 'embedding',
-                iterationWeights: [0.0, 1.0, 1.0]
+                iterationWeights: [0.0, 1.0, 1.0],
+                nodeSelfInfluence: 0.3,
+                nodeLabels: ['Card'],
+                featureProperties: [
+                    'cmc_normalized',
+                    'mana_efficiency',
+                    'is_colorless',
+                    'color_count',
+                    'is_creature',
+                    'is_instant_sorcery',
+                    'is_artifact',
+                    'is_land',
+                    'is_fast_mana_int'
+                ],
+                propertyRatio: 0.3
             }
         )
         YIELD nodePropertiesWritten, computeMillis

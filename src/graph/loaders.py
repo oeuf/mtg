@@ -1,5 +1,7 @@
 """Load cards and relationships into Neo4j graph."""
 
+import logging
+
 from .connection import Neo4jConnection
 
 
@@ -79,7 +81,15 @@ def load_card_to_graph(conn: Neo4jConnection, card_data: dict):
         c.is_fast_mana = $is_fast_mana,
         c.subtypes = $subtypes,
         c.themes = $themes,
-        c.archetype = $archetype
+        c.archetype = $archetype,
+        c.cmc_normalized = $cmc_normalized,
+        c.is_colorless = $is_colorless,
+        c.color_count = $color_count,
+        c.is_creature = $is_creature,
+        c.is_instant_sorcery = $is_instant_sorcery,
+        c.is_artifact = $is_artifact,
+        c.is_land = $is_land,
+        c.is_fast_mana_int = $is_fast_mana_int
     """
 
     # For commanders, add additional properties
@@ -110,6 +120,15 @@ def load_card_to_graph(conn: Neo4jConnection, card_data: dict):
         "subtypes": card_data.get("subtypes", []),
         "themes": card_data.get("themes", []),
         "archetype": card_data.get("archetype", "utility"),
+        # Numeric features for FastRP featureProperties
+        "cmc_normalized": min(card_data.get("cmc", 0), 16) / 16.0,
+        "is_colorless": 1 if len(card_data.get("color_identity", [])) == 0 else 0,
+        "color_count": len(card_data.get("color_identity", [])),
+        "is_creature": 1 if "Creature" in card_data.get("type_line", "") else 0,
+        "is_instant_sorcery": 1 if any(t in card_data.get("type_line", "") for t in ("Instant", "Sorcery")) else 0,
+        "is_artifact": 1 if "Artifact" in card_data.get("type_line", "") else 0,
+        "is_land": 1 if "Land" in card_data.get("type_line", "") else 0,
+        "is_fast_mana_int": 1 if card_data.get("is_fast_mana", False) else 0,
     }
 
     conn.execute_query(query, params)
@@ -229,9 +248,8 @@ def create_related_card_relationships(conn: Neo4jConnection,
                 "card_name": card_name,
                 "related_card": related_card
             })
-        except Exception:
-            # Related card might not be Commander-legal
-            pass
+        except Exception as e:
+            logging.warning("Could not create COMBOS_WITH for %s -> %s (card may not be Commander-legal): %s", card_name, related_card, e)
 
     # 2. TOKENS: Token generation
     tokens = related_data.get("tokens", [])
@@ -272,8 +290,8 @@ def create_related_card_relationships(conn: Neo4jConnection,
                 "card_name": card_name,
                 "related_card": related_card
             })
-        except Exception:
-            pass
+        except Exception as e:
+            logging.warning("Could not create COMMONLY_PAIRED_WITH for %s -> %s: %s", card_name, related_card, e)
 
 
 def integrate_related_cards(conn: Neo4jConnection,

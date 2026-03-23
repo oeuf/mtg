@@ -1,0 +1,114 @@
+Commander
+1 Muldrotha, the Gravetide
+
+CREATURES (24)
+1 Birds of Paradise
+1 Deathrite Shaman
+1 Bloom Tender
+1 Stitcher's Supplier
+1 Hedron Crab
+1 Caustic Caterpillar
+1 Haywire Mite
+1 Plaguecrafter
+1 Accursed Marauder
+1 Ramunap Excavator
+1 Eternal Witness
+1 Endurance
+1 Underrealm Lich
+1 Dauthi Voidwalker
+1 World Shaper
+1 Azusa, Lost but Seeking
+1 Wayward Swordtooth
+1 Tireless Provisioner
+1 Lord of Extinction
+1 Jarad, Golgari Lich Lord
+1 Syr Konrad, the Grim
+1 Scute Swarm
+1 Craterhoof Behemoth
+1 Vile Entomber
+
+ARTIFACTS (12)
+1 Sol Ring
+1 Arcane Signet
+1 Talisman of Curiosity
+1 Talisman of Resilience
+1 Skullclamp
+1 Mesmeric Orb
+1 Crucible of Worlds
+1 Conduit of Worlds
+1 Perpetual Timepiece
+1 Soul-Guide Lantern
+1 The One Ring
+1 Lightning Greaves
+
+ENCHANTMENTS (10)
+1 Survival of the Fittest
+1 Exploration
+1 Mystic Remora
+1 Sylvan Library
+1 Animate Dead
+1 Necromancy
+1 Phyrexian Reclamation
+1 Seal of Primordium
+1 Seal of Doom
+1 Seal of Removal
+
+INSTANTS (10)
+1 Fierce Guardianship
+1 Force of Will
+1 Force of Negation
+1 Mana Drain
+1 Counterspell
+1 Swan Song
+1 Assassin's Trophy
+1 Beast Within
+1 Krosan Grip
+1 Nature's Claim
+
+SORCERIES (10)
+1 Life from the Loam
+1 Buried Alive
+1 Entomb
+1 Reanimate
+1 Victimize
+1 Living Death
+1 Regrowth
+1 Nature's Lore
+1 Three Visits
+1 Farseek
+
+LANDS (33 + 5 basics = 38 total)
+1 Command Tower
+1 Tropical Island
+1 Bayou
+1 Underground Sea
+1 Breeding Pool
+1 Overgrown Tomb
+1 Watery Grave
+1 Zagoth Triome
+1 Morphic Pool
+1 Undergrowth Stadium
+1 Reflecting Pool
+1 Mana Confluence
+1 City of Brass
+1 Rejuvenating Springs
+1 Polluted Delta
+1 Verdant Catacombs
+1 Misty Rainforest
+1 Marsh Flats
+1 Wooded Foothills
+1 Scalding Tarn
+1 Prismatic Vista
+1 Bloodstained Mire
+1 Fabled Passage
+1 Field of the Dead
+1 Bojuka Bog
+1 Strip Mine
+1 Wasteland
+1 Urborg, Tomb of Yawgmoth
+1 Yavimaya, Cradle of Growth
+1 Dakmor Salvage
+1 Takenuma, Abandoned Mire
+1 Boseiju, Who Endures
+1 Otawara, Soaring City
+5 Basic Lands (2 Forest, 2 Swamp, 1 Island)
